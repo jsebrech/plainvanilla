@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Plain Vanilla</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <noscript>Please enable JavaScript to view this site correctly.</noscript>
+    <script type="module" src="index.js"></script>
+
+    <header>
+        <h1>Plain Vanilla</h1>
+        <p>
+            An explainer for how to do web development using vanilla techniques. 
+            No tools, no frameworks, just HTML, CSS and JavaScript.
+        </p>
+        <nav>
+            <ul>
+                <li>Introduction</li>
+                <li><a href="pages/components.html">Components</a></li>
+                <li><a href="pages/styling.html">Styling</a></li>
+                <li><a href="pages/structure.html">Structure</a></li>
+            </ul>        
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>
+                About this site
+            </h2>
+            <p>
+                This is an overview of the major techniques used to make web sites and web applications
+                without making use of build tools or frameworks, with just an editor, a browser, and web standards.
+            </p>
+            <p>
+                Specifically, that means these topics:
+            </p>
+            <dl>
+                <dt><a href="pages/components.html">Components</a></dt>
+                <dd>The use of Web Components as the basic building block for making higher-level primitives out of plain HTML, JavaScript and CSS, replacing the components approach from frameworks like React or Vue.</dd>
+                <dt><a href="pages/styling.html">Styling</a></dt>
+                <dd>Fully exploiting the abilities of modern CSS to replace the conveniences of PostCSS, styled components or SASS.</dd>
+                <dt><a href="pages/structure.html">Structure</a></dt>
+                <dd>How to structure a project, how to pull in dependencies, how to do routing, and how to deploy for production, all without involving build tools, frameworks or server-side logic.</dd>
+            </dl>
+        </section>
+        <section>
+            <h2>
+                Wait, but why
+            </h2>
+            <p>
+                Modern web development tooling is powerful but very complicated,
+                and the resulting projects often require regular maintenance to keep secure and up to date.
+                The plain vanilla style of web development makes a different choice,
+                trading off a few short-term comforts for long term benefits like simplicity and being effectively zero-maintenance.
+            </p>
+            <p>
+                <strong>Don't</strong> use the plain vanilla approach if you're uncertain about what approach to use,
+                if you favor speed of development above all else, or if you need extensive integration with a database backend.
+                Instead use something that's commonplace like React and/or Laravel because they offer more conveniences and when you run into problems
+                it will be easier to find answers.
+            </p>
+            <p>
+                <strong>Do</strong> use this approach if you want to build a site or application that requires no maintenance, is very reliable, and is built for the long haul.
+                After all, the techniques described here rely on nothing but web standards, and web standards last for decades.
+            </p>
+            <p>
+                If you're just starting out learning web development, go learn HTML, CSS and JavaScript first, then come back here.
+                You can get started at <a href="https://www.theodinproject.com/paths/foundations/courses/foundations">The Odin Project Foundations Course</a> 
+                or the <a href="https://developer.mozilla.org/en-US/docs/Learn">MDN Learn web development</a> learning path. 
+            </p>
+        </section>
+        <section>
+            <h2>Up next</h2>
+            Learn about <a href="pages/components.html">Web Components</a> as the way to compose content, style and behavior.
+        </section>
+    </main>
+</body>
+</html>

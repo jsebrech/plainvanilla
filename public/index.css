@@ -1,0 +1,53 @@
+@import url("./reset.css");
+
+:root {
+    /* https://modernfontstacks.com/ geometric humanist font */
+    --font-system: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
+    /* defaulting to system font: https://css-tricks.com/snippets/css/system-font-stack/ */
+    /*--font-system: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";*/
+}
+
+html {
+    margin:    0 auto;
+    max-width: 800px;
+}
+
+body {
+    font-family: var(--font-system);
+    font-weight: normal;
+    margin: 1.5em;
+    line-height: 1.4;
+}
+
+header {
+    margin-bottom: 1.5em;
+    background-color: white;
+}
+
+h1, h2, h3, h4, p {
+    margin-bottom: 0.5em;
+}
+
+dt {
+    margin: 0.5em 0;
+}
+
+nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: start;
+    align-items: center;
+    margin: 1em 0;
+    list-style-type: none;
+}
+
+nav li {
+    margin: 0 -1px -1px 0;
+    display: inline-block;
+    border: 1px solid black;
+    padding: 0.5em;
+}
+
+code {
+    background-color: lightblue;
+}
