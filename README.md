@@ -1,6 +1,6 @@
 # Plain Vanilla
 
-A website demonstrating how to do web development using only vanilla techniques: no tools, no frameworks, just the browser and vanilla web code. The site itself is built in this way.
+A website demonstrating how to do web development using only vanilla techniques: no tools, no frameworks, just the browser and vanilla web code. The site itself is also built in this way.
 
 ## Running
 
@@ -9,6 +9,8 @@ Run the `public/` folder as a static website:
 - node: `npx serve public`
 - php: `php -S localhost:8000 -t public`
 - python: `python3 -m http.server 8000 --directory public`
+
+Or use the VS Code Live Preview extension to show `public/index.html`.
 
 ## Other resources
 

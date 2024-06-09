@@ -1,4 +1,5 @@
 @import url("./reset.css");
+@import url("./components/code-viewer.css");
 
 :root {
     /* https://modernfontstacks.com/ geometric humanist font */
@@ -28,6 +29,10 @@ h1, h2, h3, h4, p {
     margin-bottom: 0.5em;
 }
 
+h2 {
+    margin-top: 1em;
+}
+
 dt {
     margin: 0.5em 0;
 }
@@ -50,4 +55,16 @@ nav li {
 
 code {
     background-color: lightblue;
+}
+
+x-code-viewer {
+    border: 1px solid black;
+    margin-bottom: 1em;
+    max-height: 20em;
+}
+
+iframe {
+    display: block;
+    width: 100%;
+    margin-bottom: 1em;
 }

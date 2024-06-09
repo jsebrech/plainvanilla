@@ -28,35 +28,147 @@
                 the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element">standard set of HTML elements</a> with additional elements.
             </p>
             <p>
-                The three main technologies:
+                The three main technologies are:
             </p>
             <dl>
-                <dt><a href="#custom-elements">Custom elements</a></dt>
+                <dt><a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements">Custom elements</a></dt>
                 <dd>
-                    A way to extend HTML so that instead of having to build all our markup out of <code>&lt;section&gt;</code>, <code>&lt;div&gt;</code>, <code>&lt;p&gt;</code> and friends, 
+                    A way to extend HTML so that instead of having to build all our markup out of <code>&lt;div&gt;</code>, <code>&lt;input&gt;</code>, <code>&lt;span&gt;</code> and friends, 
                     we can build with higher-level primitives.
                 </dd>
-                <dt><a href="#shadow-dom">Shadow DOM</a></dt>
+                <dt><a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM">Shadow DOM</a></dt>
                 <dd>
                     Extending custom elements to have their own separate DOM, isolating complex behavior inside the element from the rest of the page.
                 </dd>
-                <dt><a href="#html-templates">HTML templates</a></dt>
+                <dt><a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_templates_and_slots">HTML templates</a></dt>
                 <dd>
                     Extending custom elements with reusable markup blocks using the <code>&lt;template&gt;</code> and <code>&lt;slot&gt;</code> tags, for quickly generating complex components.
                 </dd>
             </dl>
+            <p>
+                Those 3 bullets tell you everything and nothing at the same time.
+                This probably isn't the first tutorial on Web Components you've seen, and you may find them a confusing topic.
+                However, it's not that complicated, as long as you build them up step by step ...
+            </p>
         </section>
-        <section id="custom-elements">
-            <h2>Custom elements</h2>
-            <p>... content goes here ...</p>
+        <section>
+            <h2>A simple component</h2>
+            <p>Let's start with the most basic form, a custom element that says <em>'hello world!'</em>:</p>
+            <x-code-viewer src="../examples/simple-component/simple-component.js"></x-code-viewer>
+            <p>We can use it in a page like this:</p>
+            <x-code-viewer src="../examples/simple-component/simple-component.html"></x-code-viewer>
+            <p>Which outputs this page:</p>
+            <iframe src="../examples/simple-component/simple-component.html"></iframe>
+            <p>So what's happening here?</p>
+            <p>We created a new HTML element, registered as the <code>x-hello-world</code> tag,
+                and used it on the page. When we did that, we got the following DOM structure:
+                <ul>
+                    <li>body (node)</li>
+                    <ul>
+                        <li>x-hello-world (node)</li>
+                        <ul>
+                            <li>'hello world!' (textContent)</li>
+                        </ul>
+                    </ul>
+                </ul>
+            </p>
+            <p>Explaining the code of the custom element line by line:</p>
+            <ul>
+                <dt><code>class HelloWorldComponent extends HTMLElement {</code></dt>
+                <dd>Every custom element is a class extending <code>HTMLElement</code>. 
+                    In the <a href="https://html.spec.whatwg.org/multipage/custom-elements.html">custom elements specification</a> you will find that it's possible to extend other elements as well, 
+                    like <code>HTMLButtonElement</code> to extend a <code>&lt;button&gt;</code>,
+                    but in practice this <a href="https://caniuse.com/mdn-api_customelementregistry_builtin_element_support">doesn't work in Safari</a>.</dd>
+                <dt><code>connectedCallback() {</code></dt>
+                <dd>This method is called when our element is added to the DOM,
+                    which means our element is ready to make DOM updates.</dd>
+                <dt><code>this.textContent = 'hello world!';</code></dt>
+                <dd>The <code>this</code> in this case refers to our element, which has the full <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement">HTMLElement</a> API,
+                    including its ancestors <code>Element</code> and <code>Node</code>. On <code>Node</code> we can find the <code>textContent</code> property,
+                    which is used to add the <code>'hello world!'</code> string to the DOM.</dd>
+                <dt><code>customElements.define('x-hello-world', HelloWorldComponent);</code></dt>
+                <dd>For every web component <code>window.customElements.define</code> must be called once to register the custom element's class and associate it with a tag.
+                    After this line is called the custom element becomes available for use in HTML markup.</dd>
+            </ul>
+            <p>
+                You may be wondering why we didn't just call it <code>hello-world</code> instead of <code>x-hello-world</code>?<br>
+                There are <a href="https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name">custom element tag naming rules</a>, in particular that the name must start with a lowercase letter and contain a dash,
+                so while <code>hello-world</code> would also be a valid name, in general it is best to start all custom element tag names with <code>x-</code> as shown here, or some other prefix of your choice.
+            </p>
         </section>
-        <section id="shadow-dom">
-            <h2>Shadow DOM</h2>
-            <p>... content goes here ...</p>
+        <section>
+            <h2>An advanced component</h2>
+            <p>
+                While the simple version above works for a quick demo, you'll probably want to do more pretty quickly:
+            </p>
+            <ul>
+                <li>Adding DOM elements as children to allow for more complex content.</li>
+                <li>Passing in attributes, and updating the DOM based on changes in those attributes.</li>
+                <li>Styling the element, preferably in a way that's isolated and scales nicely.</li>
+                <li>Defining all custom elements from a central place, instead of dumping random script tags in the middle of our markup.</li>
+            </ul>
+            <p>
+                To illustrate a way to do those things with custom elements, here's a custom element <code>&lt;x-avatar&gt;</code> that implements
+                a simplified version of the <a href="https://nextui.org/docs/components/avatar">NextUI Avatar component</a> (React):
+            </p>
+            <x-code-viewer src="../examples/advanced-component/components/avatar.js"></x-code-viewer>
+            <p>Some key elements that have changed:</p>
+            <ul>
+                <li>The <code>observedAttributes</code> getter returns the element's attributes that when changed cause <code>attributeChangedCallback()</code> to be called, allowing us to update the UI.</li>
+                <li>The <code>update()</code> method handles initial render as well as updates, centralizing the UI logic.</li>
+                <li>The exported <code>registerAvatarComponent</code> function allows centralizing the logic that defines all custom elements in an application.</li>
+            </ul>
+            <p>Once rendered this avatar component will have this DOM structure:</p>
+            <ul>
+                <li>body (node)</li>
+                <ul>
+                    <li>x-avatar (node)</li>
+                    <ul>
+                        <li>img (node)</li>
+                        <ul>
+                            <li>src (attribute)</li>
+                            <li>alt (attribute)</li>
+                        </ul>
+                    </ul>
+                </ul>
+            </ul>
+            <p>For styling of our component we can use a separate css file:</p>
+            <x-code-viewer src="../examples/advanced-component/components/avatar.css"></x-code-viewer>
+            <p>Notice that:</p>
+            <ul>
+                <li>Because we know what the tag of our component is, we can easily scope the styles by prepending them with <code>x-avatar</code>, so they won't conflict with the rest of the page.</li>
+                <li>Because a custom element is just HTML, we can style based on the element's custom attributes in pure CSS, like the <code>size</code> attribute.</li>
+            </ul>
+
+            <p>A demonstration of what that looks like in action on a webpage:</p>
+            <iframe src="../examples/advanced-component/index.html"></iframe>
+            <x-code-viewer src="../examples/advanced-component/index.html"></x-code-viewer>
+            <p>
+                This HTML centralizes the JavaScript and CSS logic to two index files, to make it easier to scale out to many web components.
+                This pattern, or a pattern like it, can keep things organized in a web application that is built out of dozens or hundreds of different web components.
+            </p>
+            <x-code-viewer src="../examples/advanced-component/index.js"></x-code-viewer>
+            <x-code-viewer src="../examples/advanced-component/index.css"></x-code-viewer>
+            <p>
+                The use of the CSS <code>@import</code> keyword may seem surprising as this keyword is often frowned upon for performance reasons,
+                but in modern browsers over HTTP/2 or HTTP/3 the performance penalty of this approach is not that severe.
+            </p>
+            <p>
+                If you've paid close attention, you have seen that we're using the ES module syntax for <code>import</code> and <code>export</code> in our code,
+                but we haven't set up any JavaScript bundler to transpile that syntax. The magic that makes this work is in the <code>index.html</code>,
+                where the <code>&lt;script type="module" src="index.js"&gt;</code> tag's type attribute enables ES module mode for all the included JavaScript.
+                This is supported in all modern browsers.
+            </p>
         </section>
-        <section id="html-templates">
-            <h2>HTML templates</h2>
-            <p>... content goes here ...</p>
+        <section>
+            <h2>Bells and whistles</h2>
+            <p>Having seen what a more advanced web component looks like, we're now ready to jump up to the final difficulty level of web components, leveraging the more advanced features of Shadow DOM, HTML templates and class properties.</p>
+            <p>TODO: bring in the badge ...</p>
+        </section>
+        <section>
+            <p>
+                Remember, all of this code is still vanilla. It does not make use of any framework and works in all modern browsers.
+            </p>
         </section>
         <section>
             <h2>Up next</h2>

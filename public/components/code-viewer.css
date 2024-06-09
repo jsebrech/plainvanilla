@@ -1,0 +1,22 @@
+x-code-viewer {
+    display: block;
+    display: flex;
+    flex-direction: column;
+}
+
+x-code-viewer label, 
+x-code-viewer code {
+    display: block;
+    font-family: monospace;
+    white-space: pre;
+    padding: 1em;
+}
+
+x-code-viewer label {
+    flex: 0 0 auto;
+}
+
+x-code-viewer code {
+    flex: 1 1 auto;
+    overflow: auto;
+}
