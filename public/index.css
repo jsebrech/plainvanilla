@@ -33,8 +33,20 @@ h2 {
     margin-top: 1em;
 }
 
+ul {
+    padding-left: 2em;
+}
+
+dl {
+    padding-left: 1.5em;
+}
+
 dt {
     margin: 0.5em 0;
+}
+
+dd {
+    margin-left: 1.5em;
 }
 
 nav ul {
@@ -59,19 +71,19 @@ code {
 
 x-code-viewer {
     border: 1px solid black;
-    margin-bottom: 1em;
+    margin: 1em 0;
     max-height: 20em;
 }
 
 iframe {
     display: block;
     width: 100%;
-    margin-bottom: 1em;
+    margin: 1em 0;
 }
 
 aside {
     border: 1px dotted black;
-    margin: 1em 0;
+    margin: 2em 0;
 }
 
 aside h4 {

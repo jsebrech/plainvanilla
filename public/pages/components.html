@@ -73,7 +73,7 @@
                 </ul>
             </p>
             <p>Explaining the code of the custom element line by line:</p>
-            <ul>
+            <dl>
                 <dt><code>class HelloWorldComponent extends HTMLElement {</code></dt>
                 <dd>Every custom element is a class extending <code>HTMLElement</code>. 
                     In the <a href="https://html.spec.whatwg.org/multipage/custom-elements.html">custom elements specification</a> you will find that it's possible to extend other elements as well, 
@@ -89,7 +89,7 @@
                 <dt><code>customElements.define('x-hello-world', HelloWorldComponent);</code></dt>
                 <dd>For every web component <code>window.customElements.define</code> must be called once to register the custom element's class and associate it with a tag.
                     After this line is called the custom element becomes available for use in HTML markup.</dd>
-            </ul>
+            </dl>
             <aside>
                 <h4>Why is it named <code>x-hello-world</code> instead of <code>hello-world</code>?</h4>
                 <p>
@@ -175,7 +175,7 @@
             
             <p>The <code>x-avatar</code> component is identical to the previous example, but how does the <code>x-badge</code> work?</p>
             <x-code-viewer src="../examples/combined-component/components/badge.js" name="components/badge.js"></x-code-viewer>
-            <p>There's a lot happening here, so let's unpack.</p>
+            <p>There is a lot happening here, so let's unpack.</p>
             <dl>
                 <dt><code>const template = document.createElement('template');</code></dt>
                 <dd>
