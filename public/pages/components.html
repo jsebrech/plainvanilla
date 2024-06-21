@@ -54,11 +54,11 @@
         <section>
             <h2>A simple component</h2>
             <p>Let's start with the most basic form, a custom element that says <em>'hello world!'</em>:</p>
-            <x-code-viewer src="../examples/simple-component/simple-component.js"></x-code-viewer>
+            <x-code-viewer src="../examples/simple-component/hello-world.js"></x-code-viewer>
             <p>We can use it in a page like this:</p>
-            <x-code-viewer src="../examples/simple-component/simple-component.html"></x-code-viewer>
+            <x-code-viewer src="../examples/simple-component/index.html"></x-code-viewer>
             <p>Which outputs this page:</p>
-            <iframe src="../examples/simple-component/simple-component.html"></iframe>
+            <iframe src="../examples/simple-component/index.html"></iframe>
             <p>So what's happening here?</p>
             <p>We created a new HTML element, registered as the <code>x-hello-world</code> tag,
                 and used it on the page. When we did that, we got the following DOM structure:
@@ -90,11 +90,13 @@
                 <dd>For every web component <code>window.customElements.define</code> must be called once to register the custom element's class and associate it with a tag.
                     After this line is called the custom element becomes available for use in HTML markup.</dd>
             </ul>
-            <p>
-                You may be wondering why we didn't just call it <code>hello-world</code> instead of <code>x-hello-world</code>?<br>
-                There are <a href="https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name">custom element tag naming rules</a>, in particular that the name must start with a lowercase letter and contain a dash,
-                so while <code>hello-world</code> would also be a valid name, in general it is best to start all custom element tag names with <code>x-</code> as shown here, or some other prefix of your choice.
-            </p>
+            <aside>
+                <h4>Why is it named <code>x-hello-world</code> instead of <code>hello-world</code>?</h4>
+                <p>
+                There are <a href="https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name">custom element tag naming rules</a>, in particular that the name must start with a lowercase letter and contain a dash.
+                While <code>hello-world</code> would also be a valid name, in general it is best to start all custom element tag names with <code>x-</code> or some other prefix of your choice.
+                </p>
+            </aside>
         </section>
         <section>
             <h2>An advanced component</h2>
@@ -111,7 +113,7 @@
                 To illustrate a way to do those things with custom elements, here's a custom element <code>&lt;x-avatar&gt;</code> that implements
                 a simplified version of the <a href="https://nextui.org/docs/components/avatar">NextUI Avatar component</a> (React):
             </p>
-            <x-code-viewer src="../examples/advanced-component/components/avatar.js"></x-code-viewer>
+            <x-code-viewer src="../examples/advanced-component/components/avatar.js" name="components/avatar.js"></x-code-viewer>
             <p>Some key elements that have changed:</p>
             <ul>
                 <li>The <code>observedAttributes</code> getter returns the element's attributes that when changed cause <code>attributeChangedCallback()</code> to be called, allowing us to update the UI.</li>
@@ -133,7 +135,7 @@
                 </ul>
             </ul>
             <p>For styling of our component we can use a separate css file:</p>
-            <x-code-viewer src="../examples/advanced-component/components/avatar.css"></x-code-viewer>
+            <x-code-viewer src="../examples/advanced-component/components/avatar.css" name="components/avatar.css"></x-code-viewer>
             <p>Notice that:</p>
             <ul>
                 <li>Because we know what the tag of our component is, we can easily scope the styles by prepending them with <code>x-avatar</code>, so they won't conflict with the rest of the page.</li>
@@ -153,22 +155,133 @@
                 The use of the CSS <code>@import</code> keyword may seem surprising as this keyword is often frowned upon for performance reasons,
                 but in modern browsers over HTTP/2 or HTTP/3 the performance penalty of this approach is not that severe.
             </p>
-            <p>
-                If you've paid close attention, you have seen that we're using the ES module syntax for <code>import</code> and <code>export</code> in our code,
-                but we haven't set up any JavaScript bundler to transpile that syntax. The magic that makes this work is in the <code>index.html</code>,
-                where the <code>&lt;script type="module" src="index.js"&gt;</code> tag's type attribute enables ES module mode for all the included JavaScript.
-                This is supported in all modern browsers.
-            </p>
+            <aside>
+                <h4>Don't we need a bundler?</h4>
+                <p>
+                    If you've paid close attention, you have seen that we're using the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules">ES module syntax</a> for <code>import</code> and <code>export</code> in our code,
+                    but we haven't set up any JavaScript bundler to transpile that syntax. The magic that makes this work is in the <code>index.html</code>,
+                    where the <code>&lt;script type="module" src="index.js"&gt;</code> tag's type attribute enables ES module mode for all the included JavaScript.
+                    This is supported by all modern browsers.
+                </p>
+            </aside>
         </section>
         <section>
             <h2>Bells and whistles</h2>
             <p>Having seen what a more advanced web component looks like, we're now ready to jump up to the final difficulty level of web components, leveraging the more advanced features of Shadow DOM, HTML templates and class properties.</p>
-            <p>TODO: bring in the badge ...</p>
+            
+            <p>Here's a demonstration of two web components interacting live:</p>
+            <x-code-viewer src="../examples/combined-component/index.html"></x-code-viewer>
+            <iframe src="../examples/combined-component/index.html"></iframe>
+            
+            <p>The <code>x-avatar</code> component is identical to the previous example, but how does the <code>x-badge</code> work?</p>
+            <x-code-viewer src="../examples/combined-component/components/badge.js" name="components/badge.js"></x-code-viewer>
+            <p>There's a lot happening here, so let's unpack.</p>
+            <dl>
+                <dt><code>const template = document.createElement('template');</code></dt>
+                <dd>
+                    The badge code starts out by creating an <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_templates_and_slots">HTML template</a>.
+                    Templates are fragments of HTML that can be easily cloned and appended to a DOM.
+                    For complex web components that have a lot of markup, the use of a template is often more convenient.
+                    By instantiating the template outside the class, it can be reused across all instances of the <code>&lt;x-badge&gt;</code> component.
+                </dd>
+                <dt><code>&lt;link rel="stylesheet" href="${new URL('badge.css', import.meta.url)}"&gt;</code></dt>
+                <dd>
+                    Because this component uses a shadow DOM, it is isolated from the styles of the containing page and starts out unstyled.
+                    The <code>badge.css</code> needs to be imported into the shadow DOM using the <code>&lt;link&gt;</code> tag.
+                    The special <code>import.meta.url</code> trick imports the css file from the same path
+                    as the <code>badge.js</code> file.
+                </dd>
+                <dt><code>&lt;slot&gt;&lt;/slot&gt;</code></dt>
+                <dd>
+                    The <code>&lt;slot&gt;</code> element is where the child elements will go (like the <code>&lt;x-avatar&gt;</code> child of our <code>&lt;x-badge&gt;</code>).
+                    Putting child elements in a slot is similar to using a <code>children</code> prop in a React component.
+                    The use of slots is only possible in web components that have a shadow DOM.
+                </dd>
+                <dt><code>if (!this.shadowRoot) { this.attachShadow({ mode: 'open' });</code></dt>
+                <dd>
+                    <p>
+                        <code>attachShadow</code> attaches a shadow DOM to the current element.
+                        A shadow DOM is an isolated part of the DOM structure, with CSS separated from the containing page,
+                        and optionally with the shadow content hidden away from the parent page's JavaScript (if <code>mode: 'closed'</code> is set).
+                        For web components that are used in a known codebase, it is usually more convenient to use them in open mode,
+                        as is done here.    
+                    </p>
+                    <p>
+                        <code>if (!this.shadowRoot) {</code> is not strictly necessary, but allows for server-side generated HTML,
+                        by making use of <a href="https://developer.chrome.com/docs/css-ui/declarative-shadow-dom">declarative shadow DOM</a>.
+                    </p>
+                </dd>
+                <dt><code>this.shadowRoot.append(template.content.cloneNode(true));</code></dt>
+                <dd>
+                    <p>
+                        The <code>shadowRoot</code> property is the root element of the attached shadow DOM, and is rendered into the page as the <code>&lt;x-badge&gt;</code> element's content.
+                        The HTML template is cloned and appended into it.
+                    </p>
+                    <p>
+                        The shadow DOM becomes immediately available as soon as <code>attachShadow</code> is called,
+                        which is why the template can be appended in the constructor, and why the <code>update()</code> method can be called there.
+                        For custom elements without shadow DOM rendering the element's content should be deferred until <code>connectedCallback()</code>.
+                    </p>
+                </dd>
+                <dt><code>set content(value) {</code></dt>
+                <dd>
+                    Custom elements attributes can only be accessed from JavaScript through the <code>setAttribute()</code> and <code>getAttribute()</code> methods.
+                    To have a cleaner JavaScript API a setter and getter must be created for a class property that wraps the custom element's <code>content</code> attribute.
+                </dd>
+            </dl>
+            <p>To clarify, this is the DOM structure that is created:</p>
+            <ul>
+                <li>p (node)</li>
+                <ul>
+                    <li>x-badge (shadowRoot)</li>
+                    <ul>
+                        <li>content (attribute)</li>
+                        <li>slot (node)</li>
+                        <ul>
+                            <li>x-avatar (node)</li>
+                        </ul>
+                        <li>span (node)</li>
+                    </ul>
+                    <li>input (node)</li>
+                </ul>
+            </ul>
+            <p>These are the files for this example:</p>
+            <ul>
+                <li>components/</li>
+                <ul>
+                    <li>avatar.js</li>
+                    <li>avatar.css</li>
+                    <li>badge.js</li>
+                    <li>badge.css</li>
+                </ul>
+                <li>index.html</li>
+                <li>index.css</li>
+                <li>index.js</li>
+            </ul>
+            <p>Rounding it out, here is the code for the remaining files:</p>
+            <x-code-viewer src="../examples/combined-component/index.js"></x-code-viewer>
+            <x-code-viewer src="../examples/combined-component/index.css"></x-code-viewer>
+            <x-code-viewer src="../examples/combined-component/components/badge.css" name="comopnents/badge.css"></x-code-viewer>
+            <p>Styling the content of a shadow DOM is a bit different:</p>
+            <ul>
+                <li>The <code>:host</code> pseudo-selector applies styles to the element that hosts the shadow DOM (or in other words, to the custom element itself).</li>
+                <li>The other styles (like <code>span</code> in this example) are isolated inside the shadow DOM.</li>
+                <li>Reusing styles inside the shadow DOM can be done by:</li>
+                <ul>
+                    <li>Importing the same CSS files as the parent page, like <code>reset.css</code> in this example.</li>
+                    <li>Making use of <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties">CSS custom properties</a>, which are passed into the shadow DOM.</li>
+                </ul>
+                <li>Custom fonts can only be used inside a shadow DOM if they have first been loaded into the parent page.</li>
+            </ul>
         </section>
         <section>
-            <p>
-                Remember, all of this code is still vanilla. It does not make use of any framework and works in all modern browsers.
-            </p>
+            <aside>
+                <h4>The power of the browser</h4>
+                <p>
+                    A reminder that all of this code is still vanilla. It does not make use of any framework or build tool and works in all modern browsers.
+                    And most importantly, it remains readable and maintainable.
+                </p>
+            </aside>
         </section>
         <section>
             <h2>Up next</h2>
