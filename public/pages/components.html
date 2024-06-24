@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <title>Plain Vanilla - Components</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
     <link rel="stylesheet" href="../index.css">
 </head>
 <body>
@@ -76,12 +76,11 @@
             <dl>
                 <dt><code>class HelloWorldComponent extends HTMLElement {</code></dt>
                 <dd>Every custom element is a class extending <code>HTMLElement</code>. 
-                    In the <a href="https://html.spec.whatwg.org/multipage/custom-elements.html">custom elements specification</a> you will find that it's possible to extend other elements as well, 
-                    like <code>HTMLButtonElement</code> to extend a <code>&lt;button&gt;</code>,
+                    In theory it's possible to extend other classes &ndash; like <code>HTMLButtonElement</code> to extend a <code>&lt;button&gt;</code> &ndash;
                     but in practice this <a href="https://caniuse.com/mdn-api_customelementregistry_builtin_element_support">doesn't work in Safari</a>.</dd>
                 <dt><code>connectedCallback() {</code></dt>
                 <dd>This method is called when our element is added to the DOM,
-                    which means our element is ready to make DOM updates.</dd>
+                    which means the element is ready to make DOM updates.</dd>
                 <dt><code>this.textContent = 'hello world!';</code></dt>
                 <dd>The <code>this</code> in this case refers to our element, which has the full <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement">HTMLElement</a> API,
                     including its ancestors <code>Element</code> and <code>Node</code>. On <code>Node</code> we can find the <code>textContent</code> property,
@@ -116,7 +115,7 @@
             <x-code-viewer src="../examples/advanced-component/components/avatar.js" name="components/avatar.js"></x-code-viewer>
             <p>Some key elements that have changed:</p>
             <ul>
-                <li>The <code>observedAttributes</code> getter returns the element's attributes that when changed cause <code>attributeChangedCallback()</code> to be called, allowing us to update the UI.</li>
+                <li>The <code>observedAttributes</code> getter returns the element's attributes that when changed cause <code>attributeChangedCallback()</code> to be called by the browser, allowing us to update the UI.</li>
                 <li>The <code>update()</code> method handles initial render as well as updates, centralizing the UI logic.</li>
                 <li>The exported <code>registerAvatarComponent</code> function allows centralizing the logic that defines all custom elements in an application.</li>
             </ul>

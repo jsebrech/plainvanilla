@@ -67,6 +67,8 @@ nav li {
 
 code {
     background-color: lightblue;
+    padding: 0.15em 0.25em;
+    overflow-wrap: break-word;
 }
 
 x-code-viewer {
