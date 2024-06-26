@@ -1,12 +1,6 @@
 @import url("./reset.css");
+@import url("./fonts.css");
 @import url("./components/code-viewer.css");
-
-:root {
-    /* https://modernfontstacks.com/ geometric humanist font */
-    --font-system: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
-    /* defaulting to system font: https://css-tricks.com/snippets/css/system-font-stack/ */
-    /*--font-system: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";*/
-}
 
 html {
     margin:    0 auto;
@@ -14,10 +8,7 @@ html {
 }
 
 body {
-    font-family: var(--font-system);
-    font-weight: normal;
     margin: 1.5em;
-    line-height: 1.4;
 }
 
 header {
@@ -55,6 +46,7 @@ nav ul {
     justify-content: start;
     align-items: center;
     margin: 1em 0;
+    padding: 0;
     list-style-type: none;
 }
 
@@ -69,6 +61,8 @@ code {
     background-color: lightblue;
     padding: 0.15em 0.25em;
     overflow-wrap: break-word;
+    font-family: var(--font-system-code);
+    font-size: var(--font-system-code-size);
 }
 
 x-code-viewer {

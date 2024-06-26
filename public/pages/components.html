@@ -95,6 +95,10 @@
                 There are <a href="https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name">custom element tag naming rules</a>, in particular that the name must start with a lowercase letter and contain a dash.
                 While <code>hello-world</code> would also be a valid name, in general it is best to start all custom element tag names with <code>x-</code> or some other prefix of your choice.
                 </p>
+                <p>
+                Another gotcha is that custom element tags cannot be self-closing.
+                So <code>&lt;x-hello-world&gt;&lt;/x-hello-world&gt;</code> is ok, but <code>&lt;x-hello-world /&gt;</code> is not.
+                </p>
             </aside>
         </section>
         <section>
@@ -277,7 +281,7 @@
             <aside>
                 <h4>The power of the browser</h4>
                 <p>
-                    A reminder that all of this code is still vanilla. It does not make use of any framework or build tool and works in all modern browsers.
+                    A reminder that all of this code is still vanilla. It does not make use of any framework, library or build tool and works in all modern browsers.
                     And most importantly, it remains readable and maintainable.
                 </p>
             </aside>

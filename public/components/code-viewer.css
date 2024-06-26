@@ -7,7 +7,8 @@ x-code-viewer {
 x-code-viewer label, 
 x-code-viewer code {
     display: block;
-    font-family: monospace;
+    font-family: var(--font-system-code);
+    font-size: var(--font-system-code-size);
     white-space: pre;
     padding: 1em;
 }

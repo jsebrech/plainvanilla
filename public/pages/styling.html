@@ -19,7 +19,55 @@
         </nav>
     </header>
     <main>
-        <p>hello styling!</p>
+        <section>
+            <h2>Modern CSS</h2>
+            <p>
+                Modern web applications are built on top of heavy tooling for dealing with CSS, relying on lots of NPM packages and a bunch of build steps.
+                A vanilla web application however has to choose a lighter weight path, abandoning the traditional modern CSS approaches 
+                and choosing strategies that are browser native.
+            </p>
+        </section>
+        <section>
+            <h2>Reset</h2>
+            <p>Resetting the styles to a cross-browser common baseline is standard practice in web development, and vanilla web apps are no different.</p>
+            <p>A minimal reset is the one used by this site:</p>
+            <x-code-viewer src="../reset.css"></x-code-viewer>
+            <p>Other options, in increasing order of complexity:</p>
+            <dl>
+                <dt><a href="https://github.com/sindresorhus/modern-normalize">modern-normalize</a></dt>
+                <dd>
+                    <p>A more comprehensive solution for resetting CSS for modern browsers.</p>
+                    <p>Include it with:</p>
+                    <p><code>&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modern-normalize@2.0.0/modern-normalize.min.css" /&gt;</code></p>
+                </dd>
+                <dt><a href="https://cferdinandi.github.io/kraken/">Kraken</a></dt>
+                <dd>
+                    <p>A starting point for front-end projects. It includes a CSS reset, typography, a grid, and other conveniences.</p>
+                    <p>Include it with:</p>
+                    <p><code>&lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Kraken/13.0.0/main.min.css" /&gt;</code></p>
+                </dd>
+                <dt><a href="https://tailwindcss.com/">Tailwind</a></dt>
+                <dd>
+                    <p>
+                        If you're going to be using Tailwind anyway, you may as well lean on its CSS reset.
+                        <a href="https://kopi.dev/tailwind-css-with-cdn-html/">Include it from CDN.</a>
+                    </p>
+                </dd>
+            </dl>
+        </section>
+        <section>
+            <h2>Fonts</h2>
+            <p>
+                Typography is the keystone of a web application. A lean approach like vanilla web development should be matched with a lean approach for typography.
+                <a href="https://modernfontstacks.com/">Modern Font Stacks</a> describes a varied selection of commonly available fonts with good fallbacks.
+            </p>
+            <p>This site uses the <em>Geometric Humanist</em> style for normal text, and the <em>Monospace Code</em> style for source code:</p>
+            <x-code-viewer src="../fonts.css"></x-code-viewer>
+        </section>
+        <section>
+            <h2>Modules</h2>
+            <p>TODO: replacing CSS modules, structuring CSS ...</p>
+        </section>
         <section>
             <h2>Up next</h2>
             Learn about <a href="structure.html">structuring vanilla sites</a> so that they are easy to build and deploy.
