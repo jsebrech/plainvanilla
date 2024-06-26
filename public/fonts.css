@@ -1,7 +1,8 @@
 :root {
-    /* https://modernfontstacks.com/ geometric humanist font */
+    /* https://modernfontstacks.com/
+       geometric humanist font */
     --font-system: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
-    /* monospace code */
+    /* monospace code font */
     --font-system-code: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
     --font-system-code-size: 0.8rem;
 }
@@ -9,5 +10,4 @@
 body {
     font-family: var(--font-system);
     font-weight: normal;
-    line-height: 1.4;
 }

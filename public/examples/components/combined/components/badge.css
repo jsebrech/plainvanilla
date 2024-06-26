@@ -1,4 +1,4 @@
-@import url("../../../reset.css");
+@import url("../../../../reset.css");
 
 :host {
     position: relative;
@@ -23,6 +23,7 @@ span {
     border-width: 2px;
     border-radius: 9999px;
     font-size: 0.875rem;
+    line-height: 1.2;
     /* text placement */
     display: flex;
     place-content: center;
