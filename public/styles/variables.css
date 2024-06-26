@@ -5,9 +5,12 @@
     /* monospace code font */
     --font-system-code: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
     --font-system-code-size: 0.8rem;
-}
 
-body {
-    font-family: var(--font-system);
-    font-weight: normal;
+    --nav-border-color: black;
+
+    --code-border-color: black;
+    --code-color-bg: lightblue;
+
+    --panel-border-color: black;
+    --panel-title-color-bg: cornsilk;
 }

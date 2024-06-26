@@ -31,7 +31,7 @@
             <h2>Reset</h2>
             <p>Resetting the styles to a cross-browser common baseline is standard practice in web development, and vanilla web apps are no different.</p>
             <p>A minimal reset is the one used by this site:</p>
-            <x-code-viewer src="../reset.css"></x-code-viewer>
+            <x-code-viewer src="../styles/reset.css"></x-code-viewer>
             <p>Other options, in increasing order of complexity:</p>
             <dl>
                 <dt><a href="https://github.com/sindresorhus/modern-normalize">modern-normalize</a></dt>
@@ -62,11 +62,64 @@
                 <a href="https://modernfontstacks.com/">Modern Font Stacks</a> describes a varied selection of commonly available fonts with good fallbacks.
             </p>
             <p>This site uses the <em>Geometric Humanist</em> stack for normal text, and the <em>Monospace Code</em> stack for source code:</p>
-            <x-code-viewer src="../fonts.css"></x-code-viewer>
         </section>
         <section>
-            <h2>Modules</h2>
-            <p>TODO: replacing CSS modules, structuring CSS ...</p>
+            <h2>The Toolbox</h2>
+            <p>
+                In any real world web project the amount of CSS quickly becomes unwieldy unless it is well-structured.
+                Let's look at the toolbox that CSS3 provides us in modern browsers to provide that structure.
+            </p>
+            <dl>
+                <dt><code>@import</code></dt>
+                <dd>
+                    <p>
+                        The most basic structuring technique is separating CSS into multiple files. 
+                        We could add all those files in order as <code>&lt;link&gt;</code> tags into the <code>index.html</code>
+                        but this quickly becomes unworkable if we have multiple HTML pages.
+                        Instead it is better to import them into the <code>index.css</code>    
+                    </p>
+                    <p>For example, here's the main CSS file for this site:</p>
+                    <x-code-viewer src="../index.css"></x-code-viewer>
+                    <p>Below is a recommended organization of CSS files.</p>
+                </dd>
+                <dt>Custom properties (variables)</dt>
+                <dd>
+                    <p>
+                        CSS variables are used to define the site's font and theme in a central place.
+                        They are inherited inside the shadow DOM, so they can be reused inside the CSS of web components.
+                    </p>
+                    <p>For example, here are the variables for this site:</p>
+                    <x-code-viewer src="../styles/variables.css"></x-code-viewer>
+                </dd>
+            </dl>
+        </section>
+        <section>
+            <h2>Structure</h2>
+            <p>There are many ways to organize CSS files in a repository, but this is the one used here:</p>
+            <dl>
+                <dt><code>/index.css</code></dt>
+                <dd>The root CSS file that imports all the other ones using <code>@import</code>.</dd>
+                <dt><code>/styles/reset.css</code></dt>
+                <dd>The reset stylesheet is the first thing imported.</dd>
+                <dt><code>/styles/variables.css</code></dt>
+                <dd>All CSS variables are defined in this separate file, including the font system.</dd>
+                <dt><code>/styles/global.css</code></dt>
+                <dd>The global styles that apply across the web page.</dd>
+                <dt><code>/components/example-component/example-component.css</code></dt>
+                <dd>All styles that aren't global are specific to a component, in a CSS file located next to the component's JS file, and imported into <code>index.css</code>.</dd>
+            </dl>
+        </section>
+        <section>
+            <h2>Replacing CSS modules</h2>
+            <p>...</p>
+        </section>
+        <section>
+            <h2>Replacing PostCSS</h2>
+            <p>...</p>
+        </section>
+        <section>
+            <h2>Replacing SASS</h2>
+            <p>...</p>
         </section>
         <section>
             <h2>Up next</h2>
