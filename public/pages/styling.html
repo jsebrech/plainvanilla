@@ -48,10 +48,8 @@
                 </dd>
                 <dt><a href="https://tailwindcss.com/">Tailwind</a></dt>
                 <dd>
-                    <p>
-                        If you're going to be using Tailwind anyway, you may as well lean on its CSS reset.
-                        <a href="https://kopi.dev/tailwind-css-with-cdn-html/">Include it from CDN.</a>
-                    </p>
+                    <p>If you're going to be using Tailwind anyway, you may as well lean on its CSS reset.</p>
+                    <p><a href="https://kopi.dev/tailwind-css-with-cdn-html/">Include it from CDN.</a></p>
                 </dd>
             </dl>
         </section>
@@ -59,15 +57,16 @@
             <h2>Fonts</h2>
             <p>
                 Typography is the keystone of a web application. A lean approach like vanilla web development should be matched with a lean approach for typography.
-                <a href="https://modernfontstacks.com/">Modern Font Stacks</a> describes a varied selection of commonly available fonts with good fallbacks.
+                <a href="https://modernfontstacks.com/">Modern Font Stacks</a> describes a varied selection of commonly available fonts with good fallbacks,
+                avoiding the need to load custom fonts.
             </p>
-            <p>This site uses the <em>Geometric Humanist</em> stack for normal text, and the <em>Monospace Code</em> stack for source code:</p>
+            <p>This site uses the <em>Geometric Humanist</em> stack for normal text, and the <em>Monospace Code</em> stack for source code.</p>
         </section>
         <section>
             <h2>The Toolbox</h2>
             <p>
                 In any real world web project the amount of CSS quickly becomes unwieldy unless it is well-structured.
-                Let's look at the toolbox that CSS3 provides us in modern browsers to provide that structure.
+                Let's look at the toolbox that CSS provides us in modern browsers to provide that structure.
             </p>
             <dl>
                 <dt><code>@import</code></dt>
@@ -84,12 +83,31 @@
                 </dd>
                 <dt>Custom properties (variables)</dt>
                 <dd>
-                    <p>
-                        CSS variables are used to define the site's font and theme in a central place.
-                        They are inherited inside the shadow DOM, so they can be reused inside the CSS of web components.
-                    </p>
+                    <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties">CSS variables</a> can be used to define the site's font and theme in a central place.</p>
                     <p>For example, here are the variables for this site:</p>
                     <x-code-viewer src="../styles/variables.css"></x-code-viewer>
+                    <p>CSS variables become even more capable when combined with <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/calc">calc()</a>.</p>
+                </dd>
+                <dt>Custom elements</dt>
+                <dd>
+                    <p>Custom elements allow us to easily scope styles to the custom element's tag.</p>
+                    <p>For example, the styles of the avatar component from the components page are all prepended by the <code>x-avatar</code> selector:</p>
+                    <x-code-viewer src="../examples/components/advanced/components/avatar.css"></x-code-viewer>
+                </dd>
+                <dt>Shadow DOM</dt>
+                <dd>
+                    <p>
+                        Adding a shadow DOM to a web component allows us to further isolate its styles from the rest of the page.
+                        For example, the <code>x-badge</code> component from the previous page restyles all <code>span</code> elements inside its CSS,
+                        without affecting the containing page or the badge's child elements.
+                    </p>
+                    <p>
+                        While all CSS files that need to apply to the shadow DOM must be imported into it explicitly,
+                        <a href="https://javascript.info/shadow-dom-style">CSS variables are passed into the shadow DOM</a>.
+                    </p>
+                    <p>
+                        Know that should you want to use custom fonts inside a shadow DOM, they must first be loaded into the light DOM.
+                    </p>
                 </dd>
             </dl>
         </section>
@@ -104,7 +122,7 @@
                 <dt><code>/styles/variables.css</code></dt>
                 <dd>All CSS variables are defined in this separate file, including the font system.</dd>
                 <dt><code>/styles/global.css</code></dt>
-                <dd>The global styles that apply across the web page.</dd>
+                <dd>The global styles that apply across the web pages of the site.</dd>
                 <dt><code>/components/example-component/example-component.css</code></dt>
                 <dd>All styles that aren't global are specific to a component, in a CSS file located next to the component's JS file, and imported into <code>index.css</code>.</dd>
             </dl>

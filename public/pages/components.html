@@ -42,13 +42,13 @@
                 </dd>
                 <dt><a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_templates_and_slots">HTML templates</a></dt>
                 <dd>
-                    Extending custom elements with reusable markup blocks using the <code>&lt;template&gt;</code> and <code>&lt;slot&gt;</code> tags, for quickly generating complex components.
+                    Extending custom elements with reusable markup blocks using the <code>&lt;template&gt;</code> and <code>&lt;slot&gt;</code> tags, for quickly generating complex layouts.
                 </dd>
             </dl>
             <p>
                 Those 3 bullets tell you everything and nothing at the same time.
                 This probably isn't the first tutorial on Web Components you've seen, and you may find them a confusing topic.
-                However, it's not that complicated, as long as you build them up step by step ...
+                However, it's not that complicated as long as you build them up step by step ...
             </p>
         </section>
         <section>
@@ -77,7 +77,7 @@
                 <dt><code>class HelloWorldComponent extends HTMLElement {</code></dt>
                 <dd>Every custom element is a class extending <code>HTMLElement</code>. 
                     In theory it's possible to extend other classes &ndash; like <code>HTMLButtonElement</code> to extend a <code>&lt;button&gt;</code> &ndash;
-                    but in practice this <a href="https://caniuse.com/mdn-api_customelementregistry_builtin_element_support">doesn't work in Safari</a>.</dd>
+                    but in practice this <a href="https://caniuse.com/mdn-api_customelementregistry_builtin_element_support">doesn't work yet in Safari</a>.</dd>
                 <dt><code>connectedCallback() {</code></dt>
                 <dd>This method is called when our element is added to the DOM,
                     which means the element is ready to make DOM updates.</dd>
@@ -107,7 +107,7 @@
                 While the simple version above works for a quick demo, you'll probably want to do more pretty quickly:
             </p>
             <ul>
-                <li>Adding DOM elements as children to allow for more complex content.</li>
+                <li>Adding DOM elements as children to allow for richer content.</li>
                 <li>Passing in attributes, and updating the DOM based on changes in those attributes.</li>
                 <li>Styling the element, preferably in a way that's isolated and scales nicely.</li>
                 <li>Defining all custom elements from a central place, instead of dumping random script tags in the middle of our markup.</li>
@@ -191,21 +191,20 @@
                 <dd>
                     Because this component uses a shadow DOM, it is isolated from the styles of the containing page and starts out unstyled.
                     The <code>badge.css</code> needs to be imported into the shadow DOM using the <code>&lt;link&gt;</code> tag.
-                    The special <code>import.meta.url</code> trick imports the css file from the same path
+                    The special <code>import.meta.url</code> trick imports the CSS file from the same path
                     as the <code>badge.js</code> file.
                 </dd>
                 <dt><code>&lt;slot&gt;&lt;/slot&gt;</code></dt>
                 <dd>
-                    The <code>&lt;slot&gt;</code> element is where the child elements will go (like the <code>&lt;x-avatar&gt;</code> child of our <code>&lt;x-badge&gt;</code>).
+                    The <code>&lt;slot&gt;</code> element is where the child elements will go (like the <code>&lt;x-avatar&gt;</code> child of <code>&lt;x-badge&gt;</code>).
                     Putting child elements in a slot is similar to using a <code>children</code> prop in a React component.
                     The use of slots is only possible in web components that have a shadow DOM.
                 </dd>
                 <dt><code>if (!this.shadowRoot) { this.attachShadow({ mode: 'open' });</code></dt>
                 <dd>
                     <p>
-                        <code>attachShadow</code> attaches a shadow DOM to the current element.
-                        A shadow DOM is an isolated part of the DOM structure, with CSS separated from the containing page,
-                        and optionally with the shadow content hidden away from the parent page's JavaScript (if <code>mode: 'closed'</code> is set).
+                        <code>attachShadow</code> attaches a shadow DOM to the current element, an isolated part of the DOM structure with CSS separated from the containing page,
+                        and optionally with the shadow content hidden away from the parent page's JavaScript context (if <code>mode: 'closed'</code> is set).
                         For web components that are used in a known codebase, it is usually more convenient to use them in open mode,
                         as is done here.    
                     </p>
@@ -228,7 +227,7 @@
                 </dd>
                 <dt><code>set content(value) {</code></dt>
                 <dd>
-                    Custom elements attributes can only be accessed from JavaScript through the <code>setAttribute()</code> and <code>getAttribute()</code> methods.
+                    Custom element attributes can only be accessed from JavaScript through the <code>setAttribute()</code> and <code>getAttribute()</code> methods.
                     To have a cleaner JavaScript API a setter and getter must be created for a class property that wraps the custom element's <code>content</code> attribute.
                 </dd>
             </dl>
@@ -265,16 +264,11 @@
             <x-code-viewer src="../examples/components/combined/index.js"></x-code-viewer>
             <x-code-viewer src="../examples/components/combined/index.css"></x-code-viewer>
             <x-code-viewer src="../examples/components/combined/components/badge.css" name="comopnents/badge.css"></x-code-viewer>
-            <p>Styling the content of a shadow DOM is a bit different:</p>
+            <p>As you can see, styling the content of a shadow DOM is a bit different:</p>
             <ul>
-                <li>The <code>:host</code> pseudo-selector applies styles to the element that hosts the shadow DOM (or in other words, to the custom element itself).</li>
+                <li>The <code>:host</code> pseudo-selector applies styles to the element from the light DOM that hosts the shadow DOM (or in other words, to the custom element itself).</li>
                 <li>The other styles (like <code>span</code> in this example) are isolated inside the shadow DOM.</li>
-                <li>Reusing styles inside the shadow DOM can be done by:</li>
-                <ul>
-                    <li>Importing the same CSS files as the parent page, like <code>reset.css</code> in this example.</li>
-                    <li>Making use of <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties">CSS custom properties</a>, which are passed into the shadow DOM.</li>
-                </ul>
-                <li>Custom fonts can only be used inside a shadow DOM if they have first been loaded into the parent page.</li>
+                <li>The shadow DOM starts out unstyled, which is why <code>reset.css</code> is imported again.</li>
             </ul>
         </section>
         <section>

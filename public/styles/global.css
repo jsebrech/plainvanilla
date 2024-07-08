@@ -55,7 +55,8 @@ nav li {
 }
 
 code {
-    background-color: var(--code-color-bg);
+    color: var(--code-text-color);
+    background-color: var(--code-text-color-bg);
     padding: 0.15em 0.25em;
     overflow-wrap: break-word;
     font-family: var(--font-system-code);
