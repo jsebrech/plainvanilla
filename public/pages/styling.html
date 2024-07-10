@@ -97,7 +97,7 @@
                 <dt>Shadow DOM</dt>
                 <dd>
                     <p>
-                        Adding a shadow DOM to a web component allows us to further isolate its styles from the rest of the page.
+                        Adding a shadow DOM to a web component further isolates its styles from the rest of the page.
                         For example, the <code>x-badge</code> component from the previous page restyles all <code>span</code> elements inside its CSS,
                         without affecting the containing page or the badge's child elements.
                     </p>
@@ -123,7 +123,7 @@
                 <dd>All CSS variables are defined in this separate file, including the font system.</dd>
                 <dt><code>/styles/global.css</code></dt>
                 <dd>The global styles that apply across the web pages of the site.</dd>
-                <dt><code>/components/example-component/example-component.css</code></dt>
+                <dt><code>/components/example/example.css</code></dt>
                 <dd>All styles that aren't global are specific to a component, in a CSS file located next to the component's JS file.</dd>
             </dl>
         </section>
@@ -172,15 +172,59 @@
         </section>
         <section>
             <h2>Replacing CSS modules</h2>
-            <p>...</p>
+            <p>
+                The local scoping feature of CSS modules can be replaced by one of the scoping approaches describe above.
+                For example, let's take the canonical <a href="https://nextjs.org/docs/app/building-your-application/styling/css-modules#example">example of CSS modules</a> from the Next.JS documentation:
+            </p>
+            <x-code-viewer src="../examples/styling/replacing-css-modules/nextjs/layout.tsx" name="app/dashboard/layout.tsx"></x-code-viewer>
+            <x-code-viewer src="../examples/styling/replacing-css-modules/nextjs/styles.module.css" name="app/dashboard/styles.module.css"></x-code-viewer>
+            <p>This becomes the following web component:</p>
+            <x-code-viewer src="../examples/styling/replacing-css-modules/vanilla/layout.js" name="components/dashboard/layout.js"></x-code-viewer>
+            <x-code-viewer src="../examples/styling/replacing-css-modules/vanilla/styles.css" name="components/dashboard/styles.css"></x-code-viewer>
         </section>
+        <p>Because the shadow DOM does not inherit the page's styles, the <code>styles.css</code> must first import the styles that are shared across shadowed web components.</p>
         <section>
             <h2>Replacing PostCSS</h2>
-            <p>...</p>
+            <p>Let's go over the main page of <a href="https://postcss.org/">PostCSS</a> to review its feature set.</p>
+            <dl>
+                <dt>Add vendor prefixes to CSS rules using values from Can I Use.</dt>
+                <dd>
+                    Vendor prefixes are no longer needed for most use cases.
+                    The <code>:fullscreen</code> pseudo-class shown in the example now <a href="https://caniuse.com/mdn-css_selectors_fullscreen">works across browsers unprefixed</a>.
+                </dd>
+                <dt>Convert modern CSS into something most browsers can understand.</dt>
+                <dd>
+                    The modern CSS you want to use is most likely already supported.
+                    The <code>color: oklch()</code> rule shown in the example now <a href="https://caniuse.com/?search=oklch">works across browsers</a>.
+                </dd>
+                <dt>CSS Modules</dt>
+                <dd>
+                    See the alternatives described in the previous section.
+                </dd>
+                <dt>Enforce consistent conventions and avoid errors in your stylesheets with stylelint.</dt>
+                <dd>
+                    The <a href="https://marketplace.visualstudio.com/items?itemName=stylelint.vscode-stylelint">vscode-stylelint extension</a> can be added into Visual Studio Code to get the same linting at develop time,
+                    without needing it to be baked into a build step.
+                </dd>
+            </dl>
+            <p><strong>Bottom line:</strong> Microsoft's dropping of support for IE11 combined with the continuing improvements of evergreen browsers has made PostCSS largely unnecessary.</p>
         </section>
         <section>
             <h2>Replacing SASS</h2>
-            <p>...</p>
+            <p>Similarly to PostCSS, let's go over the main feature set of <a href="https://sass-lang.com/guide/">SASS</a>:</p>
+            <dl>
+                <dt>Variables</dt>
+                <dd>Replaced by <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties">CSS custom properties</a>.</dd>
+                <dt>Nesting</dt>
+                <dd>CSS nesting is <a href="https://caniuse.com/css-nesting">newly available</a> across major browsers, which may be good enough depending on your browser support needs.</dd>
+                <dt>Modules</dt>
+                <dd>Can be approximated by a combination of <code>@import</code>, CSS variables, and the scoping approaches described above.</dd>
+                <dt>Mixins</dt>
+                <dd>Regrettably the <code>@apply</code> CSS feature that would replace this is still <a href="https://tabatkins.github.io/specs/css-apply-rule/">stuck in specification</a>.</dd>
+                <dt>Operators</dt>
+                <dd>In many cases can be replaced by the built-in <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/calc">calc()</a> feature.</dd>
+            </dl>
+            <p><strong>Bottom-line:</strong> SASS is a lot more powerful than PostCSS, and while many of its features have a vanilla alternative it is not as easy to replace entirely. YMMV whether the added complexity of the SASS preprocessor is worth the additional abilities.</p>
         </section>
         <section>
             <h2>Up next</h2>
