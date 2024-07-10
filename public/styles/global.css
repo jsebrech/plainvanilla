@@ -23,6 +23,11 @@ h2 {
 
 ul {
     padding-left: 2em;
+    margin-top: 0.5em;
+}
+
+ul ul {
+    margin-top: 0;
 }
 
 dl {
@@ -35,6 +40,7 @@ dt {
 
 dd {
     margin-left: 1.5em;
+    margin-bottom: 1em;
 }
 
 nav ul {
@@ -50,7 +56,7 @@ nav ul {
 nav li {
     margin: 0 -1px -1px 0;
     display: inline-block;
-    border: 1px solid var(--nav-border-color);
+    border: 1px solid var(--border-color);
     padding: 0.5em;
 }
 
@@ -64,7 +70,7 @@ code {
 }
 
 x-code-viewer {
-    border: 1px solid var(--code-border-color);
+    border: 1px solid var(--border-color);
     margin: 1em 0;
     max-height: 20em;
 }
@@ -76,15 +82,22 @@ iframe {
 }
 
 aside {
-    border: 1px dotted var(--panel-border-color);
+    border: 1px dotted var(--border-color);
     margin: 2em 0;
+    padding-bottom: 0.5em;
 }
 
 aside h4 {
+    color: var(--panel-title-color);
     background-color: var(--panel-title-color-bg);
     padding: 1em;
 }
 
 aside p {
-    padding: 0.5em 1em;
+    margin: 1em;
+    margin-bottom: 0.5em;
+}
+
+aside x-code-viewer {
+    margin: 1em;
 }

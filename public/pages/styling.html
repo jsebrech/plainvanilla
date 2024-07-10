@@ -90,7 +90,7 @@
                 </dd>
                 <dt>Custom elements</dt>
                 <dd>
-                    <p>Custom elements allow us to easily scope styles to the custom element's tag.</p>
+                    <p>Styles can be easily scoped to a custom element's tag.</p>
                     <p>For example, the styles of the avatar component from the components page are all prepended by the <code>x-avatar</code> selector:</p>
                     <x-code-viewer src="../examples/components/advanced/components/avatar.css"></x-code-viewer>
                 </dd>
@@ -112,7 +112,7 @@
             </dl>
         </section>
         <section>
-            <h2>Structure</h2>
+            <h2>Files</h2>
             <p>There are many ways to organize CSS files in a repository, but this is the one used here:</p>
             <dl>
                 <dt><code>/index.css</code></dt>
@@ -124,8 +124,51 @@
                 <dt><code>/styles/global.css</code></dt>
                 <dd>The global styles that apply across the web pages of the site.</dd>
                 <dt><code>/components/example-component/example-component.css</code></dt>
-                <dd>All styles that aren't global are specific to a component, in a CSS file located next to the component's JS file, and imported into <code>index.css</code>.</dd>
+                <dd>All styles that aren't global are specific to a component, in a CSS file located next to the component's JS file.</dd>
             </dl>
+        </section>
+        <section>
+            <h2>Scope</h2>
+            <p>
+                In order to avoid conflicting styles between pages and components we want to scope styles locally by default.
+                There are two major mechanisms for achieving that in vanilla web development.
+            </p>
+
+            <h3>Prefixed selectors</h3>
+            <p>
+                For custom elements that don't have a shadow DOM we can prefix the styles with the tag of the custom element.
+                For example, here's a simple web component that uses prefixed selectors to create a local scope:
+            </p>
+            <x-code-viewer src="../examples/styling/scoping-prefixed/components/example/example.js" name="components/example/example.js"></x-code-viewer>
+            <x-code-viewer src="../examples/styling/scoping-prefixed/components/example/example.css" name="components/example/example.css"></x-code-viewer>
+            <iframe src="../examples/styling/scoping-prefixed/index.html"></iframe>
+            <p>It is included into the page from the global index files:</p>
+            <x-code-viewer src="../examples/styling/scoping-prefixed/index.html"></x-code-viewer>
+            <x-code-viewer src="../examples/styling/scoping-prefixed/index.js"></x-code-viewer>
+            <x-code-viewer src="../examples/styling/scoping-prefixed/index.css"></x-code-viewer>
+            <aside>
+                <h4>Tip: CSS Nesting</h4>
+                <p>If you want a cleaner syntax, and you are comfortable with the <a href="https://caniuse.com/css-nesting">browser support</a>, consider using <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_nesting/Using_CSS_nesting">CSS Nesting</a>.</p>
+                <x-code-viewer src="../examples/styling/scoping-prefixed/components/example/example_nested.css" name="components/example/example.css"></x-code-viewer>
+            </aside>
+
+            <h3>Shadow DOM import</h3>
+            <p>
+                Custom elements that use a shadow DOM start out unstyled with a local scope,
+                and all styles must be explicitly imported into them. Here is the prefixed example reworked to use a shadow DOM instead.
+            </p>
+            <x-code-viewer src="../examples/styling/scoping-shadowed/components/example/example.js" name="components/example/example.js"></x-code-viewer>
+            <x-code-viewer src="../examples/styling/scoping-shadowed/components/example/example.css" name="components/example/example.css"></x-code-viewer>
+            <iframe src="../examples/styling/scoping-shadowed/index.html"></iframe>
+            <p>It is included into the page from the global index files:</p>
+            <x-code-viewer src="../examples/styling/scoping-shadowed/index.html"></x-code-viewer>
+            <x-code-viewer src="../examples/styling/scoping-shadowed/index.js"></x-code-viewer>
+            <p>To reuse styles from the surrounding page inside the shadow DOM, consider these options:</p>
+            <ul>
+                <li>Common CSS files can be imported inside the shadow DOM using <code>&lt;link&gt;</code> tags or <code>@import</code>.</li>
+                <li>CSS variables defined in the surrounding page can be referenced inside the shadow DOM's styles.</li>
+                <li>For advanced shadow domination the <code>::part</code> pseudo-element can be used to <a href="https://meowni.ca/posts/part-theme-explainer/">expose an API for styling</a>.</li>
+            </ul>
         </section>
         <section>
             <h2>Replacing CSS modules</h2>

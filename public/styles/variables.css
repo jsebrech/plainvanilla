@@ -6,12 +6,11 @@
     --font-system-code: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
     --font-system-code-size: 0.8rem;
 
-    --nav-border-color: black;
+    --border-color: black;
 
-    --code-border-color: black;
     --code-text-color: black;
     --code-text-color-bg: lightblue;
 
-    --panel-border-color: black;
+    --panel-title-color: black;
     --panel-title-color-bg: cornsilk;
 }

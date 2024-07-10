@@ -259,11 +259,12 @@
                 <li>index.html</li>
                 <li>index.css</li>
                 <li>index.js</li>
+                <li>reset.css</li>
             </ul>
             <p>Rounding it out, here is the code for the remaining files:</p>
             <x-code-viewer src="../examples/components/combined/index.js"></x-code-viewer>
             <x-code-viewer src="../examples/components/combined/index.css"></x-code-viewer>
-            <x-code-viewer src="../examples/components/combined/components/badge.css" name="comopnents/badge.css"></x-code-viewer>
+            <x-code-viewer src="../examples/components/combined/components/badge.css" name="components/badge.css"></x-code-viewer>
             <p>As you can see, styling the content of a shadow DOM is a bit different:</p>
             <ul>
                 <li>The <code>:host</code> pseudo-selector applies styles to the element from the light DOM that hosts the shadow DOM (or in other words, to the custom element itself).</li>
@@ -275,7 +276,7 @@
             <aside>
                 <h4>The power of the browser</h4>
                 <p>
-                    A reminder that all of this code is still vanilla. It does not make use of any framework, library or build tool and works in all modern browsers.
+                    A reminder that all of this code is still vanilla. It does not make use of any framework, library or build tool and works in all the major browsers.
                     And most importantly, it remains readable and maintainable.
                 </p>
             </aside>
