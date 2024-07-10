@@ -92,7 +92,7 @@
                 <dd>
                     <p>Styles can be easily scoped to a custom element's tag.</p>
                     <p>For example, the styles of the avatar component from the components page are all prepended by the <code>x-avatar</code> selector:</p>
-                    <x-code-viewer src="../examples/components/advanced/components/avatar.css"></x-code-viewer>
+                    <x-code-viewer src="./examples/components/advanced/components/avatar.css"></x-code-viewer>
                 </dd>
                 <dt>Shadow DOM</dt>
                 <dd>
@@ -139,17 +139,17 @@
                 For custom elements that don't have a shadow DOM we can prefix the styles with the tag of the custom element.
                 For example, here's a simple web component that uses prefixed selectors to create a local scope:
             </p>
-            <x-code-viewer src="../examples/styling/scoping-prefixed/components/example/example.js" name="components/example/example.js"></x-code-viewer>
-            <x-code-viewer src="../examples/styling/scoping-prefixed/components/example/example.css" name="components/example/example.css"></x-code-viewer>
-            <iframe src="../examples/styling/scoping-prefixed/index.html"></iframe>
+            <x-code-viewer src="./examples/styling/scoping-prefixed/components/example/example.js" name="components/example/example.js"></x-code-viewer>
+            <x-code-viewer src="./examples/styling/scoping-prefixed/components/example/example.css" name="components/example/example.css"></x-code-viewer>
+            <iframe src="./examples/styling/scoping-prefixed/index.html"></iframe>
             <p>It is included into the page from the global index files:</p>
-            <x-code-viewer src="../examples/styling/scoping-prefixed/index.html"></x-code-viewer>
-            <x-code-viewer src="../examples/styling/scoping-prefixed/index.js"></x-code-viewer>
-            <x-code-viewer src="../examples/styling/scoping-prefixed/index.css"></x-code-viewer>
+            <x-code-viewer src="./examples/styling/scoping-prefixed/index.html"></x-code-viewer>
+            <x-code-viewer src="./examples/styling/scoping-prefixed/index.js"></x-code-viewer>
+            <x-code-viewer src="./examples/styling/scoping-prefixed/index.css"></x-code-viewer>
             <aside>
                 <h4>Tip: CSS Nesting</h4>
                 <p>If you want a cleaner syntax, and you are comfortable with the <a href="https://caniuse.com/css-nesting">browser support</a>, consider using <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_nesting/Using_CSS_nesting">CSS Nesting</a>.</p>
-                <x-code-viewer src="../examples/styling/scoping-prefixed/components/example/example_nested.css" name="components/example/example.css"></x-code-viewer>
+                <x-code-viewer src="./examples/styling/scoping-prefixed/components/example/example_nested.css" name="components/example/example.css"></x-code-viewer>
             </aside>
 
             <h3>Shadow DOM import</h3>
@@ -157,12 +157,12 @@
                 Custom elements that use a shadow DOM start out unstyled with a local scope,
                 and all styles must be explicitly imported into them. Here is the prefixed example reworked to use a shadow DOM instead.
             </p>
-            <x-code-viewer src="../examples/styling/scoping-shadowed/components/example/example.js" name="components/example/example.js"></x-code-viewer>
-            <x-code-viewer src="../examples/styling/scoping-shadowed/components/example/example.css" name="components/example/example.css"></x-code-viewer>
-            <iframe src="../examples/styling/scoping-shadowed/index.html"></iframe>
+            <x-code-viewer src="./examples/styling/scoping-shadowed/components/example/example.js" name="components/example/example.js"></x-code-viewer>
+            <x-code-viewer src="./examples/styling/scoping-shadowed/components/example/example.css" name="components/example/example.css"></x-code-viewer>
+            <iframe src="./examples/styling/scoping-shadowed/index.html"></iframe>
             <p>It is included into the page from the global index files:</p>
-            <x-code-viewer src="../examples/styling/scoping-shadowed/index.html"></x-code-viewer>
-            <x-code-viewer src="../examples/styling/scoping-shadowed/index.js"></x-code-viewer>
+            <x-code-viewer src="./examples/styling/scoping-shadowed/index.html"></x-code-viewer>
+            <x-code-viewer src="./examples/styling/scoping-shadowed/index.js"></x-code-viewer>
             <p>To reuse styles from the surrounding page inside the shadow DOM, consider these options:</p>
             <ul>
                 <li>Common CSS files can be imported inside the shadow DOM using <code>&lt;link&gt;</code> tags or <code>@import</code>.</li>
@@ -176,11 +176,11 @@
                 The local scoping feature of CSS modules can be replaced by one of the scoping approaches describe above.
                 For example, let's take the canonical <a href="https://nextjs.org/docs/app/building-your-application/styling/css-modules#example">example of CSS modules</a> from the Next.JS documentation:
             </p>
-            <x-code-viewer src="../examples/styling/replacing-css-modules/nextjs/layout.tsx" name="app/dashboard/layout.tsx"></x-code-viewer>
-            <x-code-viewer src="../examples/styling/replacing-css-modules/nextjs/styles.module.css" name="app/dashboard/styles.module.css"></x-code-viewer>
+            <x-code-viewer src="./examples/styling/replacing-css-modules/nextjs/layout.tsx" name="app/dashboard/layout.tsx"></x-code-viewer>
+            <x-code-viewer src="./examples/styling/replacing-css-modules/nextjs/styles.module.css" name="app/dashboard/styles.module.css"></x-code-viewer>
             <p>This becomes the following web component:</p>
-            <x-code-viewer src="../examples/styling/replacing-css-modules/vanilla/layout.js" name="components/dashboard/layout.js"></x-code-viewer>
-            <x-code-viewer src="../examples/styling/replacing-css-modules/vanilla/styles.css" name="components/dashboard/styles.css"></x-code-viewer>
+            <x-code-viewer src="./examples/styling/replacing-css-modules/vanilla/layout.js" name="components/dashboard/layout.js"></x-code-viewer>
+            <x-code-viewer src="./examples/styling/replacing-css-modules/vanilla/styles.css" name="components/dashboard/styles.css"></x-code-viewer>
         </section>
         <p>Because the shadow DOM does not inherit the page's styles, the <code>styles.css</code> must first import the styles that are shared across shadowed web components.</p>
         <section>

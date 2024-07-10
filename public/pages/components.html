@@ -54,11 +54,11 @@
         <section>
             <h2>A simple component</h2>
             <p>Let's start with the most basic form, a custom element that says <em>'hello world!'</em>:</p>
-            <x-code-viewer src="../examples/components/simple/hello-world.js"></x-code-viewer>
+            <x-code-viewer src="./examples/components/simple/hello-world.js"></x-code-viewer>
             <p>We can use it in a page like this:</p>
-            <x-code-viewer src="../examples/components/simple/index.html"></x-code-viewer>
+            <x-code-viewer src="./examples/components/simple/index.html"></x-code-viewer>
             <p>Which outputs this page:</p>
-            <iframe src="../examples/components/simple/index.html"></iframe>
+            <iframe src="./examples/components/simple/index.html"></iframe>
             <p>So what's happening here?</p>
             <p>We created a new HTML element, registered as the <code>x-hello-world</code> tag,
                 and used it on the page. When we did that, we got the following DOM structure:
@@ -116,7 +116,7 @@
                 To illustrate a way to do those things with custom elements, here's a custom element <code>&lt;x-avatar&gt;</code> that implements
                 a simplified version of the <a href="https://nextui.org/docs/components/avatar">NextUI Avatar component</a> (React):
             </p>
-            <x-code-viewer src="../examples/components/advanced/components/avatar.js" name="components/avatar.js"></x-code-viewer>
+            <x-code-viewer src="./examples/components/advanced/components/avatar.js" name="components/avatar.js"></x-code-viewer>
             <p>Some key elements that have changed:</p>
             <ul>
                 <li>The <code>observedAttributes</code> getter returns the element's attributes that when changed cause <code>attributeChangedCallback()</code> to be called by the browser, allowing us to update the UI.</li>
@@ -138,7 +138,7 @@
                 </ul>
             </ul>
             <p>For styling of our component we can use a separate css file:</p>
-            <x-code-viewer src="../examples/components/advanced/components/avatar.css" name="components/avatar.css"></x-code-viewer>
+            <x-code-viewer src="./examples/components/advanced/components/avatar.css" name="components/avatar.css"></x-code-viewer>
             <p>Notice that:</p>
             <ul>
                 <li>Because we know what the tag of our component is, we can easily scope the styles by prepending them with <code>x-avatar</code>, so they won't conflict with the rest of the page.</li>
@@ -146,14 +146,14 @@
             </ul>
 
             <p>A demonstration of what that looks like in action on a webpage:</p>
-            <iframe src="../examples/components/advanced/index.html"></iframe>
-            <x-code-viewer src="../examples/components/advanced/index.html"></x-code-viewer>
+            <iframe src="./examples/components/advanced/index.html"></iframe>
+            <x-code-viewer src="./examples/components/advanced/index.html"></x-code-viewer>
             <p>
                 This HTML centralizes the JavaScript and CSS logic to two index files, to make it easier to scale out to many web components.
                 This pattern, or a pattern like it, can keep things organized in a web application that is built out of dozens or hundreds of different web components.
             </p>
-            <x-code-viewer src="../examples/components/advanced/index.js"></x-code-viewer>
-            <x-code-viewer src="../examples/components/advanced/index.css"></x-code-viewer>
+            <x-code-viewer src="./examples/components/advanced/index.js"></x-code-viewer>
+            <x-code-viewer src="./examples/components/advanced/index.css"></x-code-viewer>
             <p>
                 The use of the CSS <code>@import</code> keyword may seem surprising as this keyword is often frowned upon for performance reasons,
                 but in modern browsers over HTTP/2 or HTTP/3 the performance penalty of this approach is not that severe.
@@ -173,11 +173,11 @@
             <p>Having seen what a more advanced web component looks like, we're now ready to jump up to the final difficulty level of web components, leveraging the more advanced features of Shadow DOM, HTML templates and class properties.</p>
             
             <p>Here's a demonstration of two web components interacting live:</p>
-            <x-code-viewer src="../examples/components/combined/index.html"></x-code-viewer>
-            <iframe src="../examples/components/combined/index.html"></iframe>
+            <x-code-viewer src="./examples/components/combined/index.html"></x-code-viewer>
+            <iframe src="./examples/components/combined/index.html"></iframe>
             
             <p>The <code>x-avatar</code> component is identical to the previous example, but how does the <code>x-badge</code> work?</p>
-            <x-code-viewer src="../examples/components/combined/components/badge.js" name="components/badge.js"></x-code-viewer>
+            <x-code-viewer src="./examples/components/combined/components/badge.js" name="components/badge.js"></x-code-viewer>
             <p>There is a lot happening here, so let's unpack.</p>
             <dl>
                 <dt><code>const template = document.createElement('template');</code></dt>
@@ -262,9 +262,9 @@
                 <li>reset.css</li>
             </ul>
             <p>Rounding it out, here is the code for the remaining files:</p>
-            <x-code-viewer src="../examples/components/combined/index.js"></x-code-viewer>
-            <x-code-viewer src="../examples/components/combined/index.css"></x-code-viewer>
-            <x-code-viewer src="../examples/components/combined/components/badge.css" name="components/badge.css"></x-code-viewer>
+            <x-code-viewer src="./examples/components/combined/index.js"></x-code-viewer>
+            <x-code-viewer src="./examples/components/combined/index.css"></x-code-viewer>
+            <x-code-viewer src="./examples/components/combined/components/badge.css" name="components/badge.css"></x-code-viewer>
             <p>As you can see, styling the content of a shadow DOM is a bit different:</p>
             <ul>
                 <li>The <code>:host</code> pseudo-selector applies styles to the element from the light DOM that hosts the shadow DOM (or in other words, to the custom element itself).</li>
