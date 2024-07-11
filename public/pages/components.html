@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
     <title>Plain Vanilla - Components</title>
@@ -273,10 +273,44 @@
             </ul>
         </section>
         <section>
+            <h2>Passing Data</h2>
+            <p>
+                Everything up to this point assumes that data passed between web components is very simple, just simple numeric and string attributes passing down.
+                A real world web application however passes complex datas such as objects and arrays from parent to child components and vice versa.
+            </p>
+            <p>
+                This example demonstrates the three major ways that data can be passed between web components:
+            </p>
+            <iframe src="./examples/components/data/index.html" style="height: 250px;"></iframe>
+            
+            <h3>Events</h3>
+            <p>The first way is passing events from parents to children. This is exemplified by the form at the top.</p>
+            <x-code-viewer src="./examples/components/data/components/form.js" name="components/form.js"></x-code-viewer>
+            <p>
+                Every time the <strong>Add</strong> button is pressed a <code>CustomEvent</code> of type <code>add</code> is dispatched using the <code>dispatchEvent</code> method.
+                The event data's <code>detail</code> property carries the submitted form data.
+            </p>
+            <p>The event is handled one level up:</p>
+            <x-code-viewer src="./examples/components/data/components/app.js" name="components/app.js"></x-code-viewer>
+            <p>The <code>update()</code> method sends the updated list back down to the <code>&lt;santas-list&gt;</code> and <code>&lt;santas-summary&gt;</code> components.</p>
+
+            <h3>Properties</h3>
+            <p>The second way to pass complex data is by using class properties, as exemplified by the <code>&lt;santas-list&gt;</code> component:</p>
+            <x-code-viewer src="./examples/components/data/components/list.js" name="components/list.js"></x-code-viewer>
+            <p>The <code>list</code> setter calls the <code>update()</code> method to rerender the list.</p>
+            <p>This is the recommended approach to pass complex data to stateful web components.</p>
+
+            <h3>Methods</h3>
+            <p>The third way to pass complex data is by calling a method on the web component, as exemplified by the <code>&lt;santas-summary</code> component:</p>
+            <x-code-viewer src="./examples/components/data/components/summary.js" name="components/summary.js"></x-code-viewer>
+            <p>This is the recommended approach to pass complex data to stateless web components.</p>
+        </section>
+        <section>
             <aside>
                 <h4>The power of the browser</h4>
                 <p>
                     A reminder that all of this code is still vanilla. It does not make use of any framework, library or build tool and works in all the major browsers.
+                    It will never need changes to be compatible with new dependency versions.
                     And most importantly, it remains readable and maintainable.
                 </p>
             </aside>
