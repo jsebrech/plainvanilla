@@ -21,14 +21,69 @@
     <main>
         <section>
             <h2>Multi-page websites</h2>
-            <h3>Organization</h3>
+
+            <p>For content-driven websites with low interactivity a multi-page approach is best suited.</p>
+
+            <h3>Project</h3>
+            <p>
+                A suggested project layout for a vanilla multi-page website:
+            </p>
+            <dl>
+                <dt>/</dt>
+                <dd>The project root contains the files that will not be published, such as <code>README.md</code>, <code>LICENSE</code> or <code>.gitignore</code>.</dd>
+                <dt>/public</dt>
+                <dd>The public folder is published as-is, without build steps. It is the whole website.</dd>
+                <dt>/public/index.html</dt>
+                <dd>The main landing page of the website, not particularly different from the other pages, except for its path.</dd>
+                <dt>/public/index.[js/css]</dt>
+                <dd>
+                    The main stylesheet and javascript. These contain the shared styles and code for all pages.
+                    <code>index.js</code> loads and registers the web components used on all pages.
+                    By sharing these across multiple HTML pages unnecessary duplication and inconsistencies between pages can be avoided.
+                </dd>
+                <dt>/public/pages/<em>[name]</em>.html</dt>
+                <dd>
+                    All of the site's other pages, each including the same <code>index.js</code> and <code>index.css</code>,
+                    and ofcourse containing the content directly as markup in the HTML, leveraging the web components.
+                </dd>
+                <dt>/public/components/<em>[name]</em>/</dt>
+                <dd>
+                    One folder per web component, containing a <code>[name].js</code> and <code>[name].css</code> file.
+                    The <code>.js</code> file is imported into the <code>index.js</code> file to register the web component.
+                    The <code>.css</code> file is imported into the global <code>index.css</code> or in the shadow DOM, as explained on the styling page.
+                </dd>
+                <dt>/public/lib/</dt>
+                <dd>For all external libraries used as dependencies. See below for how to add and use these dependencies.</dd>
+                <dt>/public/styles/</dt>
+                <dd>The global styles referenced from <code>index.css</code>, as explained on the styling page.</dd>
+            </dl>
+
             <h3>Routing</h3>
+            <p>
+                The old-school routing approach of standard HTML pages and <code>&lt;a&gt;</code> tags to link them together has the advantages of being easily indexed by search engines
+                and fully supporting browser history and bookmarking functionality out of the box. 😉
+            </p>
+
             <h3>Example</h3>
+            <!-- TODO: update link -->
+            <p>This website is the example. Check out the <a href="https://github.com/jsebrech/">project on GitHub</a>.</p>
         </section>
         <section>
             <h2>Single-page applications</h2>
-            <h3>Organization</h3>
+
+            <h3>Project</h3>
+
             <h3>Routing</h3>
+
+            <aside>
+                <h4>About Search Engines</h4>
+                <p>
+                    The hash-based routing approach is effectively invisible to search engines. Only the initial route will be indexed.
+                    For this reason this approach is not suited to sites that have SEO concerns.
+                    Every route that must be discoverable through a search engine should use the multi-file approach.
+                </p>
+            </aside>
+
             <h3>Example</h3>
         </section>
         <section>
