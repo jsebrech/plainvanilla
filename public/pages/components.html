@@ -156,7 +156,7 @@
             <x-code-viewer src="./examples/components/advanced/index.css"></x-code-viewer>
             <p>
                 The use of the CSS <code>@import</code> keyword may seem surprising as this keyword is often frowned upon for performance reasons,
-                but in modern browsers over HTTP/2 or HTTP/3 the performance penalty of this approach is not that severe.
+                but in modern browsers over HTTP/2 and in particular HTTP/3 the performance penalty of this approach is not that severe.
             </p>
             <aside>
                 <h4>Don't we need a bundler?</h4>
@@ -191,8 +191,7 @@
                 <dd>
                     Because this component uses a shadow DOM, it is isolated from the styles of the containing page and starts out unstyled.
                     The <code>badge.css</code> needs to be imported into the shadow DOM using the <code>&lt;link&gt;</code> tag.
-                    The special <code>import.meta.url</code> trick imports the CSS file from the same path
-                    as the <code>badge.js</code> file.
+                    The special <code>import.meta.url</code> trick imports the CSS file from the same path as the <code>badge.js</code> file.
                 </dd>
                 <dt><code>&lt;slot&gt;&lt;/slot&gt;</code></dt>
                 <dd>
@@ -284,7 +283,7 @@
             <iframe src="./examples/components/data/index.html" style="height: 250px;"></iframe>
             
             <h3>Events</h3>
-            <p>The first way is passing events from parents to children. This is exemplified by the form at the top.</p>
+            <p>The first way is passing events from child components to their container. This is exemplified by the form at the top.</p>
             <x-code-viewer src="./examples/components/data/components/form.js" name="components/form.js"></x-code-viewer>
             <p>
                 Every time the <strong>Add</strong> button is pressed a <code>CustomEvent</code> of type <code>add</code> is dispatched using the <code>dispatchEvent</code> method.
@@ -292,7 +291,7 @@
             </p>
             <p>The event is handled one level up:</p>
             <x-code-viewer src="./examples/components/data/components/app.js" name="components/app.js"></x-code-viewer>
-            <p>The <code>update()</code> method sends the updated list back down to the <code>&lt;santas-list&gt;</code> and <code>&lt;santas-summary&gt;</code> components.</p>
+            <p>The <code>update()</code> method sends the updated list back down to the <code>&lt;santas-list&gt;</code> and <code>&lt;santas-summary&gt;</code> components, using the next two methods.</p>
 
             <h3>Properties</h3>
             <p>The second way to pass complex data is by using class properties, as exemplified by the <code>&lt;santas-list&gt;</code> component:</p>
@@ -301,7 +300,7 @@
             <p>This is the recommended way to pass complex data to stateful web components.</p>
 
             <h3>Methods</h3>
-            <p>The third way to pass complex data is by calling a method on the web component, as exemplified by the <code>&lt;santas-summary</code> component:</p>
+            <p>The third way to pass complex data is by calling a method on the web component, as exemplified by the <code>&lt;santas-summary&gt;</code> component:</p>
             <x-code-viewer src="./examples/components/data/components/summary.js" name="components/summary.js"></x-code-viewer>
             <p>This is the recommended way to pass complex data to stateless web components.</p>
         </section>

@@ -4,7 +4,7 @@ class SantasSummary extends HTMLElement {
         const naughty = list.length - nice;
         this.innerHTML = list.length ? `
             <p>${nice} nice, ${naughty} naughty</p>
-        ` : '';
+        ` : "<p>Nobody's on the list yet.</p>";
     }
 }
 
