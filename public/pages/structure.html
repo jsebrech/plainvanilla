@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="../index.css">
 </head>
 <body>
+    <noscript><strong>Please enable JavaScript to view this page correctly.</strong></noscript>
     <script type="module" src="../index.js"></script>
     <header>
         <h1>Structure</h1>
@@ -19,6 +20,36 @@
         </nav>
     </header>
     <main>
+        <section>
+            <h2>Pages</h2>
+            <p>Abandoning frameworks implies writing out HTML pages by hand. For this it is important to understand what a good minimal HTML page should look like.</p>
+            <x-code-viewer src="./examples/structure/page/example.html"></x-code-viewer>
+            <p>An explanation of each element:</p>
+            <dl>
+                <dt><code>&lt;!doctype html&gt;</code></dt>
+                <dd>The doctype is required to have the HTML parsed as HTML5 instead of an older version.</dd>
+                <dt><code>&lt;head&gt;&lt;title&gt;</code></dt>
+                <dd>The title will be used for the browser tab and when bookmarking, making it effectively non-optional.</dd>
+                <dt><code>&lt;head&gt;&lt;meta name="viewport"&gt;</code></dt>
+                <dd>The viewport meta is required to have mobile-friendly layout.</dd>
+                <dt><code>&lt;head&gt;&lt;link rel="stylesheet" href="index.css"&gt;</code></dt>
+                <dd>By the convention the stylesheet is loaded from <code>&lt;head&gt;</code> in a blocking way to ensure the page's markup does not have a flash of unstyled content.</dd>
+                <dt><code>&lt;body&gt;&lt;noscript&gt;</code></dt>
+                <dd>Because web components don't work without JavaScript it is good pracrtice to include a warning to users that disable JavaScript that this may be the case. This warning only needs to be on pages with web components. If you don't want to show anything except the warning in this case, see below.</dd>
+                <dt><code>&lt;body&gt;&lt;header/main/footer&lt;</code></dt>
+                <dd>The page's markup should be organized using <a href="https://developer.mozilla.org/en-US/blog/aria-accessibility-html-landmark-roles/">HTML landmarks</a>. Landmarks, when used properly, make the page's structure accessible and are standards-based, guaranteeing compatibility with future accessibility products.</dd>
+                <dt><code>&lt;body&gt;&lt;script type="module" src="index.js"&gt;</code></dt>
+                <dd>The main JavaScript file is at the end, and will bootstrap the web components as explained on the components page.</dd>
+            </dl>
+            <p>
+                For pages where showing the content does not make sense if JavaScript is disabled you can use this pattern,
+                which only shows the page's contents when it is enabled.
+            </p>
+            <x-code-viewer src="./examples/structure/page/example2.html"></x-code-viewer>
+            <x-code-viewer src="./examples/structure/page/index.js"></x-code-viewer>
+            
+            <h3>Favicons</h3>
+        </section>
         <section>
             <h2>Multi-page websites</h2>
 
