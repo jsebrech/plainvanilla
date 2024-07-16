@@ -55,9 +55,9 @@
                 There is one thing that you will probably want to add to the HTML that is not standards-based and that is a reference to a favicon:
             </p>
             <ul>
-                <li>Prefer <a href="https://medium.com/swlh/are-you-using-svg-favicons-yet-a-guide-for-modern-browsers-836a6aace3df">SVG favicons</a>.</li>
-                <li>Embed dark mode in the favicon SVG itself. <a href="https://css-tricks.com/svg-favicons-in-action/">Manually embed dark mode</a>, or <a href="https://realfavicongenerator.net/">use RealFaviconGenerator</a> for more convience.</li>
-                <li>Consider adding a <code>favicon.ico</code> as fallback in the site's root path.</li>
+                <li>To keep it really simple, put a <code>favicon.ico</code> in the root path of the site and link to it from your HTML: <code>&lt;link rel="icon" href="favicon.ico"&gt;</code></li>
+                <li>Consider <a href="https://medium.com/swlh/are-you-using-svg-favicons-yet-a-guide-for-modern-browsers-836a6aace3df">SVG favicons</a>, but be aware that Safari does not support them. <a href="https://css-tricks.com/svg-favicons-in-action/">Embed dark mode</a> in the favicon SVG itself or use a generator like <a href="https://realfavicongenerator.net/">RealFaviconGenerator</a> for more convience.</li>
+                <li>Be aware that because favicons are not based on web standards it is cumbersome to implement the <a href="https://dev.to/masakudamatsu/favicon-nightmare-how-to-maintain-sanity-3al7">de facto standards</a> fully.</li>
             </ul>
         </section>
         <section>
