@@ -114,7 +114,27 @@
 
             <h3>Project</h3>
 
+            <p>The suggested project layout for single-page applications is the same as for multi-page sites, except:</p>
+            <dl>
+                <dt>/public/pages</dt>
+                <dd>As there is only <code>index.html</code> there is no need for the pages folder.</dd>
+                <dt>/public/app</dt>
+                <dd>All of the views and routes for the application are in this folder, each implemented as a web component, and registered in <code>index.js</code>.</dd>
+                <dt>/public/app/App.js</dt>
+                <dd>As in the major frameworks, the application is bootstrapped from an App component. See the example below.</dd>
+            </dl>
+
             <h3>Routing</h3>
+
+            <p>Without the assistance of a server to do routing, the only option is hash-based routing:</p>
+            <ul>
+                <li>The current route is in <code>window.location.hash</code>, e.g. <code>#/about</code>.</li>
+                <li>The route's changes are detected by listening to the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/hashchange_event">Window hashchange event</a>.</li>
+                <li>Each web component is shown or hidden based on the active route.</li>
+            </ul>
+            <p>This behavior can be encapsulated in a routing web component:</p>
+            <x-code-viewer src="./examples/structure/single-page/components/route/route.js" name="components/route/route.js"></x-code-viewer>
+            <p>See the example below for how this can be used in a project.</p>
 
             <aside>
                 <h4>About Search Engines</h4>
@@ -126,6 +146,18 @@
             </aside>
 
             <h3>Example</h3>
+
+            <p>An example single-page vanilla application:</p>
+            <iframe src="./examples/structure/single-page/index.html" height="400"></iframe>
+
+            <p>It makes use of the template pattern to avoid loading the application if scripting is disabled:</p>
+            <x-code-viewer src="./examples/structure/single-page/index.html"></x-code-viewer>
+            <x-code-viewer src="./examples/structure/single-page/index.js"></x-code-viewer>
+
+            <p>The <code>x-app</code> component then implements the routes:</p>
+            <x-code-viewer src="./examples/structure/single-page/app/App.js" name="app/App.js"></x-code-viewer>
+
+            <p>Adding additional route components to the <code>/app</code> folder is left as an exercise for the reader.</p>
         </section>
         <section>
             <h2>Dependencies</h2>
