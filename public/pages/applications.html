@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Plain Vanilla - Applications</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <link rel="icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../index.css">
+</head>
+<body>
+    <noscript><strong>Please enable JavaScript to view this page correctly.</strong></noscript>
+    <script type="module" src="../index.js"></script>
+    <header>
+        <h1>Applications</h1>
+        <nav>
+            <ul>
+                <li><a href="../index.html">Introduction</a></li>
+                <li><a href="components.html">Components</a></li>
+                <li><a href="styling.html">Styling</a></li>
+                <li><a href="sites.html">Sites</a></li>
+                <li>Applications</li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section>
+            <h2>Project</h2>
+            <p>When richer interactivity and dynamic state are needed, a single-page application is often a better fit than a multi-page organization.</p>
+
+            <p>The suggested project layout for single-page applications is the same as for multi-page sites, except:</p>
+            <dl>
+                <dt>/public/pages</dt>
+                <dd>As there is only <code>index.html</code> there is no need for the pages folder.</dd>
+                <dt>/public/app</dt>
+                <dd>All of the views and routes for the application are in this folder, each implemented as a web component, and registered in <code>index.js</code>.</dd>
+                <dt>/public/app/App.js</dt>
+                <dd>As in the major frameworks, the application is bootstrapped from an App component. See the example below.</dd>
+            </dl>
+        </section>
+        <section>
+            <h2>Routing</h2>
+
+            <p>Without the assistance of a server to do routing, the only option is hash-based routing:</p>
+            <ul>
+                <li>The current route is in <code>window.location.hash</code>, e.g. <code>#/about</code>.</li>
+                <li>The route's changes are detected by listening to the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/hashchange_event">Window hashchange event</a>.</li>
+                <li>Each web component is shown or hidden based on the active route.</li>
+            </ul>
+            <p>This behavior can be encapsulated in a routing web component:</p>
+            <x-code-viewer src="./examples/applications/single-page/components/route/route.js" name="components/route/route.js"></x-code-viewer>
+            <p>See the example below for how this can be used in a project.</p>
+
+            <aside>
+                <h4>About Search Engines</h4>
+                <p>
+                    The hash-based routing approach is effectively invisible to search engines. Only the initial route will be indexed.
+                    For this reason this approach is not suited to sites that have SEO concerns.
+                    Every route that must be discoverable through a search engine should use the multi-file approach.
+                </p>
+            </aside>
+
+            <h2>Example</h2>
+
+            <p>An example single-page vanilla application:</p>
+            <iframe src="./examples/applications/single-page/index.html" height="400"></iframe>
+
+            <p>It makes use of the template pattern to avoid loading the application if scripting is disabled:</p>
+            <x-code-viewer src="./examples/applications/single-page/index.html"></x-code-viewer>
+            <x-code-viewer src="./examples/applications/single-page/index.js"></x-code-viewer>
+
+            <p>The <code>&lt;x-app&gt;</code> component then implements the routes:</p>
+            <x-code-viewer src="./examples/applications/single-page/app/App.js" name="app/App.js"></x-code-viewer>
+
+            <p>Adding additional route components to the <code>/app</code> folder is left as an exercise for the reader.</p>
+        </section>
+        <section>
+            <h2>Managing state</h2>
+            <h3>Lifting state up</h3>
+            <h3>Passing data deeply</h3>
+            <h3>Tasks example</h3>
+            TODO: write this section
+        </section>
+        <section>
+            <h2>Up next</h2>
+            Go build something vanilla!
+        </section>
+    </main>
+</body>
+</html>

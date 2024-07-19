@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <title>Plain Vanilla - Structure</title>
+    <title>Plain Vanilla - Sites</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
     <link rel="icon" href="../favicon.ico">
     <link rel="stylesheet" href="../index.css">
@@ -10,21 +10,23 @@
     <noscript><strong>Please enable JavaScript to view this page correctly.</strong></noscript>
     <script type="module" src="../index.js"></script>
     <header>
-        <h1>Structure</h1>
+        <h1>Sites</h1>
         <nav>
             <ul>
                 <li><a href="../index.html">Introduction</a></li>
                 <li><a href="components.html">Components</a></li>
                 <li><a href="styling.html">Styling</a></li>
-                <li>Structure</li>
+                <li>Sites</li>
+                <li><a href="applications.html">Applications</a></li>
             </ul>
         </nav>
     </header>
     <main>
         <section>
             <h2>Pages</h2>
-            <p>Abandoning the use of frameworks means writing out HTML pages from scratch. For this it is important to understand what a good minimal HTML page should look like.</p>
-            <x-code-viewer src="./examples/structure/page/example.html"></x-code-viewer>
+            <p>For content-driven websites with low interactivity a multi-page approach is best suited.</p>
+            <p>Abandoning the use of frameworks means writing out those HTML pages from scratch. For this it is important to understand what a good minimal HTML page should look like.</p>
+            <x-code-viewer src="./examples/sites/page/example.html"></x-code-viewer>
             <p>An explanation of each element:</p>
             <dl>
                 <dt><code>&lt;!doctype html&gt;</code></dt>
@@ -47,8 +49,8 @@
             <p>
                 Pages that should only show their contents if JavaScript is enabled can use this template pattern:
             </p>
-            <x-code-viewer src="./examples/structure/page/example2.html"></x-code-viewer>
-            <x-code-viewer src="./examples/structure/page/index.js"></x-code-viewer>
+            <x-code-viewer src="./examples/sites/page/example2.html"></x-code-viewer>
+            <x-code-viewer src="./examples/sites/page/index.js"></x-code-viewer>
             
             <h3>Favicons</h3>
 
@@ -62,11 +64,8 @@
             </ul>
         </section>
         <section>
-            <h2>Multi-page websites</h2>
-
-            <p>For content-driven websites with low interactivity a multi-page approach is best suited.</p>
-
-            <h3>Project</h3>
+            <h2>Project</h2>
+            <h3>Layout</h3>
             <p>
                 A suggested project layout for a vanilla multi-page website:
             </p>
@@ -105,64 +104,15 @@
                 The old-school routing approach of standard HTML pages and <code>&lt;a&gt;</code> tags to link them together has the advantages of being easily indexed by search engines
                 and fully supporting browser history and bookmarking functionality out of the box. 😉
             </p>
-
-            <h3>Example</h3>
+        </section>
+        <section>
+            <h2>Example</h2>
             <!-- TODO: update link -->
             <p>This website is the example. Check out the <a href="https://github.com/jsebrech/">project on GitHub</a>.</p>
         </section>
         <section>
-            <h2>Single-page applications</h2>
-
-            <h3>Project</h3>
-
-            <p>The suggested project layout for single-page applications is the same as for multi-page sites, except:</p>
-            <dl>
-                <dt>/public/pages</dt>
-                <dd>As there is only <code>index.html</code> there is no need for the pages folder.</dd>
-                <dt>/public/app</dt>
-                <dd>All of the views and routes for the application are in this folder, each implemented as a web component, and registered in <code>index.js</code>.</dd>
-                <dt>/public/app/App.js</dt>
-                <dd>As in the major frameworks, the application is bootstrapped from an App component. See the example below.</dd>
-            </dl>
-
-            <h3>Routing</h3>
-
-            <p>Without the assistance of a server to do routing, the only option is hash-based routing:</p>
-            <ul>
-                <li>The current route is in <code>window.location.hash</code>, e.g. <code>#/about</code>.</li>
-                <li>The route's changes are detected by listening to the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/hashchange_event">Window hashchange event</a>.</li>
-                <li>Each web component is shown or hidden based on the active route.</li>
-            </ul>
-            <p>This behavior can be encapsulated in a routing web component:</p>
-            <x-code-viewer src="./examples/structure/single-page/components/route/route.js" name="components/route/route.js"></x-code-viewer>
-            <p>See the example below for how this can be used in a project.</p>
-
-            <aside>
-                <h4>About Search Engines</h4>
-                <p>
-                    The hash-based routing approach is effectively invisible to search engines. Only the initial route will be indexed.
-                    For this reason this approach is not suited to sites that have SEO concerns.
-                    Every route that must be discoverable through a search engine should use the multi-file approach.
-                </p>
-            </aside>
-
-            <h3>Example</h3>
-
-            <p>An example single-page vanilla application:</p>
-            <iframe src="./examples/structure/single-page/index.html" height="400"></iframe>
-
-            <p>It makes use of the template pattern to avoid loading the application if scripting is disabled:</p>
-            <x-code-viewer src="./examples/structure/single-page/index.html"></x-code-viewer>
-            <x-code-viewer src="./examples/structure/single-page/index.js"></x-code-viewer>
-
-            <p>The <code>x-app</code> component then implements the routes:</p>
-            <x-code-viewer src="./examples/structure/single-page/app/App.js" name="app/App.js"></x-code-viewer>
-
-            <p>Adding additional route components to the <code>/app</code> folder is left as an exercise for the reader.</p>
-        </section>
-        <section>
             <h2>Dependencies</h2>
-            <p>At some point you will want to pull in third-party libraries. Without npm and a bundler this is still possible.</p>
+            <p>At some point you may want to pull in third-party libraries. Without npm and a bundler this is still possible.</p>
             <h3>Unpkg</h3>
             <p>
                 To use libraries without a bundler they need to be prebuilt in either ESM or UMD format.
@@ -199,11 +149,13 @@
             </ul>
 
             <h3>imports.js</h3>
-            <p>To neatly organize libraries, it is best to load and export them from an <code>imports.js</code> file. For example:</p>
-            <p>For example, here is a page that uses a UMD build of <a href="https://day.js.org/">Day.js</a> and an ESM build of <a href="https://github.com/GoogleChrome/web-vitals">web-vitals</a>:</p>
-            <iframe src="./examples/structure/imports/index.html" height="100"></iframe>
+            <p>
+                To neatly organize libraries, it is best to load and export them from an <code>imports.js</code> file.
+                For example, here is a page that uses a UMD build of <a href="https://day.js.org/">Day.js</a> and an ESM build of <a href="https://github.com/GoogleChrome/web-vitals">web-vitals</a>:
+            </p>
+            <iframe src="./examples/sites/imports/index.html" height="100"></iframe>
             <p>The text is rendered by the <code>&lt;x-metrics&gt;</code> component:</p>
-            <x-code-viewer src="./examples/structure/imports/components/metrics.js" name="components/metrics.js"></x-code-viewer>
+            <x-code-viewer src="./examples/sites/imports/components/metrics.js" name="components/metrics.js"></x-code-viewer>
             <p>In the <code>/lib</code> folder we find these files:</p>
             <ul>
                 <li>web-vitals.js - the ESM build of web-vitals</li>
@@ -215,20 +167,21 @@
                 <li>imports.js</li>
             </ul>
             <p>Digging deeper into this last file we see how it bundles loading of third-party dependencies:</p>
-            <x-code-viewer src="./examples/structure/imports/lib/imports.js" name="lib/imports.js"></x-code-viewer>
+            <x-code-viewer src="./examples/sites/imports/lib/imports.js" name="lib/imports.js"></x-code-viewer>
             <p>
                 It imports the ESM library directly, but it pulls the UMD libraries off the <code>Window</code> object.
-                These are loaded from the HTML:
+                These are loaded in the HTML:
             </p>
-            <x-code-viewer src="./examples/structure/imports/index.html"></x-code-viewer>
+            <x-code-viewer src="./examples/sites/imports/index.html"></x-code-viewer>
             <p>Regrettably not all libraries have a UMD or ESM build, but more and more do.</p>
         </section>
         <section>
             <h2>Deploying</h2>
+            TODO: write deploying section
         </section>
         <section>
             <h2>Up next</h2>
-            Go build something!
+            Learn how to build <a href="applications.html">single-page applications</a> using vanilla techniques.
         </section>
     </main>
 </body>
