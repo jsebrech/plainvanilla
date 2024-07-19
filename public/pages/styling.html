@@ -3,6 +3,7 @@
 <head>
     <title>Plain Vanilla - Styling</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <link rel="icon" href="../favicon.ico">
     <link rel="stylesheet" href="../index.css">
 </head>
 <body>
@@ -23,8 +24,8 @@
         <section>
             <h2>Modern CSS</h2>
             <p>
-                Modern web applications are built on top of heavy tooling for dealing with CSS, relying on lots of NPM packages and a bunch of build steps.
-                A vanilla web application however has to choose a lighter weight path, abandoning the traditional modern CSS approaches 
+                Modern web applications are built on top of rich tooling for dealing with CSS, relying on plenty of NPM packages and build steps.
+                A vanilla web application however has to choose a lighter weight path, abandoning the preprocessed modern CSS approaches 
                 and choosing strategies that are browser native.
             </p>
         </section>
@@ -95,6 +96,7 @@
                     <p>Styles can be easily scoped to a custom element's tag.</p>
                     <p>For example, the styles of the avatar component from the components page are all prepended by the <code>x-avatar</code> selector:</p>
                     <x-code-viewer src="./examples/components/advanced/components/avatar.css"></x-code-viewer>
+                    <p>Custom elements can also have custom attributes that selectors can leverage, as with the <code>[size=lg]</code> style in this example.</p>
                 </dd>
                 <dt>Shadow DOM</dt>
                 <dd>
@@ -104,11 +106,11 @@
                         without affecting the containing page or the badge's child elements.
                     </p>
                     <p>
-                        While all CSS files that need to apply to the shadow DOM must be imported into it explicitly,
+                        All CSS files that need to apply to the shadow DOM must be imported into it explicitly,
                         <a href="https://javascript.info/shadow-dom-style">CSS variables are passed into the shadow DOM</a>.
                     </p>
                     <p>
-                        Know that should you want to use custom fonts inside a shadow DOM, they must first be loaded into the light DOM.
+                        A limitation of shadow DOMs is that to use custom fonts inside them, they must first be loaded into the light DOM.
                     </p>
                 </dd>
             </dl>
@@ -184,7 +186,7 @@
             <x-code-viewer src="./examples/styling/replacing-css-modules/vanilla/layout.js" name="components/dashboard/layout.js"></x-code-viewer>
             <x-code-viewer src="./examples/styling/replacing-css-modules/vanilla/styles.css" name="components/dashboard/styles.css"></x-code-viewer>
         </section>
-        <p>Because the shadow DOM does not inherit the page's styles, the <code>styles.css</code> must first import the styles that are shared across shadowed web components.</p>
+        <p>Because the shadow DOM does not inherit the page's styles, the <code>styles.css</code> must first import the styles that are shared between the page and the shadowed web component.</p>
         <section>
             <h2>Replacing PostCSS</h2>
             <p>Let's go over the main page of <a href="https://postcss.org/">PostCSS</a> to review its feature set.</p>

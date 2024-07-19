@@ -3,6 +3,7 @@
 <head>
     <title>Plain Vanilla - Structure</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <link rel="icon" href="../favicon.ico">
     <link rel="stylesheet" href="../index.css">
 </head>
 <body>
@@ -161,9 +162,73 @@
         </section>
         <section>
             <h2>Dependencies</h2>
+            <p>At some point you will want to pull in third-party libraries. Without npm and a bundler this is still possible.</p>
+            <h3>Unpkg</h3>
+            <p>
+                To use libraries without a bundler they need to be prebuilt in either ESM or UMD format.
+                These libraries can be obtained from unpkg.com:
+            </p>
+            <ol>
+                <li>Browse to <code>unpkg.com/[library]/</code> (trailing slash matters), for example <a href="https://unpkg.com/microlight/" target="_blank">unpkg.com/microlight/</a></li>
+                <li>Look for and download the library js file, which may be in a subfolder, like <code>dist</code>, <code>esm</code> or <code>umd</code></li>
+                <li>Place the library file in the <code>lib/</code> folder</li>
+            </ol>
+            <p>Alternatively, the library may be loaded directly from CDN.</p>
+
+            <h3>UMD</h3>
+            <p>
+                The <a href="https://jameshfisher.com/2020/10/04/what-are-umd-modules/">UMD module format</a> is an older format for libraries loaded from script tag,
+                and it is the most widely supported, especially among older libraries.
+                It can be recognized by having <code>typeof define === 'function' && define.amd</code> somewhere in the library JS.
+            </p>
+            <p>To include it in your project:</p>
+            <ol>
+                <li>Include it in a script tag: <code>&lt;script src="lib/microlight.js"&gt;&lt;/script&gt;</code></li>
+                <li>Obtain it off the window: <code>const { microlight } = window;</code></li>
+            </ol>
+
+            <h3>ESM</h3>
+            <p>
+                The <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules">ESM module format</a> (also known as JavaScript modules) is the format specified by the ECMAScript standard, and newer or well-behaved libraries will typically provide an ESM build.
+                It can be recognized by the use of the <code>export</code> keyword.
+            </p>
+            <p>To include it in your project:</p>
+            <ul>
+                <li>Load it from CDN:<br><code>import('https://unpkg.com/web-vitals@4.2.2/dist/web-vitals.js').then((webVitals) => ...)</code></li>
+                <li>Or load it from a local copy:<br><code>import webVitals from 'lib/web-vitals.js'</code></li>
+            </ul>
+
+            <h3>imports.js</h3>
+            <p>To neatly organize libraries, it is best to load and export them from an <code>imports.js</code> file. For example:</p>
+            <p>For example, here is a page that uses a UMD build of <a href="https://day.js.org/">Day.js</a> and an ESM build of <a href="https://github.com/GoogleChrome/web-vitals">web-vitals</a>:</p>
+            <iframe src="./examples/structure/imports/index.html" height="100"></iframe>
+            <p>The text is rendered by the <code>&lt;x-metrics&gt;</code> component:</p>
+            <x-code-viewer src="./examples/structure/imports/components/metrics.js" name="components/metrics.js"></x-code-viewer>
+            <p>In the <code>/lib</code> folder we find these files:</p>
+            <ul>
+                <li>web-vitals.js - the ESM build of web-vitals</li>
+                <li>dayjs/</li>
+                <ul>
+                    <li>dayjs.min.js - the UMD build of Day.js</li>
+                    <li>relativeTime.js - the UMD build of this Day.js plugin</li>
+                </ul>
+                <li>imports.js</li>
+            </ul>
+            <p>Digging deeper into this last file we see how it bundles loading of third-party dependencies:</p>
+            <x-code-viewer src="./examples/structure/imports/lib/imports.js" name="lib/imports.js"></x-code-viewer>
+            <p>
+                It imports the ESM library directly, but it pulls the UMD libraries off the <code>Window</code> object.
+                These are loaded from the HTML:
+            </p>
+            <x-code-viewer src="./examples/structure/imports/index.html"></x-code-viewer>
+            <p>Regrettably not all libraries have a UMD or ESM build, but more and more do.</p>
         </section>
         <section>
             <h2>Deploying</h2>
+        </section>
+        <section>
+            <h2>Up next</h2>
+            Go build something!
         </section>
     </main>
 </body>
