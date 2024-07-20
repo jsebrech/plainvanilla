@@ -10,7 +10,7 @@
     <noscript><strong>Please enable JavaScript to view this page correctly.</strong></noscript>
     <script type="module" src="../index.js"></script>
     <header>
-        <h1>Applications</h1>
+        <h1>Plain Vanilla Applications</h1>
         <nav>
             <ul>
                 <li><a href="../index.html">Introduction</a></li>
@@ -24,7 +24,7 @@
     <main>
         <section>
             <h2>Project</h2>
-            <p>When richer interactivity and dynamic state are needed, a single-page application is often a better fit than a multi-page organization.</p>
+            <p>When richer interactivity and dynamic state are needed, a single-page application is often a better fit than a multi-page website.</p>
 
             <p>The suggested project layout for single-page applications is the same as for multi-page sites, except:</p>
             <dl>
@@ -47,7 +47,32 @@
             </ul>
             <p>This behavior can be encapsulated in a routing web component:</p>
             <x-code-viewer src="./examples/applications/single-page/components/route/route.js" name="components/route/route.js"></x-code-viewer>
-            <p>See the example below for how this can be used in a project.</p>
+
+            <p>An example single-page vanilla application that uses this routing component:</p>
+
+            <iframe src="./examples/applications/single-page/index.html" height="400"></iframe>
+
+            <x-tab-panel>
+                <x-tab title="index.html" active>
+                    <x-code-viewer src="./examples/applications/single-page/index.html" name=""></x-code-viewer>
+                </x-tab>
+                <x-tab title="index.css">
+                    <x-code-viewer src="./examples/applications/single-page/index.css" name=""></x-code-viewer>
+                </x-tab>
+                <x-tab title="index.js">
+                    <x-code-viewer src="./examples/applications/single-page/index.js" name=""></x-code-viewer>
+                </x-tab>
+                <x-tab title="App.js">
+                    <x-code-viewer src="./examples/applications/single-page/app/App.js" name="app/App.js"></x-code-viewer>
+                </x-tab>
+                <x-tab title="route.js">
+                    <x-code-viewer src="./examples/applications/single-page/components/route/route.js" name="components/route/route.js"></x-code-viewer>
+                </x-tab>
+            </x-tab-panel>
+
+            <p>It makes use of the template pattern to avoid loading the application if scripting is disabled:</p>
+
+            <p>Adding additional route components to the <code>/app</code> folder is left as an exercise for the reader.</p>
 
             <aside>
                 <h4>About Search Engines</h4>
@@ -58,19 +83,6 @@
                 </p>
             </aside>
 
-            <h2>Example</h2>
-
-            <p>An example single-page vanilla application:</p>
-            <iframe src="./examples/applications/single-page/index.html" height="400"></iframe>
-
-            <p>It makes use of the template pattern to avoid loading the application if scripting is disabled:</p>
-            <x-code-viewer src="./examples/applications/single-page/index.html"></x-code-viewer>
-            <x-code-viewer src="./examples/applications/single-page/index.js"></x-code-viewer>
-
-            <p>The <code>&lt;x-app&gt;</code> component then implements the routes:</p>
-            <x-code-viewer src="./examples/applications/single-page/app/App.js" name="app/App.js"></x-code-viewer>
-
-            <p>Adding additional route components to the <code>/app</code> folder is left as an exercise for the reader.</p>
         </section>
         <section>
             <h2>Managing state</h2>

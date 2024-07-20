@@ -76,7 +76,17 @@ code {
 x-code-viewer {
     border: 1px solid var(--border-color);
     margin: 1em 0;
-    max-height: 20em;
+    max-height: 30em;
+}
+
+x-tab-panel {
+    border: 1px solid var(--border-color);
+    margin: 1em 0;
+}
+
+x-tab-panel x-code-viewer {
+    border: none;
+    margin: 0;
 }
 
 iframe {

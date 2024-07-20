@@ -17,6 +17,10 @@ x-code-viewer label {
     flex: 0 0 auto;
 }
 
+x-code-viewer label:empty {
+    display: none;
+}
+
 x-code-viewer code {
     flex: 1 1 auto;
     overflow: auto;

@@ -1,3 +1,10 @@
+/**
+ * Code Viewer component
+ * 
+ * Usage:
+ * <x-code-viewer src="path/to/code.js"></x-code-viewer> - show code with label "code.js"
+ * <x-code-viewer src="path/to/code.js" name="My Code"></x-code-viewer> - show code with label "My Code"
+ */
 class CodeViewer extends HTMLElement {
     constructor() {
         super();
@@ -11,7 +18,7 @@ class CodeViewer extends HTMLElement {
         if (src) {
             fetch(src).then(res => res.text()).then(text => {
                 this.setAttribute('code', text);
-                if (!this.getAttribute('name')) {
+                if (!this.hasAttribute('name')) {
                     this.setAttribute('name', src.split('/').pop());
                 }
             }).catch((e) => this.setAttribute('code', e.message));
@@ -43,7 +50,7 @@ export const registerCodeViewerComponent =
         // load microlight if not yet loaded
         if (!document.querySelector('script#microlight')) {
             const script = document.createElement('script');
-            script.src = new URL('../lib/microlight/microlight.js', import.meta.url);
+            script.src = new URL('../../lib/microlight/microlight.js', import.meta.url);
             script.id = 'microlight';
             document.head.appendChild(script);
         }

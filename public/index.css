@@ -1,4 +1,4 @@
 @import url("./styles/reset.css");
 @import url("./styles/variables.css");
 @import url("./styles/global.css");
-@import url("./components/code-viewer.css");
+@import url("./components/code-viewer/code-viewer.css");

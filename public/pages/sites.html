@@ -10,7 +10,7 @@
     <noscript><strong>Please enable JavaScript to view this page correctly.</strong></noscript>
     <script type="module" src="../index.js"></script>
     <header>
-        <h1>Sites</h1>
+        <h1>Plain Vanilla Sites</h1>
         <nav>
             <ul>
                 <li><a href="../index.html">Introduction</a></li>
@@ -49,8 +49,15 @@
             <p>
                 Pages that should only show their contents if JavaScript is enabled can use this template pattern:
             </p>
-            <x-code-viewer src="./examples/sites/page/example2.html"></x-code-viewer>
-            <x-code-viewer src="./examples/sites/page/index.js"></x-code-viewer>
+
+            <x-tab-panel>
+                <x-tab title="index.html" active>
+                    <x-code-viewer src="./examples/sites/page/example2.html" name=""></x-code-viewer>
+                </x-tab>
+                <x-tab title="index.js">
+                    <x-code-viewer src="./examples/sites/page/index.js" name=""></x-code-viewer>
+                </x-tab>
+            </x-tab-panel>
             
             <h3>Favicons</h3>
 
@@ -60,12 +67,11 @@
             <ul>
                 <li>To keep it really simple, put a <code>favicon.ico</code> in the root path of the site and link to it from your HTML: <code>&lt;link rel="icon" href="favicon.ico"&gt;</code></li>
                 <li>Consider <a href="https://medium.com/swlh/are-you-using-svg-favicons-yet-a-guide-for-modern-browsers-836a6aace3df">SVG favicons</a>, but be aware that Safari does not support them. <a href="https://css-tricks.com/svg-favicons-in-action/">Embed dark mode</a> in the favicon SVG itself or use a generator like <a href="https://realfavicongenerator.net/">RealFaviconGenerator</a> for more convience.</li>
-                <li>Be aware that because favicons are not based on web standards it is cumbersome to implement the <a href="https://dev.to/masakudamatsu/favicon-nightmare-how-to-maintain-sanity-3al7">de facto standards</a> fully.</li>
+                <li>Be aware that because favicons are not based on published web standards it is cumbersome to implement the <a href="https://dev.to/masakudamatsu/favicon-nightmare-how-to-maintain-sanity-3al7">de facto standard</a> fully.</li>
             </ul>
         </section>
         <section>
             <h2>Project</h2>
-            <h3>Layout</h3>
             <p>
                 A suggested project layout for a vanilla multi-page website:
             </p>
@@ -98,8 +104,9 @@
                 <dt>/public/styles/</dt>
                 <dd>The global styles referenced from <code>index.css</code>, as explained on the styling page.</dd>
             </dl>
-
-            <h3>Routing</h3>
+        </section>
+        <section>
+            <h2>Routing</h2>
             <p>
                 The old-school routing approach of standard HTML pages and <code>&lt;a&gt;</code> tags to link them together has the advantages of being easily indexed by search engines
                 and fully supporting browser history and bookmarking functionality out of the box. 😉
@@ -170,14 +177,37 @@
             <x-code-viewer src="./examples/sites/imports/lib/imports.js" name="lib/imports.js"></x-code-viewer>
             <p>
                 It imports the ESM library directly, but it pulls the UMD libraries off the <code>Window</code> object.
-                These are loaded in the HTML:
+                These are loaded in the HTML.
             </p>
-            <x-code-viewer src="./examples/sites/imports/index.html"></x-code-viewer>
+
+            <p>Here is the combined example:</p>
+            <x-tab-panel>
+                <x-tab title="index.html" active>
+                    <x-code-viewer src="./examples/sites/imports/index.html" name=""></x-code-viewer>
+                </x-tab>
+                <x-tab title="index.css">
+                    <x-code-viewer src="./examples/sites/imports/index.css" name=""></x-code-viewer>
+                </x-tab>
+                <x-tab title="index.js">
+                    <x-code-viewer src="./examples/sites/imports/index.js" name=""></x-code-viewer>
+                </x-tab>
+                <x-tab title="metrics.js">
+                    <x-code-viewer src="./examples/sites/imports/components/metrics.js" name="components/metrics.js"></x-code-viewer>
+                </x-tab>
+                <x-tab title="imports.js">
+                    <x-code-viewer src="./examples/sites/imports/lib/imports.js" name="lib/imports.js"></x-code-viewer>
+                </x-tab>
+            </x-tab-panel>
+
             <p>Regrettably not all libraries have a UMD or ESM build, but more and more do.</p>
         </section>
         <section>
             <h2>Deploying</h2>
             TODO: write deploying section
+        </section>
+        <section>
+            <h2>Testing</h2>
+            TODO: write testing section
         </section>
         <section>
             <h2>Up next</h2>

@@ -10,7 +10,7 @@
     <noscript><strong>Please enable JavaScript to view this page correctly.</strong></noscript>
     <script type="module" src="../index.js"></script>
     <header>
-        <h1>Styling</h1>
+        <h1>Plain Vanilla Styling</h1>
         <nav>
             <ul>
                 <li><a href="../index.html">Introduction</a></li>
@@ -144,13 +144,24 @@
                 For custom elements that don't have a shadow DOM we can prefix the styles with the tag of the custom element.
                 For example, here's a simple web component that uses prefixed selectors to create a local scope:
             </p>
-            <x-code-viewer src="./examples/styling/scoping-prefixed/components/example/example.js" name="components/example/example.js"></x-code-viewer>
-            <x-code-viewer src="./examples/styling/scoping-prefixed/components/example/example.css" name="components/example/example.css"></x-code-viewer>
-            <iframe src="./examples/styling/scoping-prefixed/index.html"></iframe>
-            <p>It is included into the page from the global index files:</p>
-            <x-code-viewer src="./examples/styling/scoping-prefixed/index.html"></x-code-viewer>
-            <x-code-viewer src="./examples/styling/scoping-prefixed/index.js"></x-code-viewer>
-            <x-code-viewer src="./examples/styling/scoping-prefixed/index.css"></x-code-viewer>
+            <x-tab-panel>
+                <x-tab title="index.html">
+                    <x-code-viewer src="./examples/styling/scoping-prefixed/index.html" name=""></x-code-viewer>
+                </x-tab>
+                <x-tab title="index.js">
+                    <x-code-viewer src="./examples/styling/scoping-prefixed/index.js" name=""></x-code-viewer>
+                </x-tab>
+                <x-tab title="index.css">
+                    <x-code-viewer src="./examples/styling/scoping-prefixed/index.css" name=""></x-code-viewer>
+                </x-tab>
+                <x-tab title="example.js">
+                    <x-code-viewer src="./examples/styling/scoping-prefixed/components/example/example.js" name="components/example/example.js"></x-code-viewer>
+                </x-tab>
+                <x-tab title="example.css" active>
+                    <x-code-viewer src="./examples/styling/scoping-prefixed/components/example/example.css" name="components/example/example.css"></x-code-viewer>
+                </x-tab>
+            </x-tab-panel>
+
             <aside>
                 <h4>Tip: CSS Nesting</h4>
                 <p>If you want a cleaner syntax, and you are comfortable with the <a href="https://caniuse.com/css-nesting">browser support</a>, consider using <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_nesting/Using_CSS_nesting">CSS Nesting</a>.</p>
@@ -162,12 +173,24 @@
                 Custom elements that use a shadow DOM start out unstyled with a local scope,
                 and all styles must be explicitly imported into them. Here is the prefixed example reworked to use a shadow DOM instead.
             </p>
-            <x-code-viewer src="./examples/styling/scoping-shadowed/components/example/example.js" name="components/example/example.js"></x-code-viewer>
-            <x-code-viewer src="./examples/styling/scoping-shadowed/components/example/example.css" name="components/example/example.css"></x-code-viewer>
+
+            <x-tab-panel>
+                <x-tab title="index.html">
+                    <x-code-viewer src="./examples/styling/scoping-shadowed/index.html" name=""></x-code-viewer>
+                </x-tab>
+                <x-tab title="index.js">
+                    <x-code-viewer src="./examples/styling/scoping-shadowed/index.js" name=""></x-code-viewer>
+                </x-tab>
+                <x-tab title="example.js">
+                    <x-code-viewer src="./examples/styling/scoping-shadowed/components/example/example.js" name="components/example/example.js"></x-code-viewer>
+                </x-tab>
+                <x-tab title="example.css" active>
+                    <x-code-viewer src="./examples/styling/scoping-shadowed/components/example/example.css" name="components/example/example.css"></x-code-viewer>
+                </x-tab>
+            </x-tab-panel>
+
             <iframe src="./examples/styling/scoping-shadowed/index.html"></iframe>
-            <p>It is included into the page from the global index files:</p>
-            <x-code-viewer src="./examples/styling/scoping-shadowed/index.html"></x-code-viewer>
-            <x-code-viewer src="./examples/styling/scoping-shadowed/index.js"></x-code-viewer>
+
             <p>To reuse styles from the surrounding page inside the shadow DOM, consider these options:</p>
             <ul>
                 <li>Common CSS files can be imported inside the shadow DOM using <code>&lt;link&gt;</code> tags or <code>@import</code>.</li>
@@ -181,13 +204,26 @@
                 The local scoping feature of CSS modules can be replaced by one of the scoping approaches describe above.
                 For example, let's take the canonical <a href="https://nextjs.org/docs/app/building-your-application/styling/css-modules#example">example of CSS modules</a> from the Next.JS documentation:
             </p>
-            <x-code-viewer src="./examples/styling/replacing-css-modules/nextjs/layout.tsx" name="app/dashboard/layout.tsx"></x-code-viewer>
-            <x-code-viewer src="./examples/styling/replacing-css-modules/nextjs/styles.module.css" name="app/dashboard/styles.module.css"></x-code-viewer>
+            <x-tab-panel>
+                <x-tab title="layout.tsx" active>
+                    <x-code-viewer src="./examples/styling/replacing-css-modules/nextjs/layout.tsx" name="app/dashboard/layout.tsx"></x-code-viewer>
+                </x-tab>
+                <x-tab title="styles.module.css">
+                    <x-code-viewer src="./examples/styling/replacing-css-modules/nextjs/styles.module.css" name="app/dashboard/styles.module.css"></x-code-viewer>
+                </x-tab>
+            </x-tab-panel>
+
             <p>This becomes the following web component:</p>
-            <x-code-viewer src="./examples/styling/replacing-css-modules/vanilla/layout.js" name="components/dashboard/layout.js"></x-code-viewer>
-            <x-code-viewer src="./examples/styling/replacing-css-modules/vanilla/styles.css" name="components/dashboard/styles.css"></x-code-viewer>
+            <x-tab-panel>
+                <x-tab title="layout.js" active>
+                    <x-code-viewer src="./examples/styling/replacing-css-modules/vanilla/layout.js" name="components/dashboard/layout.js"></x-code-viewer>
+                </x-tab>
+                <x-tab title="styles.css">
+                    <x-code-viewer src="./examples/styling/replacing-css-modules/vanilla/styles.css" name="components/dashboard/styles.css"></x-code-viewer>
+                </x-tab>
+            </x-tab-panel>
+            <p>Because the shadow DOM does not inherit the page's styles, the <code>styles.css</code> must first import the styles that are shared between the page and the shadowed web component.</p>
         </section>
-        <p>Because the shadow DOM does not inherit the page's styles, the <code>styles.css</code> must first import the styles that are shared between the page and the shadowed web component.</p>
         <section>
             <h2>Replacing PostCSS</h2>
             <p>Let's go over the main page of <a href="https://postcss.org/">PostCSS</a> to review its feature set.</p>
