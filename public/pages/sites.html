@@ -215,8 +215,59 @@
             </ol>
         </section>
         <section>
-            <h2>Testing</h2>
-            TODO: write testing section
+            <h2>Testing</h2>``
+
+            <p>
+                Popular testing frameworks are all designed to run in build pipelines.
+                However, a plain vanilla web application has no build.
+                To test plain vanilla web components an old-fashioned approach can be used: testing in the browser using the Mocha framework.
+            </p>
+
+            <p>For example, these are the live unit tests for the <code>&lt;x-tab-panel&gt;</code> component used to present tabbed source code panels on this site:</p>
+            <iframe src="../tests/index.html" loading="lazy"></iframe>
+
+            <p>And for ultimate coding inception, here is that tabpanel component showing the testing source code:</p>
+            <x-tab-panel>
+                <x-tab title="index.html" active>
+                    <x-code-viewer src="../tests/index.html" name="tests/index.html"></x-code-viewer>
+                </x-tab>
+                <x-tab title="index.js">
+                    <x-code-viewer src="../tests/index.js" name="tests/index.js"></x-code-viewer>
+                </x-tab>
+                <x-tab title="tabpanel.test.js">
+                    <x-code-viewer src="../tests/tabpanel.test.js" name="tests/tabpanel.test.js"></x-code-viewer>
+                </x-tab>
+                <x-tab title="imports-test.js">
+                    <x-code-viewer src="../tests/imports-test.js" name="tests/imports-test.js"></x-code-viewer>
+                </x-tab>
+            </x-tab-panel>
+
+            <p>Some working notes on this approach:</p>
+            <ul>
+                <li>
+                    The entire code for the unit tests is isolated to a <code>public/tests/</code> subfolder.
+                    The tests will therefore be available live by adding <code>/tests</code> to the deployed site's URL.
+                    To avoid this, remove the tests folder during the deploy step.
+                </li>
+                <li>
+                    <a href="https://mochajs.org/">Mocha</a> and <a href="https://www.chaijs.com/">Chai</a> are used as test and assertion frameworks, 
+                    because they work in-browser without a build step.
+                </li>
+                <li>
+                    <a href="https://testing-library.com">DOM Testing Library</a> is used to more easily query the DOM. 
+                    The <code>imports-test.js</code> file wraps the unit tests to adapt it for vanilla use.
+                </li>
+                <li>
+                    An important limitation is that DOM Testing Library <a href="https://github.com/testing-library/dom-testing-library/issues/413">cannot query inside shadow roots</a>.
+                    To test something inside a shadow root it is necessary to first query for the containing web component, 
+                    get a handle to its <code>shadowRoot</code> property, find an element inside of that, and then use <code>within()</code> to query inside that shadowed element.
+                    This is shown in the example test.
+                </li>
+                <li>
+                    Web Components initialize asynchronously, which can make them tricky to test.
+                    Use the <a href="https://testing-library.com/docs/dom-testing-library/api-async">async methods</a> of DOM Testing Library.
+                </li>
+            </ul>
         </section>
         <section>
             <h2>Up next</h2>

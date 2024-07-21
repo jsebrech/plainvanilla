@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+    <title>Plain Vanilla - Tests</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <!-- make paths relative to parent folder -->
+    <link rel="icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../index.css">
+    <!-- https://unpkg.com/mocha@9.2.2/mocha.css -->
+    <link rel="stylesheet" href="./lib/mocha/mocha.css" />
+    <!-- https://unpkg.com/chai@4.3.6/chai.js -->
+    <script src="./lib/mocha/chai.js"></script>
+    <!-- https://unpkg.com/mocha@9.2.2/mocha.js -->
+    <script src="./lib/mocha/mocha.js"></script>
+    <!-- https://unpkg.com/@testing-library/dom@8.17.1/dist/@testing-library/dom.umd.js -->
+    <script src="./lib/@testing-library/dom.umd.js"></script>
+</head>
+<body>
+    <div id="mocha"></div>
+
+    <script type="module" class="mocha-init">
+        mocha.setup('bdd');
+        mocha.checkLeaks();
+    </script>
+
+    <script type="module" src="./tabpanel.test.js"></script>
+    
+    <!-- include more tests here -->
+
+    <script type="module" class="mocha-exec" src="./index.js"></script>
+</body>
+</html>
