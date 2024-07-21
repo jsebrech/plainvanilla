@@ -113,10 +113,6 @@
             </p>
         </section>
         <section>
-            <h2>Example</h2>
-            <p>This website is the example. Check out the <a href="https://github.com/jsebrech/plainvanilla/">project on GitHub</a>.</p>
-        </section>
-        <section>
             <h2>Dependencies</h2>
             <p>At some point you may want to pull in third-party libraries. Without npm and a bundler this is still possible.</p>
             <h3>Unpkg</h3>
@@ -215,7 +211,7 @@
             </ol>
         </section>
         <section>
-            <h2>Testing</h2>``
+            <h2>Testing</h2>
 
             <p>
                 Popular testing frameworks are all designed to run in build pipelines.
@@ -245,9 +241,9 @@
             <p>Some working notes on this approach:</p>
             <ul>
                 <li>
-                    The entire code for the unit tests is isolated to a <code>public/tests/</code> subfolder.
+                    The entire code for the unit tests, including the testing libraries, is isolated to a <code>public/tests/</code> subfolder.
                     The tests will therefore be available live by adding <code>/tests</code> to the deployed site's URL.
-                    To avoid this, remove the tests folder during the deploy step.
+                    To avoid this, exclude the tests folder during the deploy step.
                 </li>
                 <li>
                     <a href="https://mochajs.org/">Mocha</a> and <a href="https://www.chaijs.com/">Chai</a> are used as test and assertion frameworks, 
@@ -255,7 +251,7 @@
                 </li>
                 <li>
                     <a href="https://testing-library.com">DOM Testing Library</a> is used to more easily query the DOM. 
-                    The <code>imports-test.js</code> file wraps the unit tests to adapt it for vanilla use.
+                    The <code>imports-test.js</code> file configures it for vanilla use.
                 </li>
                 <li>
                     An important limitation is that DOM Testing Library <a href="https://github.com/testing-library/dom-testing-library/issues/413">cannot query inside shadow roots</a>.
@@ -268,6 +264,10 @@
                     Use the <a href="https://testing-library.com/docs/dom-testing-library/api-async">async methods</a> of DOM Testing Library.
                 </li>
             </ul>
+        </section>
+        <section>
+            <h2>Example</h2>
+            <p>This website is the example. Check out the <a href="https://github.com/jsebrech/plainvanilla/">project on GitHub</a>.</p>
         </section>
         <section>
             <h2>Up next</h2>
