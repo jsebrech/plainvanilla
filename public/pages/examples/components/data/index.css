@@ -3,4 +3,6 @@ body {
     margin: 1em;
 }
 
-x-santas-form { display: block }
+santas-form { display: block }
+
+santas-app h1 { color: darkred; }

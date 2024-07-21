@@ -86,8 +86,73 @@
         </section>
         <section>
             <h2>Managing state</h2>
+
             <h3>Lifting state up</h3>
+            <p>
+                Generally speaking, the <a href="https://react.dev/learn/choosing-the-state-structure">state management principles</a> laid out in the React documentation are sound and should be followed even for vanilla web development.
+                Here they are once again:
+            </p>
+            <ol>
+                <li><strong>Group related state.</strong> If you always update two or more state variables at the same time, consider merging them into a single state variable.</li>
+                <li><strong>Avoid contradictions in state.</strong> When the state is structured in a way that several pieces of state may contradict and “disagree” with each other, you leave room for mistakes. Try to avoid this.</li>
+                <li><strong>Avoid redundant state.</strong> If you can calculate some information from the component's attributes or properties during rendering, you should not put that information into that component's state.</li>
+                <li><strong>Avoid duplication in state.</strong> When the same data is duplicated between multiple state variables, or within nested objects, it is difficult to keep them in sync. Reduce duplication when you can.</li>
+                <li><strong>Avoid deeply nested state.</strong> Deeply hierarchical state is not very convenient to update. When possible, prefer to structure state in a flat way.</li>
+            </ol>
+
+            <p>React's <a href="https://react.dev/learn/sharing-state-between-components">lifting state up tutorial</a> explains very well how to share state between components. The final example shows how a central non-duplicated <code>activeIndex</code> state can track which panel is active:</p>
+            <x-code-viewer src="./examples/applications/lifting-state-up/react/App.js"></x-code-viewer>
+
+            <p>Here is that example adapted to vanilla web components:</p>
+
+            <iframe src="./examples/applications/lifting-state-up/index.html" height="400"></iframe>
+
+            <x-tab-panel>
+                <x-tab title="index.html" active>
+                    <x-code-viewer src="./examples/applications/lifting-state-up/index.html" name=""></x-code-viewer>
+                </x-tab>
+                <x-tab title="index.css">
+                    <x-code-viewer src="./examples/applications/lifting-state-up/index.css" name=""></x-code-viewer>
+                </x-tab>
+                <x-tab title="index.js">
+                    <x-code-viewer src="./examples/applications/lifting-state-up/index.js" name=""></x-code-viewer>
+                </x-tab>
+                <x-tab title="accordion.js">
+                    <x-code-viewer src="./examples/applications/lifting-state-up/components/accordion.js" name="components/accordion.js"></x-code-viewer>
+                </x-tab>
+                <x-tab title="panel.js">
+                    <x-code-viewer src="./examples/applications/lifting-state-up/components/panel.js" name="components/panel.js"></x-code-viewer>
+                </x-tab>
+            </x-tab-panel>
+
+            <p>What to pay attention to:</p>
+            <ul>
+                <li>
+                    State is kept as properties or attributes on a web component, as shown here with the accordion's <code>activeIndex</code> property.
+                </li>
+                <li>
+                    The property setter for <code>activeIndex</code> explicitly calls the <code>update()</code> method to bring the DOM in sync with the property's state.
+                </li>
+                <li>
+                    The <code>update()</code> method on the <code>&lt;x-panel&gt;</code> component is written in a defensive way, because it may be called before <code>connectedCallback()</code> sets up the DOM structure from the <code>attributeChangedCallback()</code> method.
+                </li>
+            </ul>
+
+            <aside>
+                <h4>Tread lightly</h4>
+                <p>
+                    In vanilla web development the components become part of the DOM hierarchy, instead of existing outside of the DOM and having changes applied to it automatically by the framework.
+                    This means the application's state itself becomes part of the DOM.
+                </p>
+                <p>
+                    Because there is no framework patching the DOM with only the parts that changed, we have to tread lightly and only update the DOM when and where that is needed.
+                    Updating too much of the DOM risks losing state or causing performance issues.
+                    Each web component in this example renders its fixed DOM structure once in <code>connectedCallback()</code> and then updates the state of those DOM elements in the <code>update()</code> method when something changes.
+                </p>
+            </aside>
+
             <h3>Passing data deeply</h3>
+
             <h3>Tasks example</h3>
             TODO: write this section
         </section>

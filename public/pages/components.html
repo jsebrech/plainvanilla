@@ -119,6 +119,8 @@
                 To illustrate a way to do those things with custom elements, here's a custom element <code>&lt;x-avatar&gt;</code> that implements
                 a simplified version of the <a href="https://nextui.org/docs/components/avatar">NextUI Avatar component</a> (React):
             </p>
+
+            <iframe src="./examples/components/advanced/simple.html" height="70"></iframe>
             <x-code-viewer src="./examples/components/advanced/components/avatar.js" name="components/avatar.js"></x-code-viewer>
             <p>Some key elements that have changed:</p>
             <ul>
@@ -145,14 +147,14 @@
             <p>Notice that:</p>
             <ul>
                 <li>Because we know what the tag of our component is, we can easily scope the styles by prepending them with <code>x-avatar</code>, so they won't conflict with the rest of the page.</li>
-                <li>Because a custom element is just HTML, we can style based on the element's custom attributes in pure CSS, like the <code>size</code> attribute.</li>
+                <li>Because a custom element is just HTML, we can style based on the element's custom attributes in pure CSS, like the <code>size</code> attribute which resizes the component without any JavaScript.</li>
             </ul>
 
-            <p>A demonstration of what that looks like in action on a webpage:</p>
+            <p>An example that shows the two different sizes on a webpage:</p>
             <iframe src="./examples/components/advanced/index.html"></iframe>
 
             <p>
-                The HTML centralizes the JavaScript and CSS logic to two index files, to make it easier to scale out to many web components.
+                The HTML for this example centralizes the JavaScript and CSS logic to two index files, to make it easier to scale out to more web components.
                 This pattern, or a pattern like it, can keep things organized in a web application that is built out of dozens or hundreds of different web components.
             </p>
 

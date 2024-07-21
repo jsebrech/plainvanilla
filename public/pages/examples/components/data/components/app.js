@@ -1,5 +1,5 @@
 class SantasApp extends HTMLElement {
-    #theList = [];
+    #theList = [/* { name, nice } */];
 
     connectedCallback() {
         this.innerHTML = `
@@ -10,6 +10,7 @@ class SantasApp extends HTMLElement {
         `;
         this.querySelector('santas-form')
             .addEventListener('add', (e) => {
+                if (!e.detail.form.name) return;
                 this.#theList.push(e.detail.form);
                 this.update();
             });

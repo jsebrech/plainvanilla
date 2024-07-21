@@ -1,3 +1,8 @@
+/**
+ * Usage:
+ * <x-avatar src="https://.../avatar.png"></x-avatar>
+ * <x-avatar src="https://.../avatar-large.png" size="lg"></x-avatar>
+ */
 class AvatarComponent extends HTMLElement {
     connectedCallback() {
         this.appendChild(document.createElement('img'));
