@@ -153,8 +153,68 @@
 
             <h3>Passing data deeply</h3>
 
-            <h3>Tasks example</h3>
-            TODO: write this section
+            <p>
+                While passing state from parent components to child components via attributes or properties works,
+                it can quickly become verbose and inconvenient, especially if you have to pass those through many components in the middle.
+            </p>
+            <p>
+                React solves this using the context, as explained on the <a href="https://react.dev/reference/react/useContext">useContext documentation page</a>.
+                The first example on that page shows a ThemeContext that keeps track of a theme variable, that can then be fetched anywhere in the hierarchy of components below.
+            </p>
+            <p>
+                A similar approach is possible by having a special "context" web component, whose only job is to keep track of state, provide setters to update that state, and dispatch events when the state changes.
+                Here is an adapted version of the context example that uses a theme context to keep track of light or dark theme, toggled by a button.
+            </p>
+
+            <iframe src="./examples/applications/passing-data-deeply/index.html" height="200"></iframe>
+
+            <x-tab-panel>
+                <x-tab title="index.html" active>
+                    <x-code-viewer src="./examples/applications/passing-data-deeply/index.html" name=""></x-code-viewer>
+                </x-tab>
+                <x-tab title="index.css">
+                    <x-code-viewer src="./examples/applications/passing-data-deeply/index.css" name=""></x-code-viewer>
+                </x-tab>
+                <x-tab title="index.js">
+                    <x-code-viewer src="./examples/applications/passing-data-deeply/index.js" name=""></x-code-viewer>
+                </x-tab>
+                <x-tab title="theme-context.js">
+                    <x-code-viewer src="./examples/applications/passing-data-deeply/components/theme-context.js" name="components/theme-context.js"></x-code-viewer>
+                </x-tab>
+                <x-tab title="panel.js">
+                    <x-code-viewer src="./examples/applications/passing-data-deeply/components/panel.js" name="components/panel.js"></x-code-viewer>
+                </x-tab>
+                <x-tab title="button.js">
+                    <x-code-viewer src="./examples/applications/passing-data-deeply/components/button.js" name="components/button.js"></x-code-viewer>
+                </x-tab>
+            </x-tab-panel>
+
+            <p>An explanation of salient points:</p>
+            <ul>
+                <li>
+                    The <code>x-theme-context</code> component uses <code>display: contents</code> to avoid impacting the layout.
+                    It exists in the DOM hierarchy, but it becomes effectively invisible.
+                    The only way it can be noticed is by its shadow root.
+                </li>
+                <li>
+                    Instead of <code>useContext</code> every component obtains the nearest theme context with <code>this.closest('x-theme-context')</code> utilizing the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/closest">Element.closest</a> API.
+                    To be notified of theme changes, those components subscribe to the <code>themechange</code> event of the context.
+                </li>
+                <li>
+                    Context components can implement additional methods that provide convenience API's around the context's state,
+                    like the <code>toggleTheme()</code> method in this example. 
+                </li>
+            </ul>
+            
+            <p>
+                This approach can be further extended to implement reducers, by adding them as a method on a context component
+                and updating the state through the setters, dispatching the necessary events to update the component hierarchy.
+            </p>
+
+            <aside>
+                <h4>Challenge</h4>
+                <p>To prove your mastery of vanilla web development use the techniques you've learned to port example 5 ("Scaling up with context and a reducer") from React's <a href="https://react.dev/reference/react/useContext">useContext</a> documentation page to vanilla code.
+            </aside>
         </section>
         <section>
             <h2>Up next</h2>
