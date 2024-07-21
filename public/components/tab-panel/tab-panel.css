@@ -11,6 +11,7 @@ div[role=tablist] {
 div[role=tablist] button[role=tab] {
     font-family: var(--font-system);
     font-size: 100%;
+    color: inherit;
     background-color: transparent;
     background-image: none;
     border: none;
