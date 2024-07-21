@@ -14,7 +14,7 @@ Or use the VS Code Live Preview extension to show `public/index.html`.
 
 ## Other resources
 
-These are some other resources demonstrating toolless web development techniques.
+These are some other resources demonstrating #notools web development techniques.
 
 - [MDN Learn Web Development](https://developer.mozilla.org/en-US/docs/Learn): a vanilla web development learning path
 - [Odin Project Foundations](https://www.theodinproject.com/paths/foundations/courses/foundations): a vanilla web development course

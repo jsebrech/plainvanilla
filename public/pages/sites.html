@@ -114,8 +114,7 @@
         </section>
         <section>
             <h2>Example</h2>
-            <!-- TODO: update link -->
-            <p>This website is the example. Check out the <a href="https://github.com/jsebrech/">project on GitHub</a>.</p>
+            <p>This website is the example. Check out the <a href="https://github.com/jsebrech/plainvanilla/">project on GitHub</a>.</p>
         </section>
         <section>
             <h2>Dependencies</h2>
@@ -203,7 +202,17 @@
         </section>
         <section>
             <h2>Deploying</h2>
-            TODO: write deploying section
+            <p>Any provider that can host static websites can be used for deployment.</p>
+            <p>An example using <a href="https://pages.github.com/">GitHub Pages</a>:</p>
+            <ol>
+                <li>Upload the project as a repository on GitHub</li>
+                <li>Go to Settings, Pages</li>
+                <li>Source: GitHub Actions</li>
+                <li>Static Website, Configure</li>
+                <li>Scroll down to <code>path</code>, and change it to <code>./public</code></li>
+                <li>Commit changes...</li>
+                <li>Go to the Actions page for the repository, wait for the site to deploy</li>
+            </ol>
         </section>
         <section>
             <h2>Testing</h2>
