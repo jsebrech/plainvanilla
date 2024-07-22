@@ -79,7 +79,7 @@
                 <p>
                     The hash-based routing approach is effectively invisible to search engines. Only the initial route will be indexed.
                     For this reason this approach is not suited to sites that have SEO concerns.
-                    Every route that must be discoverable through a search engine should use the multi-file approach.
+                    Every route that must be discoverable through a search engine should use the multi-file approach explained on the Sites page.
                 </p>
             </aside>
 
@@ -134,7 +134,7 @@
                     The property setter for <code>activeIndex</code> explicitly calls the <code>update()</code> method to bring the DOM in sync with the property's state.
                 </li>
                 <li>
-                    The <code>update()</code> method on the <code>&lt;x-panel&gt;</code> component is written in a defensive way, because it may be called before <code>connectedCallback()</code> sets up the DOM structure from the <code>attributeChangedCallback()</code> method.
+                    The <code>update()</code> method on the <code>&lt;x-panel&gt;</code> component is written in a defensive way, because it may be called from the <code>attributeChangedCallback()</code> method before <code>connectedCallback()</code> sets up the DOM structure.
                 </li>
             </ul>
 

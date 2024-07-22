@@ -86,11 +86,11 @@
                     which means the element is ready to make DOM updates.</dd>
                 <dt><code>this.textContent = 'hello world!';</code></dt>
                 <dd>The <code>this</code> in this case refers to our element, which has the full <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement">HTMLElement</a> API,
-                    including its ancestors <code>Element</code> and <code>Node</code>. On <code>Node</code> we can find the <code>textContent</code> property,
+                    including its ancestors <code>Element</code> and <code>Node</code>, on which we can find the <code>textContent</code> property,
                     which is used to add the <code>'hello world!'</code> string to the DOM.</dd>
                 <dt><code>customElements.define('x-hello-world', HelloWorldComponent);</code></dt>
                 <dd>For every web component <code>window.customElements.define</code> must be called once to register the custom element's class and associate it with a tag.
-                    After this line is called the custom element becomes available for use in HTML markup.</dd>
+                    After this line is called the custom element becomes available for use in HTML markup, and existing uses of it in already rendered markup will have their constructors called.</dd>
             </dl>
             <aside>
                 <h4>Why is it named <code>x-hello-world</code> instead of <code>hello-world</code>?</h4>
