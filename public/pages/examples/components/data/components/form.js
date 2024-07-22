@@ -3,9 +3,9 @@ class SantasForm extends HTMLElement {
         this.innerHTML = `
             <form>
                 <label for="name">Name</label>
-                <input type="text" name="name" />
+                <input type="text" id="name" name="name" />
                 <label for="nice">Nice?</label>
-                <input type="checkbox" name="nice" value="1" />
+                <input type="checkbox" id="nice" name="nice" value="1" />
                 <button type="submit">Add</button>
             </form>
         `;

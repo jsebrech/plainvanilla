@@ -1,5 +1,5 @@
 class SantasList extends HTMLElement {
-    #currentList = [];
+    #currentList = [/* { name, nice } */];
     set list(newList) {
         this.#currentList = newList;
         this.update();

@@ -189,6 +189,7 @@
             <p>Having seen what a more advanced web component looks like, we're now ready to jump up to the final difficulty level of web components, leveraging the more advanced features of Shadow DOM, HTML templates and class properties.</p>
             
             <p>Here's a demonstration of two web components interacting live:</p>
+            <iframe src="./examples/components/combined/index.html"></iframe>
             <x-tab-panel>
                 <x-tab title="index.html" active>
                     <x-code-viewer src="./examples/components/combined/index.html" name=""></x-code-viewer>
@@ -203,7 +204,6 @@
                     <x-code-viewer src="./examples/components/combined/reset.css" name=""></x-code-viewer>
                 </x-tab>
             </x-tab-panel>
-            <iframe src="./examples/components/combined/index.html"></iframe>
             
             <p>To clarify, this is the DOM structure that is created:</p>
             <ul>
@@ -302,7 +302,7 @@
             <h2>Passing Data</h2>
             <p>
                 Everything up to this point assumes that data passed between web components is very simple, just simple numeric and string attributes passing down.
-                A real world web application however passes complex datas such as objects and arrays from parent to child components and vice versa.
+                A real world web application however passes complex data such as objects and arrays from parent to child components and vice versa.
             </p>
             <p>
                 This example demonstrates the three major ways that data can be passed between web components:
@@ -342,6 +342,9 @@
                 </x-tab>
                 <x-tab title="index.css">
                     <x-code-viewer src="./examples/components/data/index.css" name=""></x-code-viewer>
+                </x-tab>
+                <x-tab title="app.js">
+                    <x-code-viewer src="./examples/components/data/components/app.js" name="components/app.js"></x-code-viewer>
                 </x-tab>
                 <x-tab title="form.js">
                     <x-code-viewer src="./examples/components/data/components/form.js" name="components/form.js"></x-code-viewer>
