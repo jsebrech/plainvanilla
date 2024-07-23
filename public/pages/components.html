@@ -3,7 +3,9 @@
 <head>
     <title>Plain Vanilla - Components</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <meta name="description" content="An explainer for doing web development with vanilla web components.">
     <link rel="icon" href="../favicon.ico">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
     <link rel="stylesheet" href="../index.css">
 </head>
 <body>
@@ -61,18 +63,20 @@
             <p>We can use it in a page like this:</p>
             <x-code-viewer src="./examples/components/simple/index.html"></x-code-viewer>
             <p>Which outputs this page:</p>
-            <iframe src="./examples/components/simple/index.html"></iframe>
+            <iframe src="./examples/components/simple/index.html" title="simple component example"></iframe>
             <p>So what's happening here?</p>
             <p>We created a new HTML element, registered as the <code>x-hello-world</code> tag,
                 and used it on the page. When we did that, we got the following DOM structure:
                 <ul>
-                    <li>body (node)</li>
-                    <ul>
-                        <li>x-hello-world (node)</li>
+                    <li>body (node)
                         <ul>
-                            <li>'hello world!' (textContent)</li>
+                            <li>x-hello-world (node)
+                                <ul>
+                                    <li>'hello world!' (textContent)</li>
+                                </ul>
+                            </li>
                         </ul>
-                    </ul>
+                    </li>
                 </ul>
             </p>
             <p>Explaining the code of the custom element line by line:</p>
@@ -120,7 +124,7 @@
                 a simplified version of the <a href="https://nextui.org/docs/components/avatar">NextUI Avatar component</a> (React):
             </p>
 
-            <iframe src="./examples/components/advanced/simple.html" height="70"></iframe>
+            <iframe src="./examples/components/advanced/simple.html" title="avatar component example" height="70"></iframe>
             <x-code-viewer src="./examples/components/advanced/components/avatar.js" name="components/avatar.js"></x-code-viewer>
             <p>Some key elements that have changed:</p>
             <ul>
@@ -130,17 +134,20 @@
             </ul>
             <p>Once rendered this avatar component will have this DOM structure:</p>
             <ul>
-                <li>body (node)</li>
-                <ul>
-                    <li>x-avatar (node)</li>
+                <li>body (node)
                     <ul>
-                        <li>img (node)</li>
-                        <ul>
-                            <li>src (attribute)</li>
-                            <li>alt (attribute)</li>
-                        </ul>
+                        <li>x-avatar (node)
+                            <ul>
+                                <li>img (node)
+                                    <ul>
+                                        <li>src (attribute)</li>
+                                        <li>alt (attribute)</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
-                </ul>
+                </li>
             </ul>
             <p>For styling of our component we can use a separate css file:</p>
             <x-code-viewer src="./examples/components/advanced/components/avatar.css" name="components/avatar.css"></x-code-viewer>
@@ -151,7 +158,7 @@
             </ul>
 
             <p>An example that shows the two different sizes on a webpage:</p>
-            <iframe src="./examples/components/advanced/index.html"></iframe>
+            <iframe src="./examples/components/advanced/index.html" title="avatar component second example"></iframe>
 
             <p>
                 The HTML for this example centralizes the JavaScript and CSS logic to two index files, to make it easier to scale out to more web components.
@@ -189,7 +196,7 @@
             <p>Having seen what a more advanced web component looks like, we're now ready to jump up to the final difficulty level of web components, leveraging the more advanced features of Shadow DOM, HTML templates and class properties.</p>
             
             <p>Here's a demonstration of two web components interacting live:</p>
-            <iframe src="./examples/components/combined/index.html"></iframe>
+            <iframe src="./examples/components/combined/index.html" title="advanced component example"></iframe>
             <x-tab-panel>
                 <x-tab title="index.html" active>
                     <x-code-viewer src="./examples/components/combined/index.html" name=""></x-code-viewer>
@@ -207,19 +214,22 @@
             
             <p>To clarify, this is the DOM structure that is created:</p>
             <ul>
-                <li>p (node)</li>
-                <ul>
-                    <li>x-badge (shadowRoot)</li>
+                <li>p (node)
                     <ul>
-                        <li>content (attribute)</li>
-                        <li>slot (node)</li>
-                        <ul>
-                            <li>x-avatar (node)</li>
-                        </ul>
-                        <li>span (node)</li>
+                        <li>x-badge (shadowRoot)
+                            <ul>
+                                <li>content (attribute)</li>
+                                <li>slot (node)
+                                    <ul>
+                                        <li>x-avatar (node)</li>
+                                    </ul>
+                                </li>
+                                <li>span (node)</li>
+                            </ul>
+                        </li>
+                        <li>input (node)</li>
                     </ul>
-                    <li>input (node)</li>
-                </ul>
+                </li>
             </ul>
 
             <p>The <code>x-avatar</code> component is identical to the previous example, but how does the <code>x-badge</code> work?</p>
@@ -307,7 +317,7 @@
             <p>
                 This example demonstrates the three major ways that data can be passed between web components:
             </p>
-            <iframe src="./examples/components/data/index.html" style="height: 250px;"></iframe>
+            <iframe src="./examples/components/data/index.html" title="data passing example" style="height: 250px;"></iframe>
             
             <h3>Events</h3>
             <p>The first way is passing events, usually from child components to their parent component. This is demonstrated by the form at the top of the example.</p>

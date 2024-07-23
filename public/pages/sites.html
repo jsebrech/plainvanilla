@@ -3,7 +3,9 @@
 <head>
     <title>Plain Vanilla - Sites</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <meta name="description" content="An explainer for making web sites using only vanilla techniques.">
     <link rel="icon" href="../favicon.ico">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
     <link rel="stylesheet" href="../index.css">
 </head>
 <body>
@@ -155,17 +157,18 @@
                 To neatly organize libraries, it is best to load and export them from an <code>imports.js</code> file.
                 For example, here is a page that uses a UMD build of <a href="https://day.js.org/">Day.js</a> and an ESM build of <a href="https://github.com/GoogleChrome/web-vitals">web-vitals</a>:
             </p>
-            <iframe src="./examples/sites/imports/index.html" height="100"></iframe>
+            <iframe src="./examples/sites/imports/index.html" title="imports.js example" height="100"></iframe>
             <p>The text is rendered by the <code>&lt;x-metrics&gt;</code> component:</p>
             <x-code-viewer src="./examples/sites/imports/components/metrics.js" name="components/metrics.js"></x-code-viewer>
             <p>In the <code>/lib</code> folder we find these files:</p>
             <ul>
                 <li>web-vitals.js - the ESM build of web-vitals</li>
-                <li>dayjs/</li>
-                <ul>
-                    <li>dayjs.min.js - the UMD build of Day.js</li>
-                    <li>relativeTime.js - the UMD build of this Day.js plugin</li>
-                </ul>
+                <li>dayjs/
+                    <ul>
+                        <li>dayjs.min.js - the UMD build of Day.js</li>
+                        <li>relativeTime.js - the UMD build of this Day.js plugin</li>
+                    </ul>
+                </li>
                 <li>imports.js</li>
             </ul>
             <p>Digging deeper into this last file we see how it bundles loading of third-party dependencies:</p>
@@ -220,7 +223,7 @@
             </p>
 
             <p>For example, these are the live unit tests for the <code>&lt;x-tab-panel&gt;</code> component used to present tabbed source code panels on this site:</p>
-            <iframe src="../tests/index.html" loading="lazy"></iframe>
+            <iframe src="../tests/index.html" title="unit tests" loading="lazy"></iframe>
 
             <p>And for ultimate coding inception, here is that tabpanel component showing the testing source code:</p>
             <x-tab-panel>

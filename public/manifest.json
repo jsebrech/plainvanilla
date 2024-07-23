@@ -1,0 +1,12 @@
+{
+    "name": "Plain Vanilla",
+    "short_name": "Plain Vanilla",
+    "icons": [{
+        "src": "android-chrome-512x512.png",
+        "sizes": "512x512"
+    }],
+    "background_color": "#ffffff",
+    "description": "An explainer for doing web development using only vanilla techniques.",
+    "theme_color": "#ffffff",
+    "display": "fullscreen"
+}
