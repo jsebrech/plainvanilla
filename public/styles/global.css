@@ -117,12 +117,11 @@ aside x-code-viewer {
 }
 
 footer {
-    margin-top: 2.5em;
+    margin: 2.5em 0;
     text-align: center;
 }
 
 footer .contact {
-    vertical-align: middle;
     line-height: 1em;
     padding: 0 0.5em;
 }
