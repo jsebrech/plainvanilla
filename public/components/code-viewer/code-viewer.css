@@ -22,6 +22,27 @@ x-code-viewer label:empty {
 }
 
 x-code-viewer code {
+    position: relative;
     flex: 1 1 auto;
     overflow: auto;
+    min-height: 8em;
+}
+
+x-code-viewer.loading code::after {
+    content: '';
+    box-sizing: border-box;
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: calc(50% - 15px);
+    left: calc(50% - 15px);
+    border-radius: 50%;
+    border-top: 4px solid ghostwhite;
+    border-left: 4px solid ghostwhite;
+    border-right: 4px solid ghostwhite;
+    animation: code-viewer-spinner .6s linear infinite;
+}
+
+@keyframes code-viewer-spinner {
+    to {transform: rotate(360deg);}
 }

@@ -12,6 +12,10 @@ Run the `public/` folder as a static website:
 
 Or use the VS Code Live Preview extension to show `public/index.html`.
 
+## Contributing
+
+Issues or PR's welcome!
+
 ## Other resources
 
 These are some other resources demonstrating #notools web development techniques.

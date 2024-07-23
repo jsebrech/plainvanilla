@@ -115,3 +115,26 @@ aside p {
 aside x-code-viewer {
     margin: 1em;
 }
+
+footer {
+    margin-top: 2.5em;
+    text-align: center;
+}
+
+footer .contact {
+    vertical-align: middle;
+    line-height: 1em;
+    padding: 0 0.5em;
+}
+
+footer .contact * {
+    color: inherit;
+    vertical-align: middle;
+}
+
+hr {
+    border: none;
+    border-top: 1px dotted var(--border-color);
+    margin: 2em auto;
+    width: 50%;
+}

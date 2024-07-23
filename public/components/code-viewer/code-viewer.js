@@ -12,17 +12,19 @@ class CodeViewer extends HTMLElement {
             <label></label>
             <code class="microlight"></code>
         `;
-        this.update();
         // load code (and name) from src attribute
         const src = this.getAttribute('src');
         if (src) {
+            if (!this.hasAttribute('name')) {
+                this.setAttribute('name', src.split('/').pop());
+            }
+            this.classList.add('loading');
             fetch(src).then(res => res.text()).then(text => {
                 this.setAttribute('code', text);
-                if (!this.hasAttribute('name')) {
-                    this.setAttribute('name', src.split('/').pop());
-                }
-            }).catch((e) => this.setAttribute('code', e.message));
+            }).catch((e) => this.setAttribute('code', e.message))
+              .finally(() => this.classList.remove('loading'));
         }
+        this.update();
     }
 
     static get observedAttributes() {
