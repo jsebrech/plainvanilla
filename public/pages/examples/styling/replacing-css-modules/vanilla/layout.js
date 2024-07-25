@@ -4,9 +4,7 @@ class Layout extends HTMLElement {
         this.attachShadow({ mode: 'open' });
         this.shadowRoot.innerHTML = `
             <link rel="stylesheet" href="${new URL('styles.css', import.meta.url)}">
-            <section class="dashboard">
-                <slot></slot>
-            </section>
+            <section class="dashboard"><slot></slot></section>
         `;
     }
 }
