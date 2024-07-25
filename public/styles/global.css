@@ -137,3 +137,29 @@ hr {
     margin: 2em auto;
     width: 50%;
 }
+
+section {
+    position: relative;
+}
+
+a.section-anchor {
+    color: inherit;
+    display: none;
+    position: absolute;
+    left: -1.5em;
+    padding-left: 0.6em;
+    font-size: 120%;
+    top: 0;
+    padding-top: 0.2em;
+    width: 1.5em;
+    height: 3em;
+    opacity: 0.4;
+}
+
+section:hover > a.section-anchor {
+    display: inline;
+}
+
+section:hover > a.section-anchor:hover {
+    opacity: 1;
+}

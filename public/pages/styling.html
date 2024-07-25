@@ -32,7 +32,8 @@
                 and choosing strategies that are browser native.
             </p>
         </section>
-        <section>
+        <section id="reset">
+            <a href="#reset" class="section-anchor">#</a>
             <h2>Reset</h2>
             <p>Resetting the styles to a cross-browser common baseline is standard practice in web development, and vanilla web apps are no different.</p>
             <p>A minimal reset is the one used by this site:</p>
@@ -58,7 +59,8 @@
                 </dd>
             </dl>
         </section>
-        <section>
+        <section id="fonts">
+            <a href="#fonts" class="section-anchor">#</a>
             <h2>Fonts</h2>
             <p>
                 Typography is the keystone of a web site or web application. 
@@ -68,7 +70,8 @@
             </p>
             <p>This site uses the <em>Geometric Humanist</em> stack for normal text, and the <em>Monospace Code</em> stack for source code.</p>
         </section>
-        <section>
+        <section id="toolbox">
+            <a href="#toolbox" class="section-anchor">#</a>
             <h2>The Toolbox</h2>
             <p>
                 In any real world web project the amount of CSS quickly becomes unwieldy unless it is well-structured.
@@ -118,7 +121,8 @@
                 </dd>
             </dl>
         </section>
-        <section>
+        <section id="files">
+            <a href="#files" class="section-anchor">#</a>
             <h2>Files</h2>
             <p>There are many ways to organize CSS files in a repository, but this is the one used here:</p>
             <dl>
@@ -134,7 +138,8 @@
                 <dd>All styles that aren't global are specific to a component, in a CSS file located next to the component's JS file.</dd>
             </dl>
         </section>
-        <section>
+        <section id="scope">
+            <a href="#scope" class="section-anchor">#</a>
             <h2>Scope</h2>
             <p>
                 In order to avoid conflicting styles between pages and components we want to scope styles locally by default.
@@ -202,7 +207,8 @@
                 <li>For advanced shadow domination the <code>::part</code> pseudo-element can be used to <a href="https://meowni.ca/posts/part-theme-explainer/">expose an API for styling</a>.</li>
             </ul>
         </section>
-        <section>
+        <section id="replacing-css-modules">
+            <a href="#replacing-css-modules" class="section-anchor">#</a>
             <h2>Replacing CSS modules</h2>
             <p>
                 The local scoping feature of CSS modules can be replaced by one of the scoping approaches describe above.
@@ -228,7 +234,8 @@
             </x-tab-panel>
             <p>Because the shadow DOM does not inherit the page's styles, the <code>styles.css</code> must first import the styles that are shared between the page and the shadowed web component.</p>
         </section>
-        <section>
+        <section id="replacing-postcss">
+            <a href="#replacing-postcss" class="section-anchor">#</a>
             <h2>Replacing PostCSS</h2>
             <p>Let's go over the main page of <a href="https://postcss.org/">PostCSS</a> to review its feature set.</p>
             <dl>
@@ -254,7 +261,8 @@
             </dl>
             <p><strong>Bottom line:</strong> Microsoft's dropping of support for IE11 combined with the continuing improvements of evergreen browsers has made PostCSS largely unnecessary.</p>
         </section>
-        <section>
+        <section id="replacing-sass">
+            <a href="#replacing-sass" class="section-anchor">#</a>
             <h2>Replacing SASS</h2>
             <p>Similarly to PostCSS, let's go over the main feature set of <a href="https://sass-lang.com/guide/">SASS</a>:</p>
             <dl>
@@ -272,6 +280,7 @@
             <p><strong>Bottom-line:</strong> SASS is a lot more powerful than PostCSS, and while many of its features have a vanilla alternative it is not as easy to replace entirely. YMMV whether the added complexity of the SASS preprocessor is worth the additional abilities.</p>
         </section>
         <section>
+            <hr />
             <h2>Up next</h2>
             Learn about <a href="sites.html">making vanilla sites</a> with web components.
         </section>
