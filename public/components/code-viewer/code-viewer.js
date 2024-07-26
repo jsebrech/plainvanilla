@@ -6,8 +6,7 @@
  * <x-code-viewer src="path/to/code.js" name="My Code"></x-code-viewer> - show code with label "My Code"
  */
 class CodeViewer extends HTMLElement {
-    constructor() {
-        super();
+    connectedCallback() {
         this.innerHTML = `
             <label></label>
             <code class="microlight"></code>
