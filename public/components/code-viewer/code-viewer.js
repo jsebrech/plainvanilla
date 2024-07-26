@@ -36,12 +36,14 @@ class CodeViewer extends HTMLElement {
 
     update() {
         const label = this.querySelector('label');
-        label.textContent = this.getAttribute('name');
         const code = this.querySelector('code');
-        code.textContent = this.getAttribute('code');
-        // microlight does a poor job with html and css
-        const highlight = !/\.(html|css)$/.test(this.getAttribute('name'));
-        code.classList.toggle('microlight', highlight);
+        if (label && code) {
+            label.textContent = this.getAttribute('name');
+            code.textContent = this.getAttribute('code');
+            // microlight does a poor job with html and css
+            const highlight = !/\.(html|css)$/.test(this.getAttribute('name'));
+            code.classList.toggle('microlight', highlight);    
+        }
     }
 }
 
