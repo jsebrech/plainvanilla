@@ -21,19 +21,19 @@ class TabPanel extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
+        // tablist starts out hidden until stylesheet loads
         this.shadowRoot.innerHTML = `
+            <style> div[role=tablist] { display: none; } </style>
             <link rel="stylesheet" href="${new URL('tab-panel.css', import.meta.url)}">
             <div role="tablist"></div>
             <slot></slot>
         `;
-    }
-
-    connectedCallback() {
         // called when tabpanels are added
         this.slot.onslotchange = () => this.onSlotChange(); 
     }
 
     onSlotChange() {
+        this.tabList.innerHTML = '';
         this.slot.assignedElements().forEach(tabPanel => {
             if (tabPanel.role !== 'tabpanel') {
                 tabPanel.style.display = 'none';

@@ -41,7 +41,7 @@ class CodeViewer extends HTMLElement {
             label.textContent = this.getAttribute('name');
             code.textContent = this.getAttribute('code');
             // microlight does a poor job with html and css
-            const highlight = !/\.(html|css)$/.test(this.getAttribute('name'));
+            const highlight = !/\.(html|css)$/.test(this.getAttribute('src'));
             code.classList.toggle('microlight', highlight);    
         }
     }

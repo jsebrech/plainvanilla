@@ -2,9 +2,11 @@
 
 :host {
     display: block;
+    border: 1px solid var(--border-color);
 }
 
 div[role=tablist] {
+    display: block;
     border-bottom: 1px dotted var(--border-color);
 }
 
@@ -31,5 +33,5 @@ div[role=tablist] button[role=tab][aria-selected=true] {
 }
 
 ::slotted(x-tab[active]) {
-    display: block;
+    display: block !important;
 }
