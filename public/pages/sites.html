@@ -158,7 +158,7 @@
 
             <h3>imports.js</h3>
             <p>
-                To neatly organize libraries, it is best to load and export them from an <code>imports.js</code> file.
+                To neatly organize libraries and separate them from the rest of the codebase, they can be loaded and exported from an <code>imports.js</code> file.
                 For example, here is a page that uses a UMD build of <a href="https://day.js.org/">Day.js</a> and an ESM build of <a href="https://github.com/GoogleChrome/web-vitals">web-vitals</a>:
             </p>
             <iframe src="./examples/sites/imports/index.html" title="imports.js example" height="100"></iframe>
@@ -202,6 +202,44 @@
             </x-tab-panel>
 
             <p>Regrettably not all libraries have a UMD or ESM build, but more and more do.</p>
+
+            <h3>Import Maps</h3>
+            
+            <p>
+                An alternative to the <code>imports.js</code> approach are <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script/type/importmap">import maps</a>.
+                These define a unique mapping between importable module name and corresponding library file in a special script tag in the HTML head.
+                This allows a more traditional module-based import syntax in the rest of the codebase.
+            </p>
+            <p>The previous example adapted to use import maps:</p>
+            <x-tab-panel>
+                <x-tab title="index.html" active>
+                    <x-code-viewer src="./examples/sites/importmap/index.html" name=""></x-code-viewer>
+                </x-tab>
+                <x-tab title="module.js">
+                    <x-code-viewer src="./examples/sites/importmap/lib/dayjs/module.js" name="lib/dayjs/module.js"></x-code-viewer>
+                </x-tab>
+                <x-tab title="metrics.js">
+                    <x-code-viewer src="./examples/sites/importmap/components/metrics.js" name="components/metrics.js"></x-code-viewer>
+                </x-tab>
+            </x-tab-panel>
+            <p>Some things to take into account when using import maps:</p>
+            <ul>
+                <li>
+                    Import maps can only map to ESM modules, so for UMD libraries a wrapper must be provided, 
+                    as with the <code>module.js</code> wrapper for <code>dayjs</code> in this example.
+                </li>
+                <li>
+                    External import maps of the form <code>&lt;script type="importmap" src="importmap.json"&gt;</code> are <a href="https://github.com/WICG/import-maps/issues/235">not yet supported</a> in all browsers.
+                    This means the import map must be duplicated in every HTML page.
+                </li>
+                <li>
+                    The import map must be defined before the <code>index.js</code> script is loaded, preferably from the <code>&lthead&gt;</code> section.
+                </li>
+                <li>
+                    Import maps can be used to more easily load libraries from a <code>node_modules</code> folder or from a CDN.
+                    <a href="https://generator.jspm.io">JSPM generator</a> can be used to quickly create an import map for CDN dependencies.
+                    Do remain aware however that adding such external dependencies makes your vanilla codebase rely on the continued availability of that service.
+                </li>
         </section>
         <section id="deploying">
             <a href="#deploying" class="section-anchor">#</a>
