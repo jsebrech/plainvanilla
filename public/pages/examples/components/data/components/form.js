@@ -4,8 +4,8 @@ class SantasForm extends HTMLElement {
             <form>
                 <label for="name">Name</label>
                 <input type="text" id="name" name="name" />
-                <label for="nice">Nice?</label>
                 <input type="checkbox" id="nice" name="nice" value="1" />
+                <label for="nice">Nice?</label>
                 <button type="submit">Add</button>
             </form>
         `;
