@@ -92,7 +92,51 @@
             <a href="#managing-state" class="section-anchor">#</a>
             <h2>Managing state</h2>
 
+            <h3>Where state lives</h3>
+
+            <p>
+                State is the source of truth of what the application should show.
+                It is the data that gets turned into markup on the page by the application's logic.
+            </p>
+            <p>
+                In web frameworks state is often carefully managed so that it lives outside of the DOM,
+                and then rendered into the DOM using a view layer.
+                Every time the state is modified, the view layer rerenders the current view based on the new state, updating the DOM behind the scenes to match the new view.
+                In this design the DOM is just a view on the state, but does not actually contain the state.
+            </p>
+            <p>
+                In vanilla web development however, state and view are merged together inside of a web component.
+                The component carries its state in attributes and properties, making it part of the DOM,
+                and it updates its appearance based on changes in that state in a self-contained way.
+                In this design the DOM ends up being the owner of the state, not just a view on that state.
+            </p>
+            <p>Take for example a simple counter:</p>
+            <iframe src="./examples/applications/counter/index.html" title="counter example" height="100"></iframe>
+
+            <x-tab-panel>
+                <x-tab title="index.html">
+                    <x-code-viewer src="./examples/applications/counter/index.html" name=""></x-code-viewer>
+                </x-tab>
+                <x-tab title="index.js">
+                    <x-code-viewer src="./examples/applications/counter/index.js" name=""></x-code-viewer>
+                </x-tab>
+                <x-tab title="counter.js" active>
+                    <x-code-viewer src="./examples/applications/counter/components/counter.js" name="components/counter.js"></x-code-viewer>
+                </x-tab>
+            </x-tab-panel>
+
+            <p>
+                The <code>&lt;x-counter&gt;</code> component carries its state in the <code>#count</code> property,
+                it provides an API for safely changing the state with the <code>increment()</code> method, 
+                and it always updates its appearance when the state is changed using the <code>update()</code> method.
+            </p>
+
             <h3>Lifting state up</h3>
+            <p>
+                Putting state inside of web components as attributes and properties at first can seem simple,
+                but when scaling this up to more complex hierarchies of components it quickly becomes difficult to manage.
+                This means care must be taken to organize state across the component hierarchy in the right way.
+            </p>
             <p>
                 Generally speaking, the <a href="https://react.dev/learn/choosing-the-state-structure">state management principles</a> laid out in the React documentation are sound and should be followed even for vanilla web development.
                 Here they are once again:
@@ -105,15 +149,28 @@
                 <li><strong>Avoid deeply nested state.</strong> Deeply hierarchical state is not very convenient to update. When possible, prefer to structure state in a flat way.</li>
             </ol>
 
-            <p>React's <a href="https://react.dev/learn/sharing-state-between-components">lifting state up tutorial</a> explains very well how to share state between components. The final example shows how a central non-duplicated <code>activeIndex</code> state can track which panel is active:</p>
-            <x-code-viewer src="./examples/applications/lifting-state-up/react/App.js"></x-code-viewer>
-
-            <p>Here is that example adapted to vanilla web components:</p>
+            <p>
+                Let's look at these principes in action by porting the React <a href="https://react.dev/learn/sharing-state-between-components">lifting state up tutorial</a> example application to vanilla code:
+            </p>
 
             <iframe src="./examples/applications/lifting-state-up/index.html" title="lifting state up example" height="400"></iframe>
 
+            <p>
+                The implementation is divided across two web components: <code>&lt;x-accordion&gt;</code> and <code>&lt;x-panel&gt;</code>.
+                The state is "lifted up" from the panels onto the accordion, so that the accordion carries the state for both panels in a single central place.
+            </p>
+            <p>
+                Each of the two panels is stateless. It receives its state through the <code>title</code> and <code>active</code> properties.
+                When it is active, it shows its children (inside of a slot). When it is not active, it shows a button labeled "Show". It always shows the title.
+            </p>
+
+            <x-code-viewer src="./examples/applications/lifting-state-up/components/panel.js" name="components/panel.js"></x-code-viewer>
+
+            <p>
+                By contrast, the accordion is where the state for the panels actually lives:
+            </p>
             <x-tab-panel>
-                <x-tab title="index.html" active>
+                <x-tab title="index.html">
                     <x-code-viewer src="./examples/applications/lifting-state-up/index.html" name=""></x-code-viewer>
                 </x-tab>
                 <x-tab title="index.css">
@@ -122,26 +179,30 @@
                 <x-tab title="index.js">
                     <x-code-viewer src="./examples/applications/lifting-state-up/index.js" name=""></x-code-viewer>
                 </x-tab>
-                <x-tab title="accordion.js">
+                <x-tab title="accordion.js" active>
                     <x-code-viewer src="./examples/applications/lifting-state-up/components/accordion.js" name="components/accordion.js"></x-code-viewer>
-                </x-tab>
-                <x-tab title="panel.js">
-                    <x-code-viewer src="./examples/applications/lifting-state-up/components/panel.js" name="components/panel.js"></x-code-viewer>
                 </x-tab>
             </x-tab-panel>
 
             <p>What to pay attention to:</p>
             <ul>
                 <li>
-                    State is kept as properties or attributes on a web component, as shown here with the accordion's <code>activeIndex</code> property.
+                    The accordion's <code>activeIndex</code> property carries the state, and everything else is derived from that.
+                    This property becomes the single source of truth for the application, avoiding redundant state.
                 </li>
                 <li>
-                    The property setter for <code>activeIndex</code> explicitly calls the <code>update()</code> method to bring the DOM in sync with the property's state.
-                </li>
-                <li>
-                    The <code>update()</code> method on the <code>&lt;x-panel&gt;</code> component is written in a defensive way, because it may be called from the <code>attributeChangedCallback()</code> method before <code>connectedCallback()</code> sets up the DOM structure.
+                    An event listener for the <code>show</code> event sent by a panel will set <code>activeIndex</code> to the right value.
+                    The property setter for <code>activeIndex</code> explicitly calls the <code>update()</code> method to bring the rest of the DOM in sync with the property's new state.
                 </li>
             </ul>
+            <p>
+                Finally, take a look at the original implementation of <em>Accordion</em> and <em>Panel</em> in React's tutorial:
+            </p>
+            <x-code-viewer src="./examples/applications/lifting-state-up/react/App.js" name="original App.js in React's example"></x-code-viewer>
+            <p>
+                Take note of how the state is organized the same across the React and vanilla implementations.
+                The differences are in implementation details for state and rendering, not in how the application is structured.
+            </p>
 
             <aside>
                 <h4>Tread lightly</h4>
@@ -151,27 +212,33 @@
                 </p>
                 <p>
                     Because there is no framework patching the DOM with only the parts that changed, we have to tread lightly and only update the DOM when and where that is needed.
-                    Updating too much of the DOM risks losing state or causing performance issues.
-                    Each web component in this example renders its fixed DOM structure once in <code>connectedCallback()</code> and then updates the state of those DOM elements in the <code>update()</code> method when something changes.
+                    Recreating too much of the DOM after a state change risks losing state or causing performance issues.
+                    Each web component in this example renders its fixed DOM structure once in <code>connectedCallback()</code> and then updates those DOM elements in the <code>update()</code> method when the state changes.
                 </p>
             </aside>
 
             <h3>Passing data deeply</h3>
 
             <p>
-                While passing state from parent components to child components via attributes or properties works,
-                it can quickly become verbose and inconvenient, especially if you have to pass those through many components in the middle.
+                While passing state deep into a hierarchy by handing it from parent components to child components via attributes or properties works,
+                it can quickly become verbose and inconvenient. This is especially the case if you have to pass those through many components in the middle
+                which have no need for that state aside from passing it to their child components, an anti-pattern colloquially known as "prop drilling".
             </p>
             <p>
-                React solves this using the context, as explained on the <a href="https://react.dev/reference/react/useContext">useContext documentation page</a>.
-                The first example on that page shows a ThemeContext that keeps track of a theme variable, that can then be fetched anywhere in the hierarchy of components below.
+                Again we can take inspiration from how popular frameworks like React organize state, by adapting the concept of a context.
+                A context holds state at a high level in the component hierarchy, and it can be accessed directly from anywhere in that hierarchy.
+                The whole concept of a context is explained in the React <a href="https://react.dev/learn/passing-data-deeply-with-context">passing data deeply tutorial</a>.
             </p>
             <p>
-                A similar approach is possible by having a special "context" web component, whose only job is to keep track of state, provide setters to update that state, and dispatch events when the state changes.
-                Here is an adapted version of the context example that uses a theme context to keep track of light or dark theme, toggled by a button.
+                To understand how to apply this concept in vanilla web development let us look at the ThemeContext example from the <a href="https://react.dev/reference/react/useContext">useContext documentation page</a>.
+                Here is an adapted vanilla version that uses a central context to keep track of light or dark theme, toggled by a button.
             </p>
 
             <iframe src="./examples/applications/passing-data-deeply/index.html" title="passing data deeply example" height="200"></iframe>
+
+            <p>
+                In this example a special web component <code>&lt;x-theme-context&gt;</code> is created, whose only job is to keep track of state, provide setters to update that state, and dispatch events when the state changes.
+            </p>
 
             <x-tab-panel>
                 <x-tab title="index.html" active>
@@ -211,14 +278,15 @@
                 </li>
             </ul>
             
-            <p>
-                This approach can be further extended to implement reducers, by adding them as a method on a context component
-                and updating the state through the setters, dispatching the necessary events to update the component hierarchy.
-            </p>
-
             <aside>
                 <h4>Challenge</h4>
-                <p>To prove your mastery of vanilla web development use the techniques you've learned to port example 5 ("Scaling up with context and a reducer") from React's <a href="https://react.dev/reference/react/useContext">useContext</a> documentation page to vanilla code.
+                <p>
+                    This approach can be further extended to implement the reactive concept of reducers, by adding them as a method on a context component
+                    and updating the state through the setters, dispatching the necessary events to update the component hierarchy.
+                </p>
+                <p>
+                    To prove your mastery of vanilla web development use the techniques you've learned to port example 5 ("Scaling up with context and a reducer") from React's <a href="https://react.dev/reference/react/useContext">useContext</a> documentation page to vanilla code.
+                </p>
             </aside>
         </section>
         <section>

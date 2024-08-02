@@ -24,11 +24,11 @@ class Panel extends HTMLElement {
     }
 
     update() {
-        const h3 = this.shadowRoot.querySelector('h3');
+        const heading = this.shadowRoot.querySelector('h3');
         const slot = this.shadowRoot.querySelector('slot');
         const button = this.shadowRoot.querySelector('button');
-        if (h3 && slot && button) {
-            h3.innerText = this.title;
+        if (heading && slot && button) {
+            heading.textContent = this.title;
             slot.style.display = this.getAttribute('active') === 'true' ? 'block' : 'none';
             button.style.display = this.getAttribute('active') === 'true' ? 'none' : 'inline';    
         }

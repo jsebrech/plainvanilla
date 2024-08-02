@@ -5,8 +5,11 @@ class SantasList extends HTMLElement {
         this.update();
     }
     update() {
-        this.innerHTML = '<ul>' +
-            this.#currentList.map((item) => `<li>${item.name} is ${item.nice ? 'nice' : 'naughty'}</li>`).join('\n') +
+        this.innerHTML = 
+            '<ul>' +
+            this.#currentList.map(person => 
+                `<li>${person.name} is ${person.nice ? 'nice' : 'naughty'}</li>`
+            ).join('\n') +
             '</ul>';
     }
 }
