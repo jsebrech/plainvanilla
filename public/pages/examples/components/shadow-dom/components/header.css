@@ -1,0 +1,24 @@
+@import url("../reset.css");
+
+:host {
+    display: block;
+}
+
+header {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: right;
+    align-items: center;
+}
+
+h1 {
+    font-family: system-ui, sans-serif;
+    margin: 0;
+    display: flex;
+    flex: 1 1 auto;
+}
+
+::slotted(*) {
+    display: flex;
+    flex: 0 1 auto;
+}

@@ -197,41 +197,35 @@
                 </p>
             </aside>
         </section>
-        <section id="bells-and-whistles">
-            <a href="#bells-and-whistles" class="section-anchor">#</a>
-            <h2>Bells and whistles</h2>
-            <p>Having seen what a more advanced web component looks like, we're now ready to jump up to the final difficulty level of web components, leveraging the more advanced features of Shadow DOM, HTML templates and class properties.</p>
-            
-            <p>Here's a demonstration of two web components interacting live:</p>
-            <iframe src="./examples/components/combined/index.html" title="advanced component example"></iframe>
+        <section id="adding-children">
+            <a href="#adding-children" class="section-anchor">#</a>
+            <h2>Adding Children</h2>
+            <p>
+                Allowing children to be added to a web component is not hard. In fact, it is the default behavior.
+                To see how this works, let's extend the avatar example by wrapping it with a badge:
+            </p>
+            <iframe src="./examples/components/adding-children/index.html" title="component with children example"></iframe>
             <x-tab-panel>
                 <x-tab title="index.html" active>
-                    <x-code-viewer src="./examples/components/combined/index.html" name=""></x-code-viewer>
+                    <x-code-viewer src="./examples/components/adding-children/index.html" name=""></x-code-viewer>
                 </x-tab>
                 <x-tab title="index.js">
-                    <x-code-viewer src="./examples/components/combined/index.js" name=""></x-code-viewer>
+                    <x-code-viewer src="./examples/components/adding-children/index.js" name=""></x-code-viewer>
                 </x-tab>
                 <x-tab title="index.css">
-                    <x-code-viewer src="./examples/components/combined/index.css" name=""></x-code-viewer>
-                </x-tab>
-                <x-tab title="reset.css">
-                    <x-code-viewer src="./examples/components/combined/reset.css" name=""></x-code-viewer>
+                    <x-code-viewer src="./examples/components/adding-children/index.css" name=""></x-code-viewer>
                 </x-tab>
             </x-tab-panel>
-            
+
             <p>To clarify, this is the DOM structure that is created:</p>
             <ul>
-                <li>p (node)
+                <li>div (node)
                     <ul>
-                        <li>x-badge (shadowRoot)
+                        <li>x-badge (node)
                             <ul>
                                 <li>content (attribute)</li>
-                                <li>slot (node)
-                                    <ul>
-                                        <li>x-avatar (node)</li>
-                                    </ul>
-                                </li>
-                                <li>span (node)</li>
+                                <li>span (node, showing content)</li>
+                                <li>x-avatar (node)</li>
                             </ul>
                         </li>
                         <li>input (node)</li>
@@ -240,39 +234,78 @@
             </ul>
 
             <p>The <code>x-avatar</code> component is identical to the previous example, but how does the <code>x-badge</code> work?</p>
+
             <x-tab-panel>
-                <x-tab title="avatar.js">
-                    <x-code-viewer src="./examples/components/combined/components/avatar.js" name="components/avatar.js"></x-code-viewer>
-                </x-tab>
-                <x-tab title="avatar.css">
-                    <x-code-viewer src="./examples/components/combined/components/avatar.css" name="components/avatar.css"></x-code-viewer>
-                </x-tab>
                 <x-tab title="badge.js" active>
-                    <x-code-viewer src="./examples/components/combined/components/badge.js" name="components/badge.js"></x-code-viewer>
+                    <x-code-viewer src="./examples/components/adding-children/components/badge.js" name="components/badge.js"></x-code-viewer>
                 </x-tab>
                 <x-tab title="badge.css">
-                    <x-code-viewer src="./examples/components/combined/components/badge.css" name="components/badge.css"></x-code-viewer>
+                    <x-code-viewer src="./examples/components/adding-children/components/badge.css" name="components/badge.css"></x-code-viewer>
                 </x-tab>
             </x-tab-panel>
 
-            <p>There is a lot happening in <code>badge.js</code>, so let's unpack.</p>
+            <p>Some notes on what's happening here:</p>
+            <dl>
+                <dt><code>this.insertBefore</code></dt>
+                <dd>
+                    <p>
+                        Care must be taken to not overwrite the children already added in the markup, for example by assigning to <code>innerHTML</code>. 
+                        In this case the span that shows the badge is inserted before the child elements.
+                    </p>
+                    <p>
+                        This also means that for custom elements that should not have children,
+                        this can be enforced by calling <code>this.innerHTML = ''</code> from <code>connectedCallback()</code>.
+                    </p>
+                </dd>
+                <dt><code>set content(value) {</code></dt>
+                <dd>
+                    Custom element attributes can only be accessed from JavaScript through the <code>setAttribute()</code> and <code>getAttribute()</code> methods.
+                    To have a cleaner JavaScript API a setter and getter must be created for a class property that wraps the custom element's <code>content</code> attribute.
+                    See the <code>index.html</code> above for where this is called.
+                </dd>
+            </dl>
+            <aside>
+                <h4>Detecting children</h4>
+                <p>
+                    Knowing when children are added or removed to a web component is possible with a <a href="https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver">MutationObserver</a>, 
+                    by calling its observe method with <code>observer.observe(this, { childList: true })</code>.
+                    Creating it in the constructor will observe a mutation of type <code>childList</code> when the child elements are first added, and also when later on elements are added or removed.
+                </p>
+            </aside>
+        </section>
+        <section id="bells-and-whistles">
+            <a href="#bells-and-whistles" class="section-anchor">#</a>
+            <h2>Bells and whistles</h2>
+            <p>
+                Having seen what regular web components look like, we're now ready to jump up to the final difficulty level of web components, 
+                leveraging the more advanced features of Shadow DOM and HTML templates.
+            </p>
+            
+            <p>This can all be brought together in this page layout example, that defines a new <code>&lt;x-header&gt;</code> component:</p>
+            <iframe src="./examples/components/shadow-dom/index.html" title="shadow dom component example" height="200"></iframe>
+            <x-code-viewer src="./examples/components/shadow-dom/index.html"></x-code-viewer>
+
+            <p>This is the code for the newly added <code>&lt;x-header&gt;</code> component:</p>
+            <x-code-viewer src="./examples/components/shadow-dom/components/header.js" name="components/header.js"></x-code-viewer>
+
+            <p>There is a lot happening in <code>header.js</code>, so let's unpack.</p>
             <dl>
                 <dt><code>const template = document.createElement('template');</code></dt>
                 <dd>
-                    The badge code starts out by creating an <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_templates_and_slots">HTML template</a>.
+                    The header code starts out by creating an <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_templates_and_slots">HTML template</a>.
                     Templates are fragments of HTML that can be easily cloned and appended to a DOM.
                     For complex web components that have a lot of markup, the use of a template is often more convenient.
-                    By instantiating the template outside the class, it can be reused across all instances of the <code>&lt;x-badge&gt;</code> component.
+                    By instantiating the template outside the class, it can be reused across all instances of the <code>&lt;x-header&gt;</code> component.
                 </dd>
-                <dt><code>&lt;link rel="stylesheet" href="${new URL('badge.css', import.meta.url)}"&gt;</code></dt>
+                <dt><code>&lt;link rel="stylesheet" href="${new URL('header.css', import.meta.url)}"&gt;</code></dt>
                 <dd>
                     Because this component uses a shadow DOM, it is isolated from the styles of the containing page and starts out unstyled.
-                    The <code>badge.css</code> needs to be imported into the shadow DOM using the <code>&lt;link&gt;</code> tag.
-                    The special <code>import.meta.url</code> trick imports the CSS file from the same path as the <code>badge.js</code> file.
+                    The <code>header.css</code> needs to be imported into the shadow DOM using the <code>&lt;link&gt;</code> tag.
+                    The special <code>import.meta.url</code> trick imports the CSS file from the same path as the <code>header.js</code> file.
                 </dd>
                 <dt><code>&lt;slot&gt;&lt;/slot&gt;</code></dt>
                 <dd>
-                    The <code>&lt;slot&gt;</code> element is where the child elements will go (like the <code>&lt;x-avatar&gt;</code> child of <code>&lt;x-badge&gt;</code>).
+                    The <code>&lt;slot&gt;</code> element is where the child elements will go (like the <code>&lt;x-badge&gt;</code> child of <code>&lt;x-header&gt;</code>).
                     Putting child elements in a slot is similar to using a <code>children</code> prop in a React component.
                     The use of slots is only possible in web components that have a shadow DOM.
                 </dd>
@@ -292,7 +325,7 @@
                 <dt><code>this.shadowRoot.append(template.content.cloneNode(true));</code></dt>
                 <dd>
                     <p>
-                        The <code>shadowRoot</code> property is the root element of the attached shadow DOM, and is rendered into the page as the <code>&lt;x-badge&gt;</code> element's content.
+                        The <code>shadowRoot</code> property is the root element of the attached shadow DOM, and is rendered into the page as the <code>&lt;x-header&gt;</code> element's content.
                         The HTML template is cloned and appended into it.
                     </p>
                     <p>
@@ -301,19 +334,53 @@
                         For custom elements without shadow DOM rendering the element's content should be deferred until <code>connectedCallback()</code>.
                     </p>
                 </dd>
-                <dt><code>set content(value) {</code></dt>
-                <dd>
-                    Custom element attributes can only be accessed from JavaScript through the <code>setAttribute()</code> and <code>getAttribute()</code> methods.
-                    To have a cleaner JavaScript API a setter and getter must be created for a class property that wraps the custom element's <code>content</code> attribute.
-                </dd>
             </dl>
 
-            <p>As you can see in <code>badge.css</code>, styling the content of a shadow DOM is a bit different:</p>
+            <p>All the new files of this example put together:</p>
+            <x-tab-panel>
+                <x-tab title="index.html" active>
+                    <x-code-viewer src="./examples/components/shadow-dom/index.html" name=""></x-code-viewer>
+                </x-tab>
+                <x-tab title="index.css">
+                    <x-code-viewer src="./examples/components/shadow-dom/index.css" name=""></x-code-viewer>
+                </x-tab>
+                <x-tab title="reset.css">
+                    <x-code-viewer src="./examples/components/shadow-dom/reset.css" name=""></x-code-viewer>
+                </x-tab>
+                <x-tab title="index.js">
+                    <x-code-viewer src="./examples/components/shadow-dom/index.js" name=""></x-code-viewer>
+                </x-tab>
+                <x-tab title="header.js">
+                    <x-code-viewer src="./examples/components/shadow-dom/components/header.js" name="components/header.js"></x-code-viewer>
+                </x-tab>
+                <x-tab title="header.css">
+                    <x-code-viewer src="./examples/components/shadow-dom/components/header.css" name="components/header.css"></x-code-viewer>
+                </x-tab>
+            </x-tab-panel>
+
+            <p>As you can see in <code>header.css</code>, styling the content of a shadow DOM is a bit different:</p>
             <ul>
                 <li>The <code>:host</code> pseudo-selector applies styles to the element from the light DOM that hosts the shadow DOM (or in other words, to the custom element itself).</li>
-                <li>The other styles (like <code>span</code> in this example) are isolated inside the shadow DOM.</li>
+                <li>The other styles (like <code>h1</code> in this example) are isolated inside the shadow DOM.</li>
                 <li>The shadow DOM starts out unstyled, which is why <code>reset.css</code> is imported again.</li>
             </ul>
+
+            <aside>
+                <h4>To shadow or not to shadow?</h4>
+                <p>
+                    Because custom elements can contain children with or without a shadow DOM, you may be wondering when to use this feature.
+                </p>
+                <p>
+                    In general shadow DOM should be avoided if possible, because it impacts accessibility, SEO and performance, and it suffers from a <abbr title="Flash Of Unstyled Content">FOUC</abbr> while the stylesheet from the <code>&lt;link&gt;</code> tag is loading. 
+                    Whenever possible, design web components to not need a shadow DOM.
+                </p>
+                <p>Shadow DOM is however advised in these situations:</p>
+                <ul>
+                    <li>Intermediate elements need to be created between the root element and the contained children, like the <code>&lt;header&gt;</code> in the example above. Only the use of a slot inside of a shadow DOM makes this possible.</li>
+                    <li>Multiple places in the web component will accept children. Named slots provide this ability. This can be convenient for layout components.</li>
+                    <li>The styles should be maximally isolated from the containing page. This is often the case for web components designed to be embedded in third party sites.</li>
+                </ul>
+            </aside>
         </section>
         <section id="passing-data">
             <a href="#passing-data" class="section-anchor">#</a>

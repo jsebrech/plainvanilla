@@ -43,7 +43,7 @@ class TabPanel extends HTMLElement {
                     const tab = document.createElement('button');
                     tab.setAttribute('role', 'tab');
                     tab.setAttribute('aria-controls', tabPanel.id);
-                    tab.innerText = tabPanel.title;
+                    tab.textContent = tabPanel.title;
                     tab.onclick = () => this.activatePanel(tabPanel.id);
                     this.tablist.appendChild(tab);
                 }

@@ -1,22 +1,15 @@
-const template = document.createElement('template');
-template.innerHTML = `
-    <link rel="stylesheet" href="${new URL('badge.css', import.meta.url)}">
-    <slot></slot>
-    <span></span>
-`;
-
 class BadgeComponent extends HTMLElement {
-    constructor() {
-        super();
-        if (!this.shadowRoot) {
-            this.attachShadow({ mode: 'open' });
-            this.shadowRoot.append(template.content.cloneNode(true));
-        }
+    #span;
+
+    connectedCallback() {
+        this.#span = document.createElement('span');
+        this.#span.className = 'x-badge-label';
+        this.insertBefore(this.#span, this.firstChild);
         this.update();
     }
 
     update() {
-        this.shadowRoot.querySelector('span').innerText = this.getAttribute('content');
+        if (this.#span) this.#span.textContent = this.getAttribute('content');
     }
 
     static get observedAttributes() {
