@@ -15,42 +15,45 @@
  */
 class TabPanel extends HTMLElement {
 
-    get tabList() { return this.shadowRoot.querySelector('div[role=tablist]'); }
-    get slot() { return this.shadowRoot.querySelector('slot'); }
+    #tablist;
+    #observer;
+    
+    get tablist() { return this.#tablist; }
+    get tabpanels() { return this.querySelectorAll('x-tab'); }
 
     constructor() {
         super();
-        this.attachShadow({ mode: 'open' });
-        // tablist starts out hidden until stylesheet loads
-        this.shadowRoot.innerHTML = `
-            <style> div[role=tablist] { display: none; } </style>
-            <link rel="stylesheet" href="${new URL('tab-panel.css', import.meta.url)}">
-            <div role="tablist"></div>
-            <slot></slot>
-        `;
-        // called when tabpanels are added
-        this.slot.onslotchange = () => this.onSlotChange(); 
+        this.#observer = new MutationObserver(this.onMutation.bind(this));
+        this.#observer.observe(this, { childList: true });
     }
 
-    onSlotChange() {
-        this.tabList.innerHTML = '';
-        this.slot.assignedElements().forEach(tabPanel => {
-            if (tabPanel.role !== 'tabpanel') {
-                tabPanel.style.display = 'none';
-            } else {
-                const tab = document.createElement('button');
-                tab.setAttribute('role', 'tab');
-                tab.setAttribute('aria-controls', tabPanel.id);
-                tab.innerText = tabPanel.title;
-                tab.onclick = () => this.activatePanel(tabPanel.id);
-                this.tabList.appendChild(tab);
-            }
-        });
+    connectedCallback() {
+        this.#tablist = document.createElement('div');
+        this.#tablist.setAttribute('role', 'tablist');
+        this.insertBefore(this.#tablist, this.firstChild);
+    }
+
+    onMutation(m) {
+        if (m.filter(_ => _.type === 'childList').length) {
+            this.tablist.innerHTML = '';
+            this.tabpanels.forEach(tabPanel => {
+                if (tabPanel.role !== 'tabpanel') {
+                    tabPanel.style.display = 'none';
+                } else {
+                    const tab = document.createElement('button');
+                    tab.setAttribute('role', 'tab');
+                    tab.setAttribute('aria-controls', tabPanel.id);
+                    tab.innerText = tabPanel.title;
+                    tab.onclick = () => this.activatePanel(tabPanel.id);
+                    this.tablist.appendChild(tab);
+                }
+            });                
+        }
         this.update();
     }
 
     activatePanel(id) {
-        this.slot.assignedElements().forEach(tabPanel => {
+        this.tabpanels.forEach(tabPanel => {
             if (tabPanel.id === id) {
                 tabPanel.setAttribute('active', 'true');
             } else {
@@ -61,9 +64,9 @@ class TabPanel extends HTMLElement {
     }
 
     update() {
-        this.slot.assignedElements().forEach(tabPanel => {
-            const tab = this.tabList.querySelector(`[aria-controls="${tabPanel.id}"]`);
-            tab.setAttribute('aria-selected', tabPanel.hasAttribute('active'));
+        this.tabpanels.forEach(tabPanel => {
+            const tab = this.tablist.querySelector(`[aria-controls="${tabPanel.id}"]`);
+            if (tab) tab.setAttribute('aria-selected', tabPanel.hasAttribute('active'));
         })
     }
 }
@@ -72,15 +75,9 @@ class Tab extends HTMLElement {
 
     static #nextId = 0;
 
-    constructor() {
-        super();
-        this.attachShadow({ mode: 'open' });
-    }
-
     connectedCallback() {
         this.role = 'tabpanel';
         this.id = 'tab-panel-' + Tab.#nextId++;
-        this.shadowRoot.appendChild(document.createElement('slot'));
     }
 }
 

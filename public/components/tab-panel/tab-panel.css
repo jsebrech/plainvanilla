@@ -1,16 +1,14 @@
-@import url("../../styles/reset.css");
-
-:host {
+x-tab-panel {
     display: block;
     border: 1px solid var(--border-color);
 }
 
-div[role=tablist] {
+x-tab-panel div[role=tablist] {
     display: block;
     border-bottom: 1px dotted var(--border-color);
 }
 
-div[role=tablist] button[role=tab] {
+x-tab-panel div[role=tablist] button[role=tab] {
     font-family: var(--font-system);
     font-size: 100%;
     color: inherit;
@@ -23,15 +21,15 @@ div[role=tablist] button[role=tab] {
     border-bottom: 2px solid transparent;
 }
 
-div[role=tablist] button[role=tab][aria-selected=true] {
+x-tab-panel div[role=tablist] button[role=tab][aria-selected=true] {
     font-weight: bold;
     border-bottom: 2px solid black;
 }
 
-::slotted(x-tab) {
+x-tab-panel > x-tab {
     display: none;
 }
 
-::slotted(x-tab[active]) {
+x-tab-panel > x-tab[active] {
     display: block !important;
 }

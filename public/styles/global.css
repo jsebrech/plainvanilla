@@ -79,17 +79,10 @@ x-code-viewer {
     max-height: 30em;
 }
 
-/* show something ok before the web component initializes */
 x-tab-panel {
-    display: block;
     border: 1px solid var(--border-color);
     margin: 1em 0;
     min-height: 8em;
-}
-
-/* hide tabs until web component initializes */
-x-tab-panel > x-tab {
-    display: none;
 }
 
 x-tab-panel x-code-viewer {

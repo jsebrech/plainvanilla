@@ -304,8 +304,7 @@
                 <li>
                     An important limitation is that DOM Testing Library <a href="https://github.com/testing-library/dom-testing-library/issues/413">cannot query inside shadow roots</a>.
                     To test something inside a shadow root it is necessary to first query for the containing web component, 
-                    get a handle to its <code>shadowRoot</code> property, find an element inside of that, and then use <code>within()</code> to query inside that shadowed element.
-                    This is shown in the example test.
+                    get a handle to its <code>shadowRoot</code> property, and then query inside of that.
                 </li>
                 <li>
                     Web Components initialize asynchronously, which can make them tricky to test.

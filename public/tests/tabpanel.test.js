@@ -1,4 +1,4 @@
-import { render, screen, within, waitFor, expect, fireEvent } from './imports-test.js';
+import { render, screen, waitFor, expect, fireEvent } from './imports-test.js';
 
 const renderTabPanel = () => {
     const div = document.createElement('div');
@@ -13,19 +13,16 @@ const renderTabPanel = () => {
         </x-tab-panel>
     `;
     render(div);
-    return div.querySelector('x-tab-panel');
 }
 
 describe('tabpanel', () => {
     it("renders a tabpanel with active tab", async () => {
         // ARRANGE
-        const element = renderTabPanel();
-        // extract the tablist div from the shadow dom
-        const tabList = element.shadowRoot.querySelector('div[role=tablist]');
+        renderTabPanel();
     
         // ASSERT
         // active tab is selected
-        const activeTab = await within(tabList).findByRole('tab', { name: 'Tab 1', selected: true });
+        const activeTab = await screen.findByRole('tab', { name: 'Tab 1', selected: true });
         expect(activeTab).to.not.be.undefined;
         // active tabpanel is visible
         const activePanel = screen.getByText(/Tab 1 content/);
@@ -37,18 +34,17 @@ describe('tabpanel', () => {
     
     it("activates a different tab on click", async () => {
         // ARRANGE
-        const element = renderTabPanel();
-        const tabList = element.shadowRoot.querySelector('div[role=tablist]');
+        renderTabPanel();
         const tab2 = screen.getByTitle('Tab 2');
     
         // ASSERT
         // inactive tabpanel content is hidden
         await waitFor(() => expect(tab2.offsetParent).to.be.null);
         // find inactive tab button and click it
-        const tab2Button = await within(tabList).findByRole('tab', { name: 'Tab 2' });
+        const tab2Button = await screen.findByRole('tab', { name: 'Tab 2' });
         expect(tab2Button).not.to.be.undefined;
         fireEvent.click(tab2Button);
         // inactive tabpanel content is made visible
         await waitFor(() => expect(tab2.offsetParent).not.to.be.null);
-    });        
+    });
 });
