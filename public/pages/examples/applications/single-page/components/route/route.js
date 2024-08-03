@@ -11,9 +11,8 @@ export class RouteComponent extends HTMLElement {
 
     constructor() {
         super();
-        this.attachShadow({ mode: 'open' });
-        this.shadowRoot.appendChild(document.createElement('slot'));
         this.update = this.update.bind(this);
+        this.style.display = 'contents';
     }
 
     #isActive = false;
