@@ -16,13 +16,7 @@ class ThemeContext extends HTMLElement {
 
     constructor() {
         super();
-        this.attachShadow({ mode: 'open' });
-        this.shadowRoot.innerHTML = `
-            <style>
-                :host { display: contents; }
-            </style>
-            <slot></slot>
-        `;
+        this.style.display = 'contents';
     }
 }
 

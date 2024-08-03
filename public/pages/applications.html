@@ -266,7 +266,6 @@
                 <li>
                     The <code>x-theme-context</code> component uses <code>display: contents</code> to avoid impacting the layout.
                     It exists in the DOM hierarchy, but it becomes effectively invisible.
-                    The only way it can be noticed is by its shadow root.
                 </li>
                 <li>
                     Instead of <code>useContext</code> every component obtains the nearest theme context with <code>this.closest('x-theme-context')</code> utilizing the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/closest">Element.closest</a> API.
