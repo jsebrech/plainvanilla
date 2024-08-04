@@ -76,6 +76,7 @@ code {
 x-code-viewer {
     border: 1px solid var(--border-color);
     margin: 1em 0;
+    min-height: 6em;
     max-height: 30em;
 }
 
