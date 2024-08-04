@@ -50,7 +50,7 @@ export class RouteComponent extends HTMLElement {
 
     // can be overridden in subclasses to change show/hide method
     setIsActive(active) {
-        this.style.display = active ? 'block' : 'none';
+        this.style.display = active ? 'contents' : 'none';
     }
 
     // for overriding in subclasses to detect parameters
