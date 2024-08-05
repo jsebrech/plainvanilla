@@ -133,7 +133,7 @@
             <ul>
                 <li>The <code>observedAttributes</code> getter returns the element's attributes that when changed cause <code>attributeChangedCallback()</code> to be called by the browser, allowing us to update the UI.</li>
                 <li>
-                    The <code>update()</code> method handles initial render as well as updates, centralizing the UI logic.</li>
+                    The <code>update()</code> method handles initial render as well as updates, centralizing the UI logic.
                     Note that this method is written in a defensive way with the <code>if</code> statement, because it may be called from the <code>attributeChangedCallback()</code> method before <code>connectedCallback()</code> creates the <code>&lt;img&gt;</code> element.
                 </li>
                 <li>The exported <code>registerAvatarComponent</code> function allows centralizing the logic that defines all custom elements in an application.</li>
