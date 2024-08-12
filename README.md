@@ -6,7 +6,7 @@ A website demonstrating how to do web development using only vanilla techniques:
 
 Run the `public/` folder as a static website:
 
-- node: `npx serve public`
+- node: `npx http-server public`
 - php: `php -S localhost:8000 -t public`
 - python: `python3 -m http.server 8000 --directory public`
 
