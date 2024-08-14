@@ -3,7 +3,7 @@ class SantasForm extends HTMLElement {
         this.innerHTML = `
             <form>
                 <label for="name">Name</label>
-                <input type="text" id="name" name="name" />
+                <input type="text" id="name" name="name" required />
                 <input type="checkbox" id="nice" name="nice" value="1" />
                 <label for="nice">Nice?</label>
                 <button type="submit">Add</button>
