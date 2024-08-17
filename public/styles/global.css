@@ -47,7 +47,7 @@ dd {
     margin-bottom: 1em;
 }
 
-nav ul {
+nav ol {
     display: flex;
     flex-wrap: wrap;
     justify-content: start;
@@ -58,10 +58,15 @@ nav ul {
 }
 
 nav li {
-    margin: 0 -1px -1px 0;
     display: inline-block;
-    border: 1px solid var(--border-color);
-    padding: 0.5em;
+    padding: 0.5em 0.7em;
+    border: none;
+    background-color: var(--nav-background-color);
+    border-left: 2px solid var(--nav-separator-color);
+}
+
+nav li a {
+    color: inherit;
 }
 
 code {
