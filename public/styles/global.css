@@ -128,14 +128,22 @@ footer {
     text-align: center;
 }
 
-footer .contact {
-    line-height: 1em;
-    padding: 0 0.5em;
+footer .contact a {
+    color: inherit;
+    background-repeat: no-repeat;
+    background-position: center left;
+    background-size: contain;
+    margin: 0 0.5em;
 }
 
-footer .contact * {
-    color: inherit;
-    vertical-align: middle;
+footer .contact a[href*="github.com"] {
+    background-image: url("../lib/akar-icons/github-fill.svg");
+    padding-left: 2em;
+}
+
+footer .contact a[href*="sebrechts.net"] {
+    background-image: url("../lib/akar-icons/envelope.svg");
+    padding-left: 2em;
 }
 
 hr {
