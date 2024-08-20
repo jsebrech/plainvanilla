@@ -11,6 +11,10 @@ body {
     margin: 1.5em;
 }
 
+a, a:hover {
+    color: var(--link-color);
+}
+
 header {
     margin-bottom: 1.5em;
 }
@@ -138,6 +142,10 @@ footer .contact a {
     margin: 0 0.5em;
 }
 
+footer .contact a:hover {
+    color: var(--link-color);
+}
+
 footer .contact a[href*="github.com"] {
     background-image: url("../lib/akar-icons/github-fill.svg");
     padding-left: 2em;
@@ -179,4 +187,5 @@ section:hover > a.section-anchor {
 
 section:hover > a.section-anchor:hover {
     opacity: 1;
+    color: var(--link-color);
 }

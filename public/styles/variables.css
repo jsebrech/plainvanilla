@@ -11,6 +11,8 @@
     --text-color: black;
     --text-color-mute: hsl(0, 0%, 40%);
 
+    --link-color: darkblue;
+
     --nav-separator-color: goldenrod;
     --nav-background-color: hsl(50, 50%, 97%);
 
