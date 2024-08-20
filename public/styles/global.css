@@ -1,6 +1,8 @@
 html {
     margin:    0 auto;
     max-width: 800px;
+    background-color: var(--background-color);
+    color: var(--text-color);
 }
 
 body {

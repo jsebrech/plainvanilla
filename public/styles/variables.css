@@ -6,6 +6,11 @@
     --font-system-code: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
     --font-system-code-size: 0.8rem;
 
+    --background-color: white;
+
+    --text-color: black;
+    --text-color-mute: hsl(0, 0%, 40%);
+
     --nav-separator-color: goldenrod;
     --nav-background-color: hsl(50, 50%, 97%);
 
