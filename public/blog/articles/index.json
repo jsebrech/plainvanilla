@@ -1,0 +1,15 @@
+[
+    {
+        "slug": "2024-08-25-vanilla-entity-encoding",
+        "title": "Vanilla entity encoding",
+        "summary": "The first version of this site didn't use entity encoding in the examples. Now it does.",
+        "published": "2024-08-25"
+    },
+    {
+        "slug": "2024-08-17-lets-build-a-blog",
+        "title": "Let's build a blog!",
+        "summary": "An inaugural article about the making of this blog, vanilla-style.",
+        "published": "2024-08-17",
+        "updated": "2024-08-25"
+    }
+]

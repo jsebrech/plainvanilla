@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Vanilla entity encoding</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <meta name="description" content="The first version of this site didn't use entity encoding in the examples. Now it does.">
+    <link rel="stylesheet" href="../../index.css">
+</head>
+<body>
+    <blog-header published="2024-08-25">
+        <img src="image.webp" alt="Bricks being laid by hand" loading="lazy" />
+        <h2>Vanilla entity encoding</h2>
+        <p class="byline" aria-label="author">Joeri Sebrechts</p>
+    </blog-header>
+    <main>
+        <h3>Good enough</h3>
+        <p>
+            When I made the first version of the Plain Vanilla website, there were things that I would have liked
+            to spend more time on, but that I felt didn't belong in a Good Enough&trade; version of the site.
+            One of those things was defending against <a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html">Cross-Site Scripting</a> (XSS).
+        </p>
+        <p>
+            XSS is still in the <a href="https://owasp.org/www-project-top-ten/">OWASP Top Ten</a> of security issues, 
+            but it's no longer as prevalent as it used to be. Frameworks have built in a lot of defenses, 
+            and when using their templating systems you have to go out of your way to inject code into the generated HTML.
+            When eschewing frameworks we're reduced to standard templating in our web components, and those offer no defense against XSS.
+        </p>
+        <p>
+            Because of this, in the original site the <a href="https://plainvanillaweb.com/pages/components.html#passing-data">Passing Data example</a> 
+            on the <em>Components</em> page had an undocumented XSS bug.
+            The <em>name</em> field could have scripts injected into it. I felt ambivalent about leaving that bug in.
+            On the one hand, the code was very compact and neat by leaving it in.
+            On the other hand it made that code a bad example that shouldn't be copied.
+            I ended up choosing to leave it as-is because an example doesn't have to be production-grade
+            and generating properly encoded HTML was not the point of that specific example.
+            It's time however to circle back to that XSS bug and figure out how it would have been solved in a clean and readable way,
+            if Santa really did want to bring his List application to production-level quality.
+        </p>
+
+        <h3>The problem</h3>
+        <p>
+            The basic problem we need to solve is that vanilla web components end up having a lot of code that looks like this:
+        </p>
+        <x-code-viewer src="example1.js"></x-code-viewer>
+        <p>
+            If any of <code>foo</code>, <code>bar</code>, <code>baz</code> or <code>xyzzy</code> contain one of the dangerous HTML entities,
+            we risk seeing our component break, and worst-case risk will see an attacker inject a malicious payload into the page.
+            Just as a reminder, those dangerous HTML entities are &lt;, &gt;, &amp;, ' and ";
+        </p>
+
+        <h3>The fix, take one</h3>
+        <p>
+            A naive fix is creating a html-encoding function and using it consistently:
+        </p>
+        <x-code-viewer src="example2.js"></x-code-viewer>
+        <p>
+            While this does work to defend against XSS, it is verbose and ugly, not pleasant to type and not pleasant to read.
+            What really kills it though, is that it assumes attention to detail from us messy humans. We can never forget,
+            never ever, to put a <code>htmlEncode()</code> around each and every variable.
+            In the real world, that is somewhat unlikely.
+        </p>
+        <p>
+            What is needed is a solution that allows us to forget about entity encoding, by doing it automatically
+            when we're templating. I drew inspiration from templating libraries that work in-browser and are based on tagged templates, 
+            like <a href="https://lit.dev/docs/api/templates/#html">lit-html</a> 
+            and <a href="https://github.com/developit/htm">htm</a>. The quest was on to build the most minimalistic
+            html templating function that encoded entities automatically.
+        </p>
+
+        <h3>The fix, take two</h3>
+        <p>
+            Ideally, the fixed example should look more like this:
+        </p>
+        <x-code-viewer src="example3.js"></x-code-viewer>
+        <p>
+            The <code>html``</code> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#tagged_templates">tagged template function</a> 
+            would automatically encode entities, in a way that we don't even have to think about it.
+            Even when we nest generated HTML inside of another template, like with <code>${btn}</code>, it should just magically work.
+            It would be so minimal as to disappear in the background, barely impacting readability, maybe even improving it.
+            You may be thinking that doing that correctly would involve an impressive amount of code. I must disappoint.
+        </p>
+        <x-code-viewer src="html.js"></x-code-viewer>
+        <p>
+            Those couple dozen lines of code are all that is needed. Let's go through it from top to bottom.
+        </p>
+        <dl>
+            <dt><code>class Html extends String { }</code></dt>
+            <dd>The Html class is used to mark strings as encoded, so that they won't be encoded again.</dd>
+            <dt><code>export const htmlRaw = str => new Html(str);</code></dt>
+            <dd>Case in point, the htmlRaw function does the marking.</dd>
+            <dt><code>export const htmlEncode = ...</code></dt>
+            <dd>The earlier htmlEncode function is still doing useful work, only this time it will mark the resulting string as HTML, and it won't double-encode.</dd>
+            <dt><code>export const html = ...</code></dt>
+            <dd>The tagged template function that binds it together.</dd>
+        </dl>
+
+        <p>
+            A nice upside of the html template function is that the <em>html-in-template-string</em> Visual Studio Code extension
+            can detect it automatically and will syntax highlight the templated HTML. This is what example 3 looked like after I made it:
+        </p>
+
+        <img src="syntax-highlighting.webp" alt="example 3 with syntax highlighting" />
+
+        <p>
+            Granted, there's still a bunch of boilerplate here, and that <code>getAttribute</code> gets unwieldy.
+            But with this syntax highlighting enabled sometimes when I'm working on vanilla web components I forget it's not React and JSX, but just HTML and JS.
+            It's surprising how nice of a development experience web standards can be if you embrace them.
+        </p>
+
+        <p>
+            I decided to leave the XSS bug in the <em>Passing Data</em> example, but now the <em>Applications</em> page
+            has an explanation about entity encoding documenting this html template function.
+            I can only hope people that work their way through the tutorial make it that far.
+            For your convenience I also put the HTML templating function in its own separate 
+            <a href="https://github.com/jsebrech/html-literal">html-literal repo on Github</a>.
+        </p>
+
+    </main>
+    <blog-footer></blog-footer>
+    <script type="module" src="../../index.js"></script>
+</body>
+</html>

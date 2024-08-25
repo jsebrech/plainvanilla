@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Plain Vanilla Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <link rel="stylesheet" href="./index.css">
+    <style>
+        blog-generator {
+            display: block;
+            border: 1px dashed gray;
+            padding: 1em;
+            min-height: 5em;
+            max-height: 90vh;
+            overflow: auto;
+            margin-bottom: 1em;
+        }
+
+        blog-generator pre {
+            border: 1px solid gray;
+            padding: 1em;
+            max-height: 30vh;
+            overflow: auto;
+        }
+
+        blog-generator button {
+            margin-bottom: 0.5em;
+        }
+
+        .warning { color: purple; }
+    </style>
+</head>
+<body>
+    <section>
+        <h1>Generator</h1>
+        <blog-generator></blog-generator>
+        <button onclick="document.querySelector('blog-generator').reset()">Reset</button>
+    </section>
+
+    <section>
+        <h3>Browser support</h3>
+        <ul>
+            <li>Chrome: supported</li>
+            <li>Edge: supported</li>
+            <li>Safari: not supported</li>
+            <li>Firefox: not supported</li>
+            <li>Brave: supported, but first enable File System Access in brave://flags</li>
+            <li>Copy to clipboard: only over HTTPS</li>
+        </ul>
+    </section>
+
+    <script type="module" src="./index.js"></script>
+    <script type="module" src="./generator.js"></script>
+</body>
+</html>
