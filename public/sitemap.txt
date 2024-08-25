@@ -4,3 +4,7 @@ https://plainvanillaweb.com/pages/components.html
 https://plainvanillaweb.com/pages/styling.html
 https://plainvanillaweb.com/pages/sites.html
 https://plainvanillaweb.com/pages/applications.html
+https://plainvanillaweb.com/blog/index.html
+https://plainvanillaweb.com/blog/archive.html
+https://plainvanillaweb.com/blog/articles/2024-08-17-lets-build-a-blog/index.html
+https://plainvanillaweb.com/blog/articles/2024-08-25-vanilla-entity-encoding/index.html
