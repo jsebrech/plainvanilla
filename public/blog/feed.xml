@@ -2,9 +2,11 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
     <title>Plain Vanilla Blog</title>
     <id>https://plainvanillaweb.com/blog/</id>
+    <icon>https://plainvanillaweb.com/favicon.ico</icon>
+    <logo>https://plainvanillaweb.com/android-chrome-512x512.png</logo>
     <link rel="alternate" href="https://plainvanillaweb.com/blog/"/>
     <link rel="self" href="https://plainvanillaweb.com/blog/feed.xml"/>
-    <updated>2024-08-25T12:00:00.000Z</updated>
+    <updated>2024-08-26T12:00:00.000Z</updated>
     <author>
         <name>Joeri Sebrechts</name>
     </author>
@@ -16,6 +18,7 @@
         <updated>2024-08-25T12:00:00.000Z</updated>
         <summary><![CDATA[The first version of this site didn't use entity encoding in the examples. Now it does.]]></summary>
         <media:content url="https://plainvanillaweb.com/blog/articles/2024-08-25-vanilla-entity-encoding/image.webp" type="image/webp" medium="image" />
+        <author><name><![CDATA[Joeri Sebrechts]]></name></author>
         <content type="html"><![CDATA[
         <h3>Good enough</h3>
         <p>
@@ -209,18 +212,19 @@ export const html = (strings, ...values) =&gt;
     ]]></content>
     </entry>
     <entry>
-        <title><![CDATA[Let's build a blog!]]></title>
+        <title><![CDATA[Let's build a blog, vanilla-style!]]></title>
         <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2024-08-17-lets-build-a-blog/"/>
         <id>https://plainvanillaweb.com/blog/articles/2024-08-17-lets-build-a-blog/</id>
         <published>2024-08-17T12:00:00.000Z</published>
-        <updated>2024-08-25T12:00:00.000Z</updated>
-        <summary><![CDATA[An inaugural article about the making of this blog, vanilla-style.]]></summary>
+        <updated>2024-08-26T12:00:00.000Z</updated>
+        <summary><![CDATA[Explaining how this vanilla web development blog was built, using nothing but vanilla web techniques.]]></summary>
         <media:content url="https://plainvanillaweb.com/blog/articles/2024-08-17-lets-build-a-blog/image.webp" type="image/webp" medium="image" />
+        <author><name><![CDATA[Joeri Sebrechts]]></name></author>
         <content type="html"><![CDATA[
         <p>
-            As I write this paragraph it is my birthday, and it seemed like as good an opportunity as any to start a blog.
+            As I write this paragraph it is my birthday, and it seemed like as good an opportunity as any to start a blog about vanilla web development.
             This blog post will be a bit unusual, as I will be writing it while I'm making the blog's inner workings.
-            But before I get around to explaining how it was made, let me start with why.
+            But before I get around to figuring out and then explaining how it was made, let me start with why.
         </p>
 
         <section>
@@ -264,6 +268,7 @@ export const html = (strings, ...values) =&gt;
                 <li>An RSS feed, for the 20 most recent articles, containing the full text.</li>
                 <li>Comments on every article. This is a big one.</li>
                 <li>Some colors and imagery, to spruce things up and please the readers.</li>
+                <li>Easy to author articles. This is also a big one.</li>
             </ul>
             <p>The challenge was: how to do all of that within the vanilla constraints that I set myself?</p>
         </section>
@@ -370,10 +375,29 @@ export const html = (strings, ...values) =&gt;
                 <li>The full list of articles in the archive page</li>
             </ol>
             <p>
-                The recent posts section on the index page can be built by reading the RSS feed, so that's one down.
-                The full list of posts however cannot, so that needs a separate step to build the list of links from the folder of articles.
-                And of course, the RSS feed itself contains full text contents, so that too needs a separate step to build.
-                For these steps I considered various options:
+                Visually showing an index is not so difficult, as a web component built around a simple <code>&lt;li&gt;</code>-based
+                card design can be used to show both the recent posts and the archive page, and was straighforward to style with CSS.
+            </p>
+            <pre><code>&lt;ul class="cards"&gt;
+    &lt;li class="card"&gt;
+        &lt;img src="./articles/2024-08-17-lets-build-a-blog/image.webp" aria-hidden="true" loading="lazy" /&gt;
+        &lt;h3&gt;&lt;a href="./articles/2024-08-17-lets-build-a-blog/"&gt;Let's build a blog, vanilla-style!&lt;/a&gt;&lt;/h3&gt;
+        &lt;p&gt;Explaining how this vanilla web development blog was built, using nothing but vanilla web techniques.&lt;/p&gt;
+        &lt;small&gt;
+            &lt;time datetime="2024-08-17"&gt;August 17, 2024&lt;/time&gt;
+        &lt;/small&gt;
+    &lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+            <p>
+                Getting that data in a convenient form however is another matter.
+                The RSS feed contains full text contents, so needs a separate step to build from the articles' HTML.
+                The recent posts section on the index page thankfully can be built by reading the RSS feed,
+                so was trivial to solve with a <code>&lt;blog-latest-posts&gt;</code> web component once the feed was set up.
+                The full list of articles however cannot, as the RSS feed would grow too large if it contained all posts.
+                So the archive page needs another separate step to build the full list of links from the folder of articles.
+            </p>
+            <p>
+                For these build steps I considered various options:
             </p>
             <dl>
                 <dt>❌ <del>Manually keeping the files in sync</del></dt><dt>
@@ -397,12 +421,12 @@ export const html = (strings, ...values) =&gt;
             </dl>
 
             <p>
-                For the generator page, I built a dedicated web component that allows opening or dropping the
+                For the generator page I built a dedicated web component that allows opening or dropping the
                 local <code>blog/</code> folder with the newly written or updated articles,
                 and then will process those into a <code>feed.xml</code> and <code>index.json</code>.
                 The JSON file is used to load the contents of the archive page.
                 The RSS feed is particularly tricky, because there is a limited set of tags that it should contain.
-                By loading the article's HTML into a DOM parser, and replacing all unsupported tags (like the code viewer)
+                By loading the article's HTML into a DOM parser, and replacing all unsupported tags (like the code viewer web component shown below)
                 the HTML can be transformed into something that can be used as RSS feed entry contents.
             </p>
             <p>The core logic of the generator extracts the article's metadata and transforms the HTML:</p>
@@ -470,7 +494,7 @@ export const html = (strings, ...values) =&gt;
 
 });</code></pre>
 
-            <p>To give you an idea of what <a href="generator.html">generator.html</a> looks like in use:</p>
+            <p>To give you an idea of what <a href="../../generator.html">generator.html</a> looks like in use:</p>
             <img src="https://plainvanillaweb.com/blog/articles/2024-08-17-lets-build-a-blog/generator.webp" alt="generator page screenshot">
 
             <p>

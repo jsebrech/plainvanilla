@@ -6,6 +6,8 @@ const ATOM_FEED_XML = `<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
     <title>Plain Vanilla Blog</title>
     <id>https://plainvanillaweb.com/blog/</id>
+    <icon>https://plainvanillaweb.com/favicon.ico</icon>
+    <logo>https://plainvanillaweb.com/android-chrome-512x512.png</logo>
     <link rel="alternate" href="https://plainvanillaweb.com/blog/"/>
     <link rel="self" href="https://plainvanillaweb.com/blog/feed.xml"/>
     <updated>%UPDATED%</updated>
@@ -133,9 +135,10 @@ customElements.define('blog-generator', class BlogGenerator extends HTMLElement 
         const img = dom.querySelector('blog-header img');
         const image = img && { src: img.getAttribute('src'), alt: img.getAttribute('alt') };
         const updated = dom.querySelector('blog-header').getAttribute('updated') || undefined;
+        const author = dom.querySelector('blog-header p[aria-label="author"]').textContent || undefined;
 
         this.#articles.push({
-            slug, title, summary, content, published, updated, image
+            slug, title, summary, content, published, updated, image, author
         });
     }
 
@@ -190,12 +193,13 @@ customElements.define('blog-generator', class BlogGenerator extends HTMLElement 
     }
 
     addFeedBlock() {
-        const lastUpdated = this.#articles.map(a => a.published).sort().pop();
+        const lastUpdated = this.#articles.map(a => a.updated || a.published).sort().pop();
         const xml = ATOM_FEED_XML
             .replace('%UPDATED%', toISODate(lastUpdated))
             .replace('%ENTRIES%', this.#articles.slice(0, ATOM_FEED_LENGTH).map(a => {
                 const url = `${BLOG_BASE_URL}articles/${a.slug}/`;
                 const media = a.image ? `<media:content url="${new URL(a.image.src, url)}" type="image/${a.image.src.split('.').pop()}" medium="image" />` : '';
+                const author = a.author ? `<author><name><![CDATA[${a.author}]]></name></author>` : '';
                 return `    <entry>
         <title><![CDATA[${a.title}]]></title>
         <link rel="alternate" type="text/html" href="${url}"/>
@@ -204,6 +208,7 @@ customElements.define('blog-generator', class BlogGenerator extends HTMLElement 
         <updated>${toISODate(a.updated || a.published)}</updated>
         <summary><![CDATA[${a.summary}]]></summary>
         ${media}
+        ${author}
         <content type="html"><![CDATA[${a.content}]]></content>
     </entry>`;
             }).join('\n'));
