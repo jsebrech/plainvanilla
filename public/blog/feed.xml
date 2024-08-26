@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
+    <title>Plain Vanilla Blog</title>
+    <id>https://plainvanillaweb.com/blog/</id>
+    <icon>https://plainvanillaweb.com/favicon.ico</icon>
+    <logo>https://plainvanillaweb.com/android-chrome-512x512.png</logo>
+    <link rel="alternate" href="https://plainvanillaweb.com/blog/"/>
+    <link rel="self" href="https://plainvanillaweb.com/blog/feed.xml"/>
+    <updated>2024-08-26T12:00:00.000Z</updated>
+    <author>
+        <name>Joeri Sebrechts</name>
+    </author>
+    <entry>
+        <title><![CDATA[Vanilla entity encoding]]></title>
+        <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2024-08-25-vanilla-entity-encoding/"/>
+        <id>https://plainvanillaweb.com/blog/articles/2024-08-25-vanilla-entity-encoding/</id>
+        <published>2024-08-25T12:00:00.000Z</published>
+        <updated>2024-08-25T12:00:00.000Z</updated>
+        <summary><![CDATA[The first version of this site didn't use entity encoding in the examples. Now it does.]]></summary>
+        <media:content url="https://plainvanillaweb.com/blog/articles/2024-08-25-vanilla-entity-encoding/image.webp" type="image/webp" medium="image" />
+        <author><name><![CDATA[Joeri Sebrechts]]></name></author>
+        <content type="html"><![CDATA[
+        <h3>Good enough</h3>
+        <p>
+            When I made the first version of the Plain Vanilla website, there were things that I would have liked
+            to spend more time on, but that I felt didn't belong in a Good Enough™ version of the site.
+            One of those things was defending against <a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html">Cross-Site Scripting</a> (XSS).
+        </p>
+        <p>
+            XSS is still in the <a href="https://owasp.org/www-project-top-ten/">OWASP Top Ten</a> of security issues, 
+            but it's no longer as prevalent as it used to be. Frameworks have built in a lot of defenses, 
+            and when using their templating systems you have to go out of your way to inject code into the generated HTML.
+            When eschewing frameworks we're reduced to standard templating in our web components, and those offer no defense against XSS.
+        </p>
+        <p>
+            Because of this, in the original site the <a href="https://plainvanillaweb.com/pages/components.html#passing-data">Passing Data example</a> 
+            on the <em>Components</em> page had an undocumented XSS bug.
+            The <em>name</em> field could have scripts injected into it. I felt ambivalent about leaving that bug in.
+            On the one hand, the code was very compact and neat by leaving it in.
+            On the other hand it made that code a bad example that shouldn't be copied.
+            I ended up choosing to leave it as-is because an example doesn't have to be production-grade
+            and generating properly encoded HTML was not the point of that specific example.
+            It's time however to circle back to that XSS bug and figure out how it would have been solved in a clean and readable way,
+            if Santa really did want to bring his List application to production-level quality.
+        </p>
+
+        <h3>The problem</h3>
+        <p>
+            The basic problem we need to solve is that vanilla web components end up having a lot of code that looks like this:
+        </p>
+        <pre><code>class MyComponent extends HTMLElement {
+    connectedCallback() {
+        const btn = `&lt;button&gt;${this.getAttribute('foo')}&lt;/button&gt;`;
+        this.innerHTML = `
+            &lt;header&gt;&lt;h1&gt;${this.getAttribute('bar')}&lt;/h1&gt;&lt;/header&gt;
+            &lt;article&gt;
+                &lt;p class="${this.getAttribute('baz')}"&gt;${this.getAttribute('xyzzy')}&lt;/p&gt;
+                ${btn}
+            &lt;/article&gt;
+        `;
+    }
+}
+customElements.define('my-component', MyComponent);</code></pre>
+        <p>
+            If any of <code>foo</code>, <code>bar</code>, <code>baz</code> or <code>xyzzy</code> contain one of the dangerous HTML entities,
+            we risk seeing our component break, and worst-case risk will see an attacker inject a malicious payload into the page.
+            Just as a reminder, those dangerous HTML entities are &lt;, &gt;, &amp;, ' and ";
+        </p>
+
+        <h3>The fix, take one</h3>
+        <p>
+            A naive fix is creating a html-encoding function and using it consistently:
+        </p>
+        <pre><code>function htmlEncode(s) {
+    return s.replace(/[&amp;&lt;&gt;'"]/g,
+        tag =&gt; ({
+            '&amp;': '&amp;amp;',
+            '&lt;': '&amp;lt;',
+            '&gt;': '&amp;gt;',
+            "'": '&amp;#39;',
+            '"': '&amp;quot;'
+        }[tag]))
+}
+
+class MyComponent extends HTMLElement {
+    connectedCallback() {
+        const btn = `&lt;button&gt;${htmlEncode(this.getAttribute('foo'))}&lt;/button&gt;`;
+        this.innerHTML = `
+            &lt;header&gt;&lt;h1&gt;${htmlEncode(this.getAttribute('bar'))}&lt;/h1&gt;&lt;/header&gt;
+            &lt;article&gt;
+                &lt;p class="${htmlEncode(this.getAttribute('baz'))}"&gt;${htmlEncode(this.getAttribute('xyzzy'))}&lt;/p&gt;
+                ${btn}
+            &lt;/article&gt;
+        `;
+    }
+}
+customElements.define('my-component', MyComponent);</code></pre>
+        <p>
+            While this does work to defend against XSS, it is verbose and ugly, not pleasant to type and not pleasant to read.
+            What really kills it though, is that it assumes attention to detail from us messy humans. We can never forget,
+            never ever, to put a <code>htmlEncode()</code> around each and every variable.
+            In the real world, that is somewhat unlikely.
+        </p>
+        <p>
+            What is needed is a solution that allows us to forget about entity encoding, by doing it automatically
+            when we're templating. I drew inspiration from templating libraries that work in-browser and are based on tagged templates, 
+            like <a href="https://lit.dev/docs/api/templates/#html">lit-html</a> 
+            and <a href="https://github.com/developit/htm">htm</a>. The quest was on to build the most minimalistic
+            html templating function that encoded entities automatically.
+        </p>
+
+        <h3>The fix, take two</h3>
+        <p>
+            Ideally, the fixed example should look more like this:
+        </p>
+        <pre><code>import { html } from './html.js';
+
+class MyComponent extends HTMLElement {
+    connectedCallback() {
+        const btn = html`&lt;button&gt;${this.getAttribute('foo')}&lt;/button&gt;`;
+        this.innerHTML = html`
+            &lt;header&gt;&lt;h1&gt;${this.getAttribute('bar')}&lt;/h1&gt;&lt;/header&gt;
+            &lt;article&gt;
+                &lt;p class="${this.getAttribute('baz')}"&gt;${this.getAttribute('xyzzy')}&lt;/p&gt;
+                ${btn}
+            &lt;/article&gt;
+        `;
+    }
+}
+customElements.define('my-component', MyComponent);</code></pre>
+        <p>
+            The <code>html``</code> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#tagged_templates">tagged template function</a> 
+            would automatically encode entities, in a way that we don't even have to think about it.
+            Even when we nest generated HTML inside of another template, like with <code>${btn}</code>, it should just magically work.
+            It would be so minimal as to disappear in the background, barely impacting readability, maybe even improving it.
+            You may be thinking that doing that correctly would involve an impressive amount of code. I must disappoint.
+        </p>
+        <pre><code>class Html extends String { }
+
+/** 
+ * tag a string as html not to be encoded
+ * @param {string} str
+ * @returns {string}
+ */
+export const htmlRaw = str =&gt; new Html(str);
+
+/** 
+ * entity encode a string as html
+ * @param {*} value The value to encode
+ * @returns {string}
+ */
+export const htmlEncode = (value) =&gt; {
+    // avoid double-encoding the same string
+    if (value instanceof Html) {
+        return value;
+    } else {
+        // https://stackoverflow.com/a/57448862/20980
+        return htmlRaw(
+            String(value).replace(/[&amp;&lt;&gt;'"]/g, 
+                tag =&gt; ({
+                    '&amp;': '&amp;amp;',
+                    '&lt;': '&amp;lt;',
+                    '&gt;': '&amp;gt;',
+                    "'": '&amp;#39;',
+                    '"': '&amp;quot;'
+                }[tag]))
+        );
+    }
+}
+
+/** 
+ * html tagged template literal, auto-encodes entities
+ */
+export const html = (strings, ...values) =&gt; 
+    htmlRaw(String.raw({ raw: strings }, ...values.map(htmlEncode)));
+</code></pre>
+        <p>
+            Those couple dozen lines of code are all that is needed. Let's go through it from top to bottom.
+        </p>
+        <dl>
+            <dt><code>class Html extends String { }</code></dt>
+            <dd>The Html class is used to mark strings as encoded, so that they won't be encoded again.</dd>
+            <dt><code>export const htmlRaw = str =&gt; new Html(str);</code></dt>
+            <dd>Case in point, the htmlRaw function does the marking.</dd>
+            <dt><code>export const htmlEncode = ...</code></dt>
+            <dd>The earlier htmlEncode function is still doing useful work, only this time it will mark the resulting string as HTML, and it won't double-encode.</dd>
+            <dt><code>export const html = ...</code></dt>
+            <dd>The tagged template function that binds it together.</dd>
+        </dl>
+
+        <p>
+            A nice upside of the html template function is that the <em>html-in-template-string</em> Visual Studio Code extension
+            can detect it automatically and will syntax highlight the templated HTML. This is what example 3 looked like after I made it:
+        </p>
+
+        <img src="https://plainvanillaweb.com/blog/articles/2024-08-25-vanilla-entity-encoding/syntax-highlighting.webp" alt="example 3 with syntax highlighting">
+
+        <p>
+            Granted, there's still a bunch of boilerplate here, and that <code>getAttribute</code> gets unwieldy.
+            But with this syntax highlighting enabled sometimes when I'm working on vanilla web components I forget it's not React and JSX, but just HTML and JS.
+            It's surprising how nice of a development experience web standards can be if you embrace them.
+        </p>
+
+        <p>
+            I decided to leave the XSS bug in the <em>Passing Data</em> example, but now the <em>Applications</em> page
+            has an explanation about entity encoding documenting this html template function.
+            I can only hope people that work their way through the tutorial make it that far.
+            For your convenience I also put the HTML templating function in its own separate 
+            <a href="https://github.com/jsebrech/html-literal">html-literal repo on Github</a>.
+        </p>
+
+    ]]></content>
+    </entry>
+    <entry>
+        <title><![CDATA[Let's build a blog, vanilla-style!]]></title>
+        <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2024-08-17-lets-build-a-blog/"/>
+        <id>https://plainvanillaweb.com/blog/articles/2024-08-17-lets-build-a-blog/</id>
+        <published>2024-08-17T12:00:00.000Z</published>
+        <updated>2024-08-26T12:00:00.000Z</updated>
+        <summary><![CDATA[Explaining how this vanilla web development blog was built, using nothing but vanilla web techniques.]]></summary>
+        <media:content url="https://plainvanillaweb.com/blog/articles/2024-08-17-lets-build-a-blog/image.webp" type="image/webp" medium="image" />
+        <author><name><![CDATA[Joeri Sebrechts]]></name></author>
+        <content type="html"><![CDATA[
+        <p>
+            As I write this paragraph it is my birthday, and it seemed like as good an opportunity as any to start a blog about vanilla web development.
+            This blog post will be a bit unusual, as I will be writing it while I'm making the blog's inner workings.
+            But before I get around to figuring out and then explaining how it was made, let me start with why.
+        </p>
+
+        <section>
+            <h3>Origin story</h3>
+            <p>
+                I have been building web sites since the late 90's, and over the years there were always two constants:
+                (1) browsers were terrible developer platforms, (2) new tools and frameworks built ever taller on top of them.
+                The tools were necessary, but their growing complexity frustrated me, and in that frustration lies the origin of this blog.
+            </p>
+            <p>
+                A few years ago something unexpected happened: Microsoft moved away from their (underfeatured) Trident browser engine.
+                Suddenly there was a new baseline of browsers, a capable baseline. Browsers got good!
+                I explored what modern browsers could do as a developer platform, and grew excited with the possibilities
+                to treat the browser itself as the framework, without a middleman. 
+                That eventually led into making the <a href="https://plainvanillaweb.com">Plain Vanilla website</a>, a framework tutorial for the web standards platform.
+            </p>
+            <p>
+                In building this website editorial choices had to be made.
+                Trying to explain too much would only confuse people, so the tutorial was trimmed of its fat.
+                There is however so much more to explore, and that is where this blog enters the picture.
+                Here I will talk about some of the things that didn't find a home in the Plain Vanilla tutorial,
+                and document the new things that do.
+            </p> 
+        </section>
+
+        <section>
+            <h3>What is a blog anyway?</h3>
+
+            <p>
+                Of course, a blog about vanilla web development has to be built vanilla-style.
+                That means no build steps, no server-side logic, no frameworks or libraries.
+                Bottom line that means throwing up a bunch of HTML pages with an index page linking them together,
+                but that by itself isn't enough. The idea is to make a full-fat modern feeling blog,
+                something that has what people expect a blog to have. So off I went to look at popular blogs and build a list of features.
+            </p>
+            <p>A <em>modern</em> blog will have ...</p> 
+            <ul>
+                <li>One page per article, easy for sharing as a link and discovery by Google.</li>
+                <li>A welcome page, with one or more hero cards leading to articles and a list of cards for recent articles.</li>
+                <li>An archive page, with the full history of articles linking to the article pages.</li>
+                <li>An RSS feed, for the 20 most recent articles, containing the full text.</li>
+                <li>Comments on every article. This is a big one.</li>
+                <li>Some colors and imagery, to spruce things up and please the readers.</li>
+                <li>Easy to author articles. This is also a big one.</li>
+            </ul>
+            <p>The challenge was: how to do all of that within the vanilla constraints that I set myself?</p>
+        </section>
+
+        <section>
+            <h3>Article-first design</h3>
+
+            <p>
+                The core of the blog experience is the article, so getting that right is key and that makes it the best place to start.
+                Lacking any kind of generator or server-side routing, each article has to be written as a discrete html page
+                in order to be discoverable by Google. Authoring those html pages should be straightforward,
+                with minimal boilerplate.
+            </p>
+
+            <p>After careful consideration we present to you, an article page blueprint...</p>
+            <pre><code>&lt;!doctype html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;title&gt;A spiffy title!&lt;/title&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" /&gt;
+    &lt;meta name="description" content="This is a spiffy article. You should read it."&gt;
+    &lt;link rel="stylesheet" href="index.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;blog-header published="2024-08-17"&gt;
+        &lt;img src="image.jpeg" alt="Another AI image" loading="lazy" /&gt;
+        &lt;h2&gt;A spiffy title!&lt;/h2&gt;
+        &lt;p class="byline" aria-label="author"&gt;Malkovich&lt;/p&gt;
+    &lt;/blog-header&gt;
+    &lt;main&gt;
+        Article text goes here ...
+    &lt;/main&gt;
+    &lt;blog-footer mastodon-url="https://example.com/@jmalkovich/12345"&gt;&lt;/blog-footer&gt;
+    &lt;script type="module" src="index.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+            <p>
+                This does several things for me. It keeps the &lt;head&gt; section as minimal as possible.
+                It also moves the navigation at the top and bottom into dedicated web components.
+                The header component accepts the article's image and title as child elements,
+                neatly leaving the main element containing just the article's content and nothing else,
+                making it easy to extract (but more on that later).
+            </p>
+            <p>
+                When users have scripting disabled they won't get the header navigation, 
+                but thanks to this CSS they do get a warning:<br>
+                <code>@media (scripting: none) { blog-header::before { content: ' ... ' } }</code><br>
+                This approach frees me from thinking about noscript warnings while writing an article.
+            </p>
+            <p>
+                Finally, for comments I considered Disqus, but didn't want to include their embed.
+                So instead the footer accepts the URL to a mastodon toot about the article,
+                and will automatically generate a link that goes there. Given that the blog has a technical audience
+                I'm pretty sure they can figure out how to reply over there. This approach can be extended
+                to <a href="https://carlschwan.eu/2020/12/29/adding-comments-to-your-static-blog-with-mastodon/">show replies inline on the page</a>
+                by calling the Mastodon API, but I didn't tackle that yet. It's somewhat cumbersome to first post an article, 
+                then toot about it, and then update the article with the toot's URL, but I'll survive.
+                Incidentally, I still giggle like a schoolgirl inside my head every time I type the word <em>toot</em>.
+            </p>
+        </section>
+
+        <section>
+            <h3>Organizing files</h3>
+
+            <p>
+                Next comes the question how to organize the article files into a coherent structure.
+                After thinking it over, this is what I landed on:
+            </p>
+            <ul>
+                <li><code>articles/</code>
+                    <ul>
+                        <li><code><em>YYYY-MM-DD</em>-some-blog-title/</code>
+                            <ul>
+                                <li><code>index.html</code></li>
+                                <li><code>image.jpeg</code></li>
+                                <li>other files used in the article ...</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li><code>components/</code>: the blog's shared web components</li>
+                <li><code>index.html</code>: the main landing page</li>
+                <li><code>archive.html</code>: the archives page</li>
+                <li><code>index.js/css</code>: shared resources</li>
+                <li><code>feed.xml</code>: the RSS feed</li>
+            </ul>
+            <p>
+                By wrapping every article and all its resources into a folder, each article can get as messy and complicated as it wants.
+                The shared index.js and index.css is separate from that of the main site
+                to keep the blog's resources out of the Plain Vanilla site's pages, and vice versa.
+            </p>
+        </section>
+
+        <section>
+            <h3>Building indexes</h3>
+
+            <p>
+                You wouldn't think a blog has a need for many indexes, but in fact this modest blog will have three:
+            </p>
+            <ol>
+                <li>The recent posts section on the main landing page</li>
+                <li>The recent posts in the RSS feed</li>
+                <li>The full list of articles in the archive page</li>
+            </ol>
+            <p>
+                Visually showing an index is not so difficult, as a web component built around a simple <code>&lt;li&gt;</code>-based
+                card design can be used to show both the recent posts and the archive page, and was straighforward to style with CSS.
+            </p>
+            <pre><code>&lt;ul class="cards"&gt;
+    &lt;li class="card"&gt;
+        &lt;img src="./articles/2024-08-17-lets-build-a-blog/image.webp" aria-hidden="true" loading="lazy" /&gt;
+        &lt;h3&gt;&lt;a href="./articles/2024-08-17-lets-build-a-blog/"&gt;Let's build a blog, vanilla-style!&lt;/a&gt;&lt;/h3&gt;
+        &lt;p&gt;Explaining how this vanilla web development blog was built, using nothing but vanilla web techniques.&lt;/p&gt;
+        &lt;small&gt;
+            &lt;time datetime="2024-08-17"&gt;August 17, 2024&lt;/time&gt;
+        &lt;/small&gt;
+    &lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+            <p>
+                Getting that data in a convenient form however is another matter.
+                The RSS feed contains full text contents, so needs a separate step to build from the articles' HTML.
+                The recent posts section on the index page thankfully can be built by reading the RSS feed,
+                so was trivial to solve with a <code>&lt;blog-latest-posts&gt;</code> web component once the feed was set up.
+                The full list of articles however cannot, as the RSS feed would grow too large if it contained all posts.
+                So the archive page needs another separate step to build the full list of links from the folder of articles.
+            </p>
+            <p>
+                For these build steps I considered various options:
+            </p>
+            <dl>
+                <dt>❌ <del>Manually keeping the files in sync</del></dt><dt>
+                </dt><dd>
+                    It sounded like a lot of work, and error-prone, so a hard no on that one.
+                </dd>
+                <dt>❌ <del>A generator script, and a package.json</del></dt>
+                <dd>
+                    This is what I would normally go for, relying on a bunch of npm dependencies and a bunch of scripting
+                    to process the articles into the index files that are needed. 
+                    It felt like cheating to bring in node and its ecosystem, so again this was a no.
+                </dd>
+                <dt>✅ A separate generator webpage</dt>
+                <dd>
+                    I've wanted to play around with the
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/File_System_API">File System API</a>
+                    for a while, and this seemed a good opportunity.
+                    Turning the generator into a webpage also leaves options for actually running the web components
+                    and extracting their dynamically rendered content.
+                </dd>
+            </dl>
+
+            <p>
+                For the generator page I built a dedicated web component that allows opening or dropping the
+                local <code>blog/</code> folder with the newly written or updated articles,
+                and then will process those into a <code>feed.xml</code> and <code>index.json</code>.
+                The JSON file is used to load the contents of the archive page.
+                The RSS feed is particularly tricky, because there is a limited set of tags that it should contain.
+                By loading the article's HTML into a DOM parser, and replacing all unsupported tags (like the code viewer web component shown below)
+                the HTML can be transformed into something that can be used as RSS feed entry contents.
+            </p>
+            <p>The core logic of the generator extracts the article's metadata and transforms the HTML:</p>
+            <pre><code>customElements.define('blog-generator', class BlogGenerator extends HTMLElement {
+
+    // ...
+
+    async processArticle(article, path) {
+        const file = await article.getFile();
+        const html = await file.text();
+        const dom = (new DOMParser()).parseFromString(html, 'text/html');
+        // mandatory
+        const title = dom.querySelector('title').textContent;
+        const summary = dom.querySelector('meta[name="description"]').getAttribute('content');
+        const published = dom.querySelector('blog-header').getAttribute('published');
+        const content = await this.processArticleContent(dom.querySelector('main'), path);
+        const slug = path.name;
+        // optional
+        const img = dom.querySelector('blog-header img');
+        const image = img &amp;&amp; { src: img.getAttribute('src'), alt: img.getAttribute('alt') };
+        const updated = dom.querySelector('blog-header').getAttribute('updated') || undefined;
+
+        this.#articles.push({
+            slug, title, summary, content, published, updated, image
+        });
+    }
+
+    async processArticleContent(main, path) {
+        // inline code examples
+        await Promise.all([...main.querySelectorAll('x-code-viewer')].map(async (elem) =&gt; {
+            const text = await this.downloadFile(elem.getAttribute('src'), path);
+            const pre = document.createElement('pre');
+            pre.innerHTML = html`&lt;code&gt;${text}&lt;/code&gt;`;
+            elem.replaceWith(pre);
+        }));
+
+        // convert img src to absolute url
+        [...main.querySelectorAll('img')].map((elem) =&gt; {
+            const src = elem.getAttribute('src');
+            if (src.indexOf('http') !== 0) {
+                elem.setAttribute('src', new URL(`articles/${path.name}/${src}`, BLOG_BASE_URL));
+            }
+        });
+
+        // replace iframes by links
+        [...main.querySelectorAll('iframe')].map((elem) =&gt; {
+            const src = elem.getAttribute('src');
+            const title = elem.getAttribute('title') || src;
+            const a = document.createElement('a');
+            a.textContent = title;
+            const p = document.createElement('p');
+            p.appendChild(a);
+            elem.replaceWith(p);
+            if (src.indexOf('http') !== 0) {
+                a.href = new URL(`articles/${path.name}/${src}`, BLOG_BASE_URL);
+            } else {
+                a.href = src;
+            }
+        });
+
+        return main.innerHTML;
+    }
+
+    // ...
+
+});</code></pre>
+
+            <p>To give you an idea of what <a href="../../generator.html">generator.html</a> looks like in use:</p>
+            <img src="https://plainvanillaweb.com/blog/articles/2024-08-17-lets-build-a-blog/generator.webp" alt="generator page screenshot">
+
+            <p>
+                The generator JS ended up around 250 lines of code, so not too cumbersome to build or maintain.
+                If you're curious about the generator, check out the 
+                <a href="https://github.com/jsebrech/plainvanilla/tree/main/public/blog/">blog's code on Github</a>.
+                It can be found in <code>generator.html</code> and <code>generator.js</code>.
+            </p>
+
+            <p>The user experience of writing a blog post then boils down to this:</p>
+            <ol>
+                <li>Create an article folder and write the article as HTML</li>
+                <li>Open the generator page</li>
+                <li>Drop the blog folder on the generator, it will automatically process the articles</li>
+                <li>Copy the <code>feed.xml</code> and <code>index.json</code> text to their respective files</li>
+                <li>Commit and push the changes</li>
+                <li>Optionally: toot on mastodon, add the toot URL in the page, commit and push</li>
+            </ol>
+
+            <p>Not too shabby...</p>
+        </section>
+    ]]></content>
+    </entry>
+</feed>

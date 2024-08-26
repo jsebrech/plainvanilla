@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Plain Vanilla Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <meta name="description" content="A blog about vanilla web development.">
+    <link rel="icon" href="../favicon.ico">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <link rel="stylesheet" href="./index.css">
+    <link rel="alternate" type="application/rss+xml" href="https://plainvanillaweb.com/blog/feed.xml" />
+</head>
+<body>
+    <header>
+        <h1>Plain Vanilla Blog</h1>
+        <p>A blog about vanilla web development &mdash; no frameworks, just standards.</p>
+        <nav aria-label="breadcrumb">
+            <ol>
+                <li><a href="../index.html">Plain Vanilla</a></li>
+                <li><a aria-current="page">Blog</a></li>
+            </ol>
+        </nav>
+    </header>
+    <main>
+        <h2>Featured</h2>
+        <ul class="cards">
+            <li class="card">
+                <img src="./articles/2024-08-17-lets-build-a-blog/image.webp" aria-hidden="true" loading="lazy" />
+                <h3><a href="./articles/2024-08-17-lets-build-a-blog/">Let's build a blog, vanilla-style!</a></h3>
+                <p>Explaining how this vanilla web development blog was built, using nothing but vanilla web techniques.</p>
+                <small>
+                    <time datetime="2024-08-17">August 17, 2024</time>
+                </small>
+            </li>
+        </ul>
+
+        <h2>Latest Posts</h2>
+        <blog-latest-posts>
+            <noscript>Please enable scripting to view.</noscript>
+        </blog-latest-posts>
+
+        <p class="archive">
+            <a href="archive.html">Archive</a>
+            |
+            <a href="feed.xml">RSS</a>
+        </p>
+    </main>
+    <blog-footer></blog-footer>
+    <script type="module" src="./index.js"></script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Let's build a blog, vanilla-style!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <meta name="description" content="Explaining how this vanilla web development blog was built, using nothing but vanilla web techniques.">
+    <link rel="stylesheet" href="../../index.css">
+</head>
+<body>
+    <blog-header published="2024-08-17" updated="2024-08-26">
+        <img src="image.webp" alt="Bricks being laid by hand" loading="lazy" />
+        <h2>Let's build a blog, vanilla-style!</h2>
+        <p class="byline" aria-label="author">Joeri Sebrechts</p>
+    </blog-header>
+    <main>
+        <p>
+            As I write this paragraph it is my birthday, and it seemed like as good an opportunity as any to start a blog about vanilla web development.
+            This blog post will be a bit unusual, as I will be writing it while I'm making the blog's inner workings.
+            But before I get around to figuring out and then explaining how it was made, let me start with why.
+        </p>
+
+        <section>
+            <h3>Origin story</h3>
+            <p>
+                I have been building web sites since the late 90's, and over the years there were always two constants:
+                (1) browsers were terrible developer platforms, (2) new tools and frameworks built ever taller on top of them.
+                The tools were necessary, but their growing complexity frustrated me, and in that frustration lies the origin of this blog.
+            </p>
+            <p>
+                A few years ago something unexpected happened: Microsoft moved away from their (underfeatured) Trident browser engine.
+                Suddenly there was a new baseline of browsers, a capable baseline. Browsers got good!
+                I explored what modern browsers could do as a developer platform, and grew excited with the possibilities
+                to treat the browser itself as the framework, without a middleman. 
+                That eventually led into making the <a href="https://plainvanillaweb.com">Plain Vanilla website</a>, a framework tutorial for the web standards platform.
+            </p>
+            <p>
+                In building this website editorial choices had to be made.
+                Trying to explain too much would only confuse people, so the tutorial was trimmed of its fat.
+                There is however so much more to explore, and that is where this blog enters the picture.
+                Here I will talk about some of the things that didn't find a home in the Plain Vanilla tutorial,
+                and document the new things that do.
+            </p> 
+        </section>
+
+        <section>
+            <h3>What is a blog anyway?</h3>
+
+            <p>
+                Of course, a blog about vanilla web development has to be built vanilla-style.
+                That means no build steps, no server-side logic, no frameworks or libraries.
+                Bottom line that means throwing up a bunch of HTML pages with an index page linking them together,
+                but that by itself isn't enough. The idea is to make a full-fat modern feeling blog,
+                something that has what people expect a blog to have. So off I went to look at popular blogs and build a list of features.
+            </p>
+            <p>A <em>modern</em> blog will have ...</p> 
+            <ul>
+                <li>One page per article, easy for sharing as a link and discovery by Google.</li>
+                <li>A welcome page, with one or more hero cards leading to articles and a list of cards for recent articles.</li>
+                <li>An archive page, with the full history of articles linking to the article pages.</li>
+                <li>An RSS feed, for the 20 most recent articles, containing the full text.</li>
+                <li>Comments on every article. This is a big one.</li>
+                <li>Some colors and imagery, to spruce things up and please the readers.</li>
+                <li>Easy to author articles. This is also a big one.</li>
+            </ul>
+            <p>The challenge was: how to do all of that within the vanilla constraints that I set myself?</p>
+        </section>
+
+        <section>
+            <h3>Article-first design</h3>
+
+            <p>
+                The core of the blog experience is the article, so getting that right is key and that makes it the best place to start.
+                Lacking any kind of generator or server-side routing, each article has to be written as a discrete html page
+                in order to be discoverable by Google. Authoring those html pages should be straightforward,
+                with minimal boilerplate.
+            </p>
+
+            <p>After careful consideration we present to you, an article page blueprint...</p>
+            <x-code-viewer src="example.html"></x-code-viewer>
+
+            <p>
+                This does several things for me. It keeps the &lt;head&gt; section as minimal as possible.
+                It also moves the navigation at the top and bottom into dedicated web components.
+                The header component accepts the article's image and title as child elements,
+                neatly leaving the main element containing just the article's content and nothing else,
+                making it easy to extract (but more on that later).
+            </p>
+            <p>
+                When users have scripting disabled they won't get the header navigation, 
+                but thanks to this CSS they do get a warning:<br>
+                <code>@media (scripting: none) { blog-header::before { content: ' ... ' } }</code><br>
+                This approach frees me from thinking about noscript warnings while writing an article.
+            </p>
+            <p>
+                Finally, for comments I considered Disqus, but didn't want to include their embed.
+                So instead the footer accepts the URL to a mastodon toot about the article,
+                and will automatically generate a link that goes there. Given that the blog has a technical audience
+                I'm pretty sure they can figure out how to reply over there. This approach can be extended
+                to <a href="https://carlschwan.eu/2020/12/29/adding-comments-to-your-static-blog-with-mastodon/">show replies inline on the page</a>
+                by calling the Mastodon API, but I didn't tackle that yet. It's somewhat cumbersome to first post an article, 
+                then toot about it, and then update the article with the toot's URL, but I'll survive.
+                Incidentally, I still giggle like a schoolgirl inside my head every time I type the word <em>toot</em>.
+            </p>
+        </section>
+
+        <section>
+            <h3>Organizing files</h3>
+
+            <p>
+                Next comes the question how to organize the article files into a coherent structure.
+                After thinking it over, this is what I landed on:
+            </p>
+            <ul>
+                <li><code>articles/</code>
+                    <ul>
+                        <li><code><em>YYYY-MM-DD</em>-some-blog-title/</code>
+                            <ul>
+                                <li><code>index.html</code></li>
+                                <li><code>image.jpeg</code></li>
+                                <li>other files used in the article ...</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li><code>components/</code>: the blog's shared web components</li>
+                <li><code>index.html</code>: the main landing page</li>
+                <li><code>archive.html</code>: the archives page</li>
+                <li><code>index.js/css</code>: shared resources</li>
+                <li><code>feed.xml</code>: the RSS feed</li>
+            </ul>
+            <p>
+                By wrapping every article and all its resources into a folder, each article can get as messy and complicated as it wants.
+                The shared index.js and index.css is separate from that of the main site
+                to keep the blog's resources out of the Plain Vanilla site's pages, and vice versa.
+            </p>
+        </section>
+
+        <section>
+            <h3>Building indexes</h3>
+
+            <p>
+                You wouldn't think a blog has a need for many indexes, but in fact this modest blog will have three:
+            </p>
+            <ol>
+                <li>The recent posts section on the main landing page</li>
+                <li>The recent posts in the RSS feed</li>
+                <li>The full list of articles in the archive page</li>
+            </ol>
+            <p>
+                Visually showing an index is not so difficult, as a web component built around a simple <code>&lt;li&gt;</code>-based
+                card design can be used to show both the recent posts and the archive page, and was straighforward to style with CSS.
+            </p>
+            <x-code-viewer src="card.html"></x-code-viewer>
+            <p>
+                Getting that data in a convenient form however is another matter.
+                The RSS feed contains full text contents, so needs a separate step to build from the articles' HTML.
+                The recent posts section on the index page thankfully can be built by reading the RSS feed,
+                so was trivial to solve with a <code>&lt;blog-latest-posts&gt;</code> web component once the feed was set up.
+                The full list of articles however cannot, as the RSS feed would grow too large if it contained all posts.
+                So the archive page needs another separate step to build the full list of links from the folder of articles.
+            </p>
+            <p>
+                For these build steps I considered various options:
+            </p>
+            <dl>
+                <dt>❌ <del>Manually keeping the files in sync</del><dt>
+                <dd>
+                    It sounded like a lot of work, and error-prone, so a hard no on that one.
+                </dd>
+                <dt>❌ <del>A generator script, and a package.json</del></dt>
+                <dd>
+                    This is what I would normally go for, relying on a bunch of npm dependencies and a bunch of scripting
+                    to process the articles into the index files that are needed. 
+                    It felt like cheating to bring in node and its ecosystem, so again this was a no.
+                </dd>
+                <dt>✅ A separate generator webpage</dt>
+                <dd>
+                    I've wanted to play around with the
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/File_System_API">File System API</a>
+                    for a while, and this seemed a good opportunity.
+                    Turning the generator into a webpage also leaves options for actually running the web components
+                    and extracting their dynamically rendered content.
+                </dd>
+            </dl>
+
+            <p>
+                For the generator page I built a dedicated web component that allows opening or dropping the
+                local <code>blog/</code> folder with the newly written or updated articles,
+                and then will process those into a <code>feed.xml</code> and <code>index.json</code>.
+                The JSON file is used to load the contents of the archive page.
+                The RSS feed is particularly tricky, because there is a limited set of tags that it should contain.
+                By loading the article's HTML into a DOM parser, and replacing all unsupported tags (like the code viewer web component shown below)
+                the HTML can be transformed into something that can be used as RSS feed entry contents.
+            </p>
+            <p>The core logic of the generator extracts the article's metadata and transforms the HTML:</p>
+            <x-code-viewer src="generator.js"></x-code-viewer>
+
+            <p>To give you an idea of what <a href="../../generator.html">generator.html</a> looks like in use:</p>
+            <img src="generator.webp" alt="generator page screenshot" />
+
+            <p>
+                The generator JS ended up around 250 lines of code, so not too cumbersome to build or maintain.
+                If you're curious about the generator, check out the 
+                <a href="https://github.com/jsebrech/plainvanilla/tree/main/public/blog/">blog's code on Github</a>.
+                It can be found in <code>generator.html</code> and <code>generator.js</code>.
+            </p>
+
+            <p>The user experience of writing a blog post then boils down to this:</p>
+            <ol>
+                <li>Create an article folder and write the article as HTML</li>
+                <li>Open the generator page</a></li>
+                <li>Drop the blog folder on the generator, it will automatically process the articles</li>
+                <li>Copy the <code>feed.xml</code> and <code>index.json</code> text to their respective files</li>
+                <li>Commit and push the changes</li>
+                <li>Optionally: toot on mastodon, add the toot URL in the page, commit and push</li>
+            </ol>
+
+            <p>Not too shabby...</p>
+        </section>
+    </main>
+    <blog-footer></blog-footer>
+    <script type="module" src="../../index.js"></script>
+</body>
+</html>

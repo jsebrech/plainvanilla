@@ -1,12 +1,18 @@
 html {
     margin:    0 auto;
     max-width: 800px;
+    background-color: var(--background-color);
+    color: var(--text-color);
 }
 
 body {
     font-family: var(--font-system);
     font-weight: normal;
     margin: 1.5em;
+}
+
+a, a:hover {
+    color: var(--link-color);
 }
 
 header {
@@ -22,7 +28,7 @@ h2 {
 }
 
 h3 {
-    margin-top: 0.6em;
+    margin-top: 1em;
 }
 
 ul {
@@ -47,7 +53,7 @@ dd {
     margin-bottom: 1em;
 }
 
-nav ul {
+nav ol {
     display: flex;
     flex-wrap: wrap;
     justify-content: start;
@@ -58,10 +64,15 @@ nav ul {
 }
 
 nav li {
-    margin: 0 -1px -1px 0;
     display: inline-block;
-    border: 1px solid var(--border-color);
-    padding: 0.5em;
+    padding: 0.5em 0.7em;
+    border: none;
+    background-color: var(--nav-background-color);
+    border-left: 2px solid var(--nav-separator-color);
+}
+
+nav li a {
+    color: inherit;
 }
 
 code {
@@ -123,14 +134,26 @@ footer {
     text-align: center;
 }
 
-footer .contact {
-    line-height: 1em;
-    padding: 0 0.5em;
+footer .contact a {
+    color: inherit;
+    background-repeat: no-repeat;
+    background-position: center left;
+    background-size: contain;
+    margin: 0 0.5em;
 }
 
-footer .contact * {
-    color: inherit;
-    vertical-align: middle;
+footer .contact a:hover {
+    color: var(--link-color);
+}
+
+footer .contact a[href*="github.com"] {
+    background-image: url("../lib/akar-icons/github-fill.svg");
+    padding-left: 2em;
+}
+
+footer .contact a[href*="sebrechts.net"] {
+    background-image: url("../lib/akar-icons/envelope.svg");
+    padding-left: 2em;
 }
 
 hr {
@@ -164,4 +187,5 @@ section:hover > a.section-anchor {
 
 section:hover > a.section-anchor:hover {
     opacity: 1;
+    color: var(--link-color);
 }

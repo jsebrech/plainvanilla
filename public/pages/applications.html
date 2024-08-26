@@ -14,13 +14,13 @@
     <header>
         <h1>Plain Vanilla Applications</h1>
         <nav>
-            <ul>
-                <li><a href="../index.html">Introduction</a></li>
+            <ol>
+                <li><a href="../index.html">Welcome</a></li>
                 <li><a href="components.html">Components</a></li>
                 <li><a href="styling.html">Styling</a></li>
                 <li><a href="sites.html">Sites</a></li>
                 <li>Applications</li>
-            </ul>
+            </ol>
         </nav>
     </header>
     <main>
@@ -87,6 +87,27 @@
                 </p>
             </aside>
 
+        </section>
+        <section id="entity-encoding">
+            <a href="#entity-encoding" class="section-anchor">#</a>
+            <h2>Entity Encoding</h2>
+            <p>
+                A real-world application will often have complex markup in the web components, filled with variables based on user input.
+                This creates a risk for <a href="https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html">Cross-Site Scripting</a>.
+                In fact, eagle-eyed readers may have noticed in the <a href="components.html#passing-data">Passing Data example</a> of the Components page that a XSS bug snuck in.
+                By entering the following as a name, the output of <code>list.js</code> would have code injected:<br><code>&lt;button onclick="alert('gotcha')"&gt;oops&lt;/button&gt;</code>
+            </p>
+            <p>Go ahead and return to that page to try it ...</p>
+            <p>
+                To solve this we need to encode dangerous HTML entities while plugging variables into HTML markup, something frameworks often do automatically in their templating layer.
+                This <code>html``</code> literal function can be used to do this automatically in a vanilla codebase:
+            </p>
+            <x-code-viewer src="../lib/html.js"></x-code-viewer>
+            <p>
+                The reworked <code>list.js</code> that uses this:
+            </p>
+            <x-code-viewer src="./examples/components/data/components/list-safe.js" name="components/list.js"></x-code-viewer>
+            <p>To learn more on using this function, check the <a href="https://github.com/jsebrech/html-literal">html-literal documentation</a>.</p>
         </section>
         <section id="managing-state">
             <a href="#managing-state" class="section-anchor">#</a>
@@ -296,12 +317,10 @@
 
     <footer>
         <hr />
-        <span class="contact">
-            <img src="../lib/akar-icons/github-fill.svg" alt="github" /> <a href="https://github.com/jsebrech/plainvanilla">GitHub</a>
-        </span>
-        <span class="contact">
-            <img src="../lib/akar-icons/envelope.svg" alt="mail" /> <a href="https://sebrechts.net/">Contact</a>
-        </span>
+        <div class="contact">
+            <a href="https://github.com/jsebrech/plainvanilla">GitHub</a>
+            <a href="https://sebrechts.net/">Contact</a>
+        </div>
     </footer>
 </body>
 </html>

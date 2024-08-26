@@ -46,3 +46,7 @@ x-code-viewer.loading code::after {
 @keyframes code-viewer-spinner {
     to {transform: rotate(360deg);}
 }
+
+@media (scripting: none) {
+    x-code-viewer::before { content: 'Enable scripting to view ' attr(src) }
+}

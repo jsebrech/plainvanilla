@@ -1,0 +1,124 @@
+@import url("../index.css");
+
+.cards { 
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-gap: 2em;
+    row-gap: 0;
+    grid-auto-flow: row;
+    grid-auto-rows: minmax(200px, auto);
+}
+
+.card {
+    display: block;
+    list-style: none;
+    padding: 1em;
+    margin: 0 -1em;
+    font-size: 0.9em;
+    border-radius: 5px;
+    container-type: inline-size;
+    container-name: card;
+}
+
+.card img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    margin-bottom: 0.5em;
+}
+
+.card h3 {
+    margin-top: 0;
+    margin-bottom: 0.5em;
+}
+
+.card a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* make the whole card focusable */
+.card:focus-within {
+    box-shadow: 0 0 0 0.25rem;
+}
+
+.card:focus-within a:focus {
+    text-decoration: none;
+}
+
+/* turn the whole card into the clickable area */
+.card h3 a::after {
+    display: block;
+    position: absolute;
+    content: "";
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/* make byline links clickable */
+.card small {
+    position: relative;
+    z-index: 10;
+    color: var(--text-color-mute);
+}
+
+.card small a {
+    text-decoration: underline;
+}
+
+.card small a:hover {
+    color: var(--text-color);
+}
+
+/* for hero cards (full width), move the image to the left */
+@container card ( min-width: 500px ) {
+    .card img {
+        float: left;
+        width: calc(50% - 1em);
+        height: 200px;
+        margin-right: 2em;
+        margin-bottom: 0;
+    }
+}
+
+.archive {
+    text-align: center;
+    color: var(--text-color-mute);
+
+    a:not(:hover) {
+        color: inherit;
+    }
+}
+
+.byline {
+    color: var(--text-color-mute);
+    font-size: 0.8em;
+    margin-bottom: 1.5em;
+}
+
+blog-header {
+    display: block;
+    margin-bottom: 1.5em;
+}
+
+blog-header nav {
+    margin-bottom: 2em;
+}
+
+main img {
+    margin: 0.5em 0;
+}
+
+@media (scripting: none) {
+    blog-header::before {
+        content: 'Please enable scripting to view the navigation'
+    }
+}
+
+.comments {
+    margin-top: 2em;
+    text-align: center;
+}
