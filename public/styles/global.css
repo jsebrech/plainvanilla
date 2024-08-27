@@ -69,6 +69,7 @@ nav li {
     border: none;
     background-color: var(--nav-background-color);
     border-left: 2px solid var(--nav-separator-color);
+    border-bottom: 2px solid var(--background-color);
 }
 
 nav li a {
