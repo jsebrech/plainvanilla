@@ -34,7 +34,7 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Create analytics file
-        run: echo "$CLOUDFLARE_ANALYTICS" > public/analytics.template
+        run: echo "${{ vars.CLOUDFLARE_ANALYTICS }}" > public/analytics.template
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
