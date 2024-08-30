@@ -6,10 +6,222 @@
     <logo>https://plainvanillaweb.com/android-chrome-512x512.png</logo>
     <link rel="alternate" href="https://plainvanillaweb.com/blog/"/>
     <link rel="self" href="https://plainvanillaweb.com/blog/feed.xml"/>
-    <updated>2024-08-26T12:00:00.000Z</updated>
+    <updated>2024-08-30T12:00:00.000Z</updated>
     <author>
         <name>Joeri Sebrechts</name>
     </author>
+    <entry>
+        <title><![CDATA[Poor man's signals]]></title>
+        <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2024-08-30-poor-mans-signals/"/>
+        <id>https://plainvanillaweb.com/blog/articles/2024-08-30-poor-mans-signals/</id>
+        <published>2024-08-30T12:00:00.000Z</published>
+        <updated>2024-08-30T12:00:00.000Z</updated>
+        <summary><![CDATA[Signals are all the rage over in frameworkland, so let's bring them to vanilla JS.]]></summary>
+        <media:content url="https://plainvanillaweb.com/blog/articles/2024-08-30-poor-mans-signals/image.webp" type="image/webp" medium="image" />
+        <author><name><![CDATA[Joeri Sebrechts]]></name></author>
+        <content type="html"><![CDATA[
+        <p>
+            Signals are all the rage right now. Everyone's doing them.
+            <a href="https://angular.dev/guide/signals">Angular</a>,
+            and <a href="https://docs.solidjs.com/concepts/signals">Solid</a>,
+            and <a href="https://preactjs.com/guide/v10/signals/">Preact</a>,
+            and there are third party packages for just about every framework that doesn't already have them.
+            There's even a <a href="https://github.com/tc39/proposal-signals">proposal</a>
+            to add them to the language, and if that passes it's just a 
+            <a href="https://thenewstack.io/did-signals-just-land-in-react/">matter of time</a> before all frameworks 
+            have them built in.
+        </p>
+
+        <h3>Living under a rock</h3>
+        <p>
+            In case you've been living under a rock, here's the example from Preact's documentation 
+            that neatly summarizes what signals do:
+        </p>
+        <pre><code>import { signal, computed, effect } from "@preact/signals";
+
+const name = signal("Jane");
+const surname = signal("Doe");
+const fullName = computed(() =&gt; `${name.value} ${surname.value}`);
+
+// Logs name every time it changes:
+effect(() =&gt; console.log(fullName.value));
+// Logs: "Jane Doe"
+
+// Updating `name` updates `fullName`, which triggers the effect again:
+name.value = "John";
+// Logs: "John Doe"
+</code></pre>
+        <p>
+            Simply put, signals wrap values and computations 
+            in a way that allows us to easily respond to every change to those values and results in a targeted way,
+            without having to rerender the entire application in the way that we would do in React.
+            In short, signals are an efficient and targeted way to respond to changes without having to do state comparison and DOM-diffing.
+        </p>
+        <p>
+            OK, so, if signals are so great, why am I trying to sell you on them on a vanilla web development blog?
+            Don't worry! Vanilla web developers can have signals too.
+        </p>
+
+        <h3>Just a wrapper</h3>
+        <p>
+            Signals are at heart nothing more than a wrapper for a value that sends events when the value changes.
+            That's nothing that a little trickery with the not well known but very handy <code>EventTarget</code> base class can't fix for us.
+        </p>
+        <pre><code>class Signal extends EventTarget {
+    #value;
+    get value () { return this.#value; }
+    set value (value) {
+        if (this.#value === value) return;
+        this.#value = value;
+        this.dispatchEvent(new CustomEvent('change')); 
+    }
+
+    constructor (value) {
+        super();
+        this.#value = value;
+    }
+}</code></pre>
+        <p>
+            This gets us a very barebones signals experience:
+        </p>
+        <pre><code>const name = new Signal('Jane');
+name.addEventListener('change', () =&gt; console.log(name.value));
+name.value = 'John';
+// Logs: John</code></pre>
+        <p>
+            But that's kind of ugly. The <code>new</code> keyword went out of fashion a decade ago,
+            and that <code>addEventListener</code> sure is unwieldy.
+            So let's add a little syntactic sugar.
+        </p>
+        <pre><code>class Signal extends EventTarget {
+    #value;
+    get value () { return this.#value; }
+    set value (value) {
+        if (this.#value === value) return;
+        this.#value = value;
+        this.dispatchEvent(new CustomEvent('change')); 
+    }
+
+    constructor (value) {
+        super();
+        this.#value = value;
+    }
+
+    effect(fn) {
+        fn();
+        this.addEventListener('change', fn);
+        return () =&gt; this.removeEventListener('change', fn);
+    }
+
+    valueOf () { return this.#value; }
+    toString () { return String(this.#value); }
+}
+
+const signal = _ =&gt; new Signal(_);
+</code></pre>
+        <p>
+            Now our barebones example is a lot nicer to use:
+        </p>
+        <pre><code>const name = signal('Jane');
+name.effect(() =&gt; console.log(name.value));
+// Logs: Jane
+name.value = 'John';
+// Logs: John</code></pre>
+        <p>
+            The <code>effect(fn)</code> method will call the specified function,
+            and also subscribe it to changes in the signal's value.
+        </p>
+        <p>
+            It also returns a dispose function that can be used to unregister the effect.
+            However, a nice side effect of using <code>EventTarget</code> and browser built-in events as the reactivity primitive
+            is that it makes the browser smart enough to garbage collect the signal and its effect when the signal goes out of scope.
+            This means less chance for memory leaks even if we never call the dispose function.
+        </p>
+        <p>
+            Finally, the <code>toString</code> and <code>valueOf</code> magic methods allow for dropping <code>.value</code> in most places
+            that the signal's value gets used. (But not in this example, because the console is far too clever for that.)
+        </p>
+
+        <h3>Does not compute</h3>
+        <p>
+            This signals implementation is already capable, but at some point it might be handy to have an effect based on more than one signal.
+            That means supporting computed values. Where the base signals are a wrapper around a value,
+            computed signals are a wrapper around a function.
+        </p>
+        <pre><code>class Computed extends Signal {
+    constructor (fn, deps) {
+        super(fn(...deps));
+        for (const dep of deps) {
+            if (dep instanceof Signal) 
+                dep.addEventListener('change', () =&gt; this.value = fn(...deps));
+        }
+    }
+}
+
+const computed = (fn, deps) =&gt; new Computed(fn, deps);
+</code></pre>
+        <p>
+            The computed signal calculates its value from a function.
+            It also depends on other signals, and when they change it will recompute its value.
+            It's a bit obnoxious to have to pass the signals that it depends on
+            as an additional parameter, but hey, I didn't title this article <em>Rich man's signals</em>.
+        </p>
+        <p>
+            This enables porting Preact's signals example to vanilla JS.
+        </p>
+        <pre><code>const name = signal('Jane');
+const surname = signal('Doe');
+const fullName = computed(() =&gt; `${name} ${surname}`, [name, surname]);
+// Logs name every time it changes:
+fullName.effect(() =&gt; console.log(fullName.value));
+// -&gt; Jane Doe
+
+// Updating `name` updates `fullName`, which triggers the effect again:
+name.value = 'John';
+// -&gt; John Doe
+</code></pre>
+
+        <h3>Can you use it in a sentence?</h3>
+        <p>
+            You may be thinking, all these <code>console.log</code> examples are fine and dandy,
+            but how do you use this stuff in actual web development?
+            This simple adder demonstrates how signals can be combined with web components:
+        </p>
+        <pre><code>import { signal, computed } from './signals.js';
+
+customElements.define('x-adder', class extends HTMLElement {
+    a = signal(1);
+    b = signal(2);
+    result = computed((a, b) =&gt; `${a} + ${b} = ${+a + +b}`, [this.a, this.b]);
+
+    connectedCallback() {
+        if (this.querySelector('input')) return;
+
+        this.innerHTML = `
+            &lt;input type="number" name="a" value="${this.a}"&gt;
+            &lt;input type="number" name="b" value="${this.b}"&gt;
+            &lt;p&gt;&lt;/p&gt;
+        `;
+        this.result.effect(
+            () =&gt; this.querySelector('p').textContent = this.result);
+        this.addEventListener('input', 
+            e =&gt; this[e.target.name].value = e.target.value);
+    }
+});
+</code></pre>
+        <p>
+            And here's a live demo:
+        </p>
+        <p><a href="https://plainvanillaweb.com/blog/articles/2024-08-30-poor-mans-signals/adder.html">adder.html</a></p>
+        <p>
+            In case you were wondering, the <code>if</code> is there to prevent adding the effect twice
+            if connectedCallback is called when the component is already rendered.
+        </p>
+        <p>
+            The full poor man's signals code in all its 36 line glory can be found in the <a href="https://github.com/jsebrech/tiny-signals/">tiny-signals repo</a> on Github.
+        </p>
+    ]]></content>
+    </entry>
     <entry>
         <title><![CDATA[Vanilla entity encoding]]></title>
         <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2024-08-25-vanilla-entity-encoding/"/>
@@ -63,7 +275,7 @@
 customElements.define('my-component', MyComponent);</code></pre>
         <p>
             If any of <code>foo</code>, <code>bar</code>, <code>baz</code> or <code>xyzzy</code> contain one of the dangerous HTML entities,
-            we risk seeing our component break, and worst-case risk will see an attacker inject a malicious payload into the page.
+            we risk seeing our component break, and worst-case risk seeing an attacker inject a malicious payload into the page.
             Just as a reminder, those dangerous HTML entities are &lt;, &gt;, &amp;, ' and ";
         </p>
 
@@ -286,7 +498,7 @@ export const html = (strings, ...values) =&gt;
             <p>After careful consideration we present to you, an article page blueprint...</p>
             <pre><code>&lt;!doctype html&gt;
 &lt;html lang="en"&gt;
-&lt;head&gt;
+&lt;head&gt;&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;
     &lt;title&gt;A spiffy title!&lt;/title&gt;
     &lt;meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" /&gt;
     &lt;meta name="description" content="This is a spiffy article. You should read it."&gt;
@@ -378,7 +590,7 @@ export const html = (strings, ...values) =&gt;
                 Visually showing an index is not so difficult, as a web component built around a simple <code>&lt;li&gt;</code>-based
                 card design can be used to show both the recent posts and the archive page, and was straighforward to style with CSS.
             </p>
-            <pre><code>&lt;ul class="cards"&gt;
+            <pre><code>&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;&lt;ul class="cards"&gt;
     &lt;li class="card"&gt;
         &lt;img src="./articles/2024-08-17-lets-build-a-blog/image.webp" aria-hidden="true" loading="lazy" /&gt;
         &lt;h3&gt;&lt;a href="./articles/2024-08-17-lets-build-a-blog/"&gt;Let's build a blog, vanilla-style!&lt;/a&gt;&lt;/h3&gt;

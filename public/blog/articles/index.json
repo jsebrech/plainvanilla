@@ -1,5 +1,12 @@
 [
     {
+        "slug": "2024-08-30-poor-mans-signals",
+        "title": "Poor man's signals",
+        "summary": "Signals are all the rage over in frameworkland, so let's bring them to vanilla JS.",
+        "published": "2024-08-30",
+        "author": "Joeri Sebrechts"
+    },
+    {
         "slug": "2024-08-25-vanilla-entity-encoding",
         "title": "Vanilla entity encoding",
         "summary": "The first version of this site didn't use entity encoding in the examples. Now it does.",

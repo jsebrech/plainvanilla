@@ -9,6 +9,7 @@ class BlogHeader extends HTMLElement {
         const template = document.createElement('template');
         template.innerHTML = html`
             <h1>${title}</h1>
+            <p>A blog about vanilla web development &mdash; no frameworks, just standards.</p>
             <nav aria-label="breadcrumb">
                 <ol>
                     <li><a href="${new URL('../../index.html', import.meta.url)}">Plain Vanilla</a></li>

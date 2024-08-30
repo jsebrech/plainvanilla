@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Poor man's signals</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <meta name="description" content="Signals are all the rage over in frameworkland, so let's bring them to vanilla JS.">
+    <link rel="stylesheet" href="../../index.css">
+</head>
+<body>
+    <blog-header published="2024-08-30">
+        <img src="image.webp" alt="" loading="lazy" />
+        <h2>Poor man's signals</h2>
+        <p class="byline" aria-label="author">Joeri Sebrechts</p>
+    </blog-header>
+    <main>
+        <p>
+            Signals are all the rage right now. Everyone's doing them.
+            <a href="https://angular.dev/guide/signals">Angular</a>,
+            and <a href="https://docs.solidjs.com/concepts/signals">Solid</a>,
+            and <a href="https://preactjs.com/guide/v10/signals/">Preact</a>,
+            and there are third party packages for just about every framework that doesn't already have them.
+            There's even a <a href="https://github.com/tc39/proposal-signals">proposal</a>
+            to add them to the language, and if that passes it's just a 
+            <a href="https://thenewstack.io/did-signals-just-land-in-react/">matter of time</a> before all frameworks 
+            have them built in.
+        </p>
+
+        <h3>Living under a rock</h3>
+        <p>
+            In case you've been living under a rock, here's the example from Preact's documentation 
+            that neatly summarizes what signals do:
+        </p>
+        <x-code-viewer src="preact-example.js" name=""></x-code-viewer>
+        <p>
+            Simply put, signals wrap values and computations 
+            in a way that allows us to easily respond to every change to those values and results in a targeted way,
+            without having to rerender the entire application in the way that we would do in React.
+            In short, signals are an efficient and targeted way to respond to changes without having to do state comparison and DOM-diffing.
+        </p>
+        <p>
+            OK, so, if signals are so great, why am I trying to sell you on them on a vanilla web development blog?
+            Don't worry! Vanilla web developers can have signals too.
+        </p>
+
+        <h3>Just a wrapper</h3>
+        <p>
+            Signals are at heart nothing more than a wrapper for a value that sends events when the value changes.
+            That's nothing that a little trickery with the not well known but very handy <code>EventTarget</code> base class can't fix for us.
+        </p>
+        <x-code-viewer src="signals1.js" name=""></x-code-viewer>
+        <p>
+            This gets us a very barebones signals experience:
+        </p>
+        <x-code-viewer src="signals1-use.js" name=""></x-code-viewer>
+        <p>
+            But that's kind of ugly. The <code>new</code> keyword went out of fashion a decade ago,
+            and that <code>addEventListener</code> sure is unwieldy.
+            So let's add a little syntactic sugar.
+        </p>
+        <x-code-viewer src="signals2.js" name=""></x-code-viewer>
+        <p>
+            Now our barebones example is a lot nicer to use:
+        </p>
+        <x-code-viewer src="signals2-use.js" name=""></x-code-viewer>
+        <p>
+            The <code>effect(fn)</code> method will call the specified function,
+            and also subscribe it to changes in the signal's value.
+        </p>
+        <p>
+            It also returns a dispose function that can be used to unregister the effect.
+            However, a nice side effect of using <code>EventTarget</code> and browser built-in events as the reactivity primitive
+            is that it makes the browser smart enough to garbage collect the signal and its effect when the signal goes out of scope.
+            This means less chance for memory leaks even if we never call the dispose function.
+        </p>
+        <p>
+            Finally, the <code>toString</code> and <code>valueOf</code> magic methods allow for dropping <code>.value</code> in most places
+            that the signal's value gets used. (But not in this example, because the console is far too clever for that.)
+        </p>
+
+        <h3>Does not compute</h3>
+        <p>
+            This signals implementation is already capable, but at some point it might be handy to have an effect based on more than one signal.
+            That means supporting computed values. Where the base signals are a wrapper around a value,
+            computed signals are a wrapper around a function.
+        </p>
+        <x-code-viewer src="signals3.js" name=""></x-code-viewer>
+        <p>
+            The computed signal calculates its value from a function.
+            It also depends on other signals, and when they change it will recompute its value.
+            It's a bit obnoxious to have to pass the signals that it depends on
+            as an additional parameter, but hey, I didn't title this article <em>Rich man's signals</em>.
+        </p>
+        <p>
+            This enables porting Preact's signals example to vanilla JS.
+        </p>
+        <x-code-viewer src="signals3-use.js" name=""></x-code-viewer>
+
+        <h3>Can you use it in a sentence?</h3>
+        <p>
+            You may be thinking, all these <code>console.log</code> examples are fine and dandy,
+            but how do you use this stuff in actual web development?
+            This simple adder demonstrates how signals can be combined with web components:
+        </p>
+        <x-code-viewer src="adder.js"></x-code-viewer>
+        <p>
+            And here's a live demo:
+        </p>
+        <iframe src="adder.html" name="Adder example"></iframe>
+        <p>
+            In case you were wondering, the <code>if</code> is there to prevent adding the effect twice
+            if connectedCallback is called when the component is already rendered.
+        </p>
+        <p>
+            The full poor man's signals code in all its 36 line glory can be found in the <a href="https://github.com/jsebrech/tiny-signals/">tiny-signals repo</a> on Github.
+        </p>
+    </main>
+    <blog-footer></blog-footer>
+    <script type="module" src="../../index.js"></script>
+</body>
+</html>
