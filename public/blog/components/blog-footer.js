@@ -12,6 +12,7 @@ class BlogFooter extends HTMLElement {
                     <a href="https://github.com/jsebrech/plainvanilla">GitHub</a>
                     <a href="https://sebrechts.net/">Contact</a>
                 </div>
+                <x-analytics></x-analytics>
             </footer>
         `;
     }
