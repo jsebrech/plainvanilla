@@ -1,5 +1,12 @@
 [
     {
+        "slug": "2024-09-03-unix-philosophy",
+        "title": "A unix philosophy for web development",
+        "summary": "Maybe all web components need to be a light-weight framework is the right set of helper functions.",
+        "published": "2024-09-03",
+        "author": "Joeri Sebrechts"
+    },
+    {
         "slug": "2024-08-30-poor-mans-signals",
         "title": "Poor man's signals",
         "summary": "Signals are all the rage over in frameworkland, so let's bring them to vanilla JS.",

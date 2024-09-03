@@ -6,10 +6,377 @@
     <logo>https://plainvanillaweb.com/android-chrome-512x512.png</logo>
     <link rel="alternate" href="https://plainvanillaweb.com/blog/"/>
     <link rel="self" href="https://plainvanillaweb.com/blog/feed.xml"/>
-    <updated>2024-08-30T12:00:00.000Z</updated>
+    <updated>2024-09-03T12:00:00.000Z</updated>
     <author>
         <name>Joeri Sebrechts</name>
     </author>
+    <entry>
+        <title><![CDATA[A unix philosophy for web development]]></title>
+        <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2024-09-03-unix-philosophy/"/>
+        <id>https://plainvanillaweb.com/blog/articles/2024-09-03-unix-philosophy/</id>
+        <published>2024-09-03T12:00:00.000Z</published>
+        <updated>2024-09-03T12:00:00.000Z</updated>
+        <summary><![CDATA[Maybe all web components need to be a light-weight framework is the right set of helper functions.]]></summary>
+        <media:content url="https://plainvanillaweb.com/blog/articles/2024-09-03-unix-philosophy/image.webp" type="image/webp" medium="image" />
+        <author><name><![CDATA[Joeri Sebrechts]]></name></author>
+        <content type="html"><![CDATA[
+        <p>
+            Web components have their malcontents. While frameworks have done their best to provide
+            a place for web components to fit into their architecture, the suit never fits quite right,
+            and framework authors have not been shy about expressing their disappointment.
+            Here's Ryan Carniato of SolidJS explaining what's wrong with web components:
+        </p>
+        <blockquote>
+            The collection of standards (Custom Elements, HTML Templates, Shadow DOM, and formerly HTML Imports) 
+            put together to form Web Components on the surface seem like they could be used to replace 
+            your favourite library or framework. But they are not an advanced templating solution. 
+            They don't improve your ability to render or update the DOM. 
+            They don't manage higher-level concerns for you like state management.
+        </blockquote>
+        <cite><a href="https://dev.to/ryansolid/maybe-web-components-are-not-the-future-hfh">Ryan Carniato</a></cite>
+        <p>
+            While this criticism is true, perhaps it's besides the point.
+            Maybe web components were never meant to solve those problems anyway.
+            Maybe there are ways to solve those problems in a way that dovetails with web components as they exist.
+            In the main <a href="../../../pages/components.html">components tutorial</a> I've already explained what they <em>can</em> do,
+            now let's see what can be done about the things that they <em>can't</em> do.
+        </p>
+
+        <h3>The Unix Philosophy</h3>
+
+        <p>
+            The Unix operating system carries with it a culture and philosophy of system design,
+            which carries over to the command lines of today's Unix-like systems like Linux and MacOS. 
+            This philosophy can be summarized as follows:
+        </p>
+        <ul>
+            <li>Write programs that do one thing and do it well.</li>
+            <li>Write programs to work together.</li>
+            <li>Write programs to handle text streams, because that is a universal interface.</li>
+        </ul>
+        <p>
+            What if we look at the various technologies that comprise web components as just programs, 
+            part of a Unix-like system of web development that we collectively call the browser platform?
+            In that system we can do better than text and use the DOM as the universal interface between programs, 
+            and we can extend the system with a set of single purpose independent "programs" (functions) 
+            that fully embrace the DOM by augmenting it instead of replacing it.
+        </p>
+        <p>
+            In a sense this is the most old-school way of building web projects, the one people who "don't know any better"
+            automatically gravitate to. What us old-school web developers did before Vue and Solid and Svelte, before Angular and React,
+            before Knockout and Ember and Backbone, before even jQuery, was have a bunch of functions in <code>utilities.js</code>
+            that we copied along from project to project.
+            But, you know, sometimes old things can become new again.
+        </p>
+        <p>
+            In previous posts I've already covered a <code>html()</code> function for <a href="../2024-08-25-vanilla-entity-encoding/">vanilla entity encoding</a>,
+            and a <code>signal()</code> function that provides a <a href="../2024-08-30-poor-mans-signals/">tiny signals</a> implementation 
+            that can serve as a lightweight system for state management.
+            That still leaves a missing link between the state managed by the signals and the DOM that is rendered from safely entity-encoded HTML.
+            What we need is a <code>bind()</code> function that can bind data to DOM elements and bind DOM events back to data.
+        </p>
+
+        <h3>Finding inspiration</h3>
+
+        <p>
+            In order to bind a template to data, we need a way of describing that behavior in the HTML markup.
+            Well-trodden paths are often the best starting place to look for inspiration. I like <a href="https://vuejs.org/guide/essentials/template-syntax.html">Vue's template syntax</a>,
+            because it is valid HTML but just augmented, and because it is proven. Vue's templates only pretend to be HTML
+            because they're actually compiled to JavaScript behind the scenes, but let's start there as an API.
+            This is what it looks like:
+        </p>
+        <dl>
+            <dt><code>&lt;img :src="imageSrc" /&gt;</code></dt>
+            <dd>Bind <em>src</em> to track the value of the <em>imageSrc</em> property of the current component.
+                Vue is smart enough to set a property if one exists, and falls back to setting an attribute otherwise.
+                (If that confuses you, read about <a href="https://javascript.info/dom-attributes-and-properties">attributes and properties</a> first.)</dd>
+            <dt><code>&lt;button @click="doThis"&gt;&lt;/button&gt;</code></dt>
+            <dd>Bind the <em>click</em> event to the <em>doThis</em> method of the current component.</dd>
+        </dl>
+        <p>
+            By chance I came across this article about <a href="https://hawkticehurst.com/2024/05/bring-your-own-base-class/">making a web component base class</a>.
+            In the section <em>Declarative interactivity</em> the author shows a way to do the Vue-like event binding syntax
+            on a vanilla web component. This is what inspired me to develop the concept into a generic binding function and write this article.
+        </p>
+
+        <h3>Just an iterator</h3>
+
+        <p>
+            The heart of the binding function is an HTML fragment iterator. 
+            After all, before we can bind attributes we need to first find the ones that have binding directives.
+        </p>
+        <pre><code>export const bind = (template) =&gt; {
+    const fragment = template.content.cloneNode(true);
+    // iterate over all nodes in the fragment
+    const iterator = document.createNodeIterator(
+        fragment,
+        NodeFilter.SHOW_ELEMENT,
+        {
+            // reject any node that is not an HTML element
+            acceptNode: (node) =&gt; {
+                if (!(node instanceof HTMLElement))
+                    return NodeFilter.FILTER_REJECT;
+                return NodeFilter.FILTER_ACCEPT;
+            },
+        }
+    );
+    let node;
+    while (node = iterator.nextNode()) {
+        if (!node) return;
+        const elem = node;
+        for (const attr of Array(...node.attributes)) {
+            // check for event binding directive
+            if (attr.name.startsWith('@')) {
+
+                // TODO: bind event ...
+                
+                elem.removeAttributeNode(attr);
+            // check for property/attribute binding directive
+            } else if (attr.name.startsWith(':')) {
+                
+                // TODO: bind data ...
+                
+                elem.removeAttributeNode(attr);
+            }
+        }
+    }
+    return fragment;
+}</code></pre>
+        <p>
+            This code will take an <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template">HTML template element</a>, 
+            clone it to a <a href="https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment">document fragment</a>, 
+            and then iterate over all the nodes in the fragment, discovering their attributes. 
+            Then for each attribute a check is made to see if it's a binding directive (@ or :). 
+            The node is then bound to data according to the directive attribute (shown here as TODO's), 
+            and the attribute is removed from the node. At the end the bound fragment is returned for inserting into the DOM.
+        </p>
+        <p>
+            The benefit of using a fragment is that it is disconnected from the main DOM, while still offering all of the DOM API's. 
+            That means we can easily create a node iterator to walk over it and discover all the attributes 
+            with binding directives, modify those nodes and attributes in-place, and still be sure we're not causing 
+            DOM updates in the main page until the fragment is inserted there. This makes the bind function very fast.
+        </p>
+        <p>
+            If you're thinking "woah dude, that's a lot of code and a lot of technobabble, I ain't reading all that,"
+            then please, I implore you to read through the code line by line, and you'll see it will all make sense.
+        </p>
+        <p>
+            Of course, we also need to have something to bind <em>to</em>, so we need to add a second parameter.
+            At the same time, it would be nice to just be able to pass in a string and have it auto-converted into a template.
+            The beginning of our bind function then ends up looking like this:
+        </p>
+        <pre><code>export const bind = (template, target) =&gt; {
+    if (!template.content) {
+        const text = template;
+        template = document.createElement('template');
+        template.innerHTML = text;
+    }
+    const fragment = template.content.cloneNode(true);
+// ...
+}</code></pre>
+        <p>That just leaves us the TODO's. We can make those as simple or complicated as we want. I'll pick a middle ground.</p>
+
+        <h3>Binding to events</h3>
+
+        <p>This 20 line handler binds events to methods, signals or properties:</p>
+        <pre><code>// check for custom event listener attributes
+if (attr.name.startsWith('@')) {
+    const event = attr.name.slice(1);
+    const property = attr.value;
+    let listener;
+    // if we're binding the event to a function, call it directly
+    if (typeof target[property] === 'function') {
+        listener = target[property].bind(target);
+    // if we're binding to a signal, set the signal's value
+    } else if (typeof target[property] === 'object' &amp;&amp; 
+                typeof target[property].value !== 'undefined') {
+        listener = e =&gt; target[property].value = e.target.value;
+    // fallback: assume we're binding to a property, set the property's value
+    } else {
+        listener = e =&gt; target[property] = e.target.value;
+    }
+    elem.addEventListener(event, listener);
+    // remove (non-standard) attribute from element
+    elem.removeAttributeNode(attr);
+}</code></pre>
+
+        <p>That probably doesn't explain much, so let me give an example of what this enables:</p>
+        <p><a href="https://plainvanillaweb.com/blog/articles/2024-09-03-unix-philosophy/example-bind3/example.html">Binding to events example</a></p>
+        <pre><code>import { bind } from './bind.js';
+import { signal } from './signals.js';
+
+customElements.define('x-example', class Example extends HTMLElement {
+
+    set a(value) { 
+        this.setAttribute('a', value);
+        this.querySelector('label[for=a] span').textContent = value;
+    }
+    set b(value) {
+        this.setAttribute('b', value);
+        this.querySelector('label[for=b] span').textContent = value;
+    }
+    c = signal('');
+
+    connectedCallback() {
+        this.append(bind(`
+            &lt;div&gt;
+                &lt;input id="a" type="number" @input="onInputA"&gt;
+                &lt;label for="a"&gt;A = &lt;span&gt;&lt;/span&gt;&lt;/label&gt;
+            &lt;/div&gt;
+            &lt;div&gt;
+                &lt;input id="b" type="number" @input="b"&gt;
+                &lt;label for="b"&gt;B = &lt;span&gt;&lt;/span&gt;&lt;/label&gt;
+            &lt;/div&gt;
+            &lt;div&gt;
+                &lt;input id="c" type="number" @input="c"&gt;
+                &lt;label for="c"&gt;C = &lt;span&gt;&lt;/span&gt;&lt;/label&gt;
+            &lt;/div&gt;
+            &lt;button @click="onClick"&gt;Add&lt;/button&gt;
+            &lt;div&gt;Result: &lt;span id="result"&gt;&lt;/span&gt;&lt;/div&gt;
+        `, this));
+        this.c.effect(() =&gt; 
+            this.querySelector('label[for=c] span').textContent = this.c);
+    }
+
+    onInputA (e) {
+        this.a = e.target.value;
+    }
+
+    onClick() {
+        this.querySelector('#result').textContent =
+            +this.getAttribute('a') + +this.getAttribute('b') + +this.c;
+    }
+});
+</code></pre>
+
+        <ul>
+            <li><code>input#a</code>'s input event is handled by calling the <code>onClickA()</code> method.</li>
+            <li><code>input#b</code>'s input event is handled by assigning <code>e.target.value</code> to the <code>b</code> property.</li>
+            <li><code>input#c</code>'s input event is handled by setting the value of the <code>c</code> signal.</li>
+        </ul>
+        <p>
+            If you're not familiar with the <code>signal()</code> function, check out the <a href="../2024-08-30-poor-mans-signals/">tiny signals</a> 
+            implementation in the previous post. For now you can also just roll with it.
+        </p>
+        <p>Not a bad result for 20 lines of code.</p>
+
+        <h3>Binding to data</h3>
+        <p>
+            Having established the pattern for events that automatically update properties, 
+            we now reverse the polarity to make data values automatically set element properties or attributes.
+        </p>
+        <pre><code>// ...
+    if (attr.name.startsWith(':')) {
+        // extract the name and value of the attribute/property
+        let name = attr.name.slice(1);
+        const property = getPropertyForAttribute(name, target);
+        const setter = property ?
+            () =&gt; elem[property] = target[attr.value] :
+            () =&gt; elem.setAttribute(name, target[attr.value]);
+        setter();
+        // if we're binding to a signal, listen to updates
+        if (target[attr.value]?.effect) {
+            target[attr.value].effect(setter);
+        // if we're binding to a property, listen to the target's updates
+        } else if (target.addEventListener) {
+            target.addEventListener('change', setter);
+        }
+        // remove (non-standard) attribute from element
+        elem.removeAttributeNode(attr);
+    }
+// ...
+
+function getPropertyForAttribute(name, obj) {
+    switch (name.toLowerCase()) {
+        case 'text': case 'textcontent':
+            return 'textContent';
+        case 'html': case 'innerhtml':
+            return 'innerHTML';
+        default:
+            for (let prop of Object.getOwnPropertyNames(obj)) {
+                if (prop.toLowerCase() === name.toLowerCase()) {
+                    return prop;
+                }
+            }   
+    }
+}</code></pre>
+        <p>
+            The <code>getPropertyForAttribute</code> function is necessary because the attributes that contain the directives
+            will have names that are case-insensitive, and these must be mapped to property names that are case-sensitive.
+            Also, the <code>:text</code> and <code>:html</code> shorthand notations replace the role of <code>v-text</code>
+            and <code>v-html</code> in Vue's template syntax.
+        </p>
+        <p>
+            When the value of the target's observed property changes, we need to update the bound element's property or attribute.
+            This means a triggering <code>'change'</code> event is needed that is then subscribed to.
+            A framework's templating system will compare state across time, and detect the changed values automatically. 
+            Lacking such a system we need a light-weight alternative.
+        </p>
+        <p>
+            When the property being bound to is a signal, this code registers an effect on the signal.
+            When the property is just a value, it registers an event listener on the target object,
+            making it the responsibility of that target object to dispatch the <code>'change'</code> event when values change.
+            This approach isn't going to get many points for style, but it does work.
+        </p>
+        <p>
+            Check out the <a href="example-combined/bind.js">completed bind.js</a> code.
+        </p>
+
+        <h3>Bringing the band together</h3>
+
+        <p>
+            In the article <a href="https://dev.to/richharris/why-i-don-t-use-web-components-2cia">Why I don't use web components</a> 
+            Svelte's Rich Harris lays out the case against web components. He demonstrates how this simple 9 line Svelte component
+            <code>&lt;Adder a={1} b={2}/&gt;</code> becomes an incredible verbose 59 line monstrosity when ported to a vanilla web component.
+        </p>
+        <pre><code>&lt;script&gt;
+  export let a;
+  export let b;
+&lt;/script&gt;
+
+&lt;input type="number" bind:value={a}&gt;
+&lt;input type="number" bind:value={b}&gt;
+
+&lt;p&gt;{a} + {b} = {a + b}&lt;/p&gt;</code></pre>
+
+        <p>
+            Now that we have assembled our three helper functions <code>html()</code>, <code>signal()</code> and <code>bind()</code>
+            on top of the web components baseline, at a total budget of around 150 lines of code, how close can we get for a web component <code>&lt;x-adder a="1" b="2"&gt;&lt;/x-adder&gt;</code>?
+        </p>
+        <pre><code>import { bind } from './bind.js';
+import { signal, computed } from './signals.js';
+import { html } from './html.js';
+
+customElements.define('x-adder', class Adder extends HTMLElement {
+    a = signal();
+    b = signal();
+    result = computed(() =&gt; 
+        html`${+this.a} + ${+this.b} = ${+this.a + +this.b}`, [this.a, this.b]);
+
+    connectedCallback() {
+        this.a.value ??= this.getAttribute('a') || 0;
+        this.b.value ??= this.getAttribute('b') || 0;
+        this.append(bind(html`
+            &lt;input type="number" :value="a" @input="a" /&gt;
+            &lt;input type="number" :value="b" @input="b" /&gt;
+            &lt;p :html="result"&gt;&lt;/p&gt;
+        `, this));
+    }
+});
+</code></pre>
+        <p><a href="https://plainvanillaweb.com/blog/articles/2024-09-03-unix-philosophy/example-combined/example.html">combined example</a></p>
+
+        <p>
+            To be fair, that's still twice the lines of code, but it describes clearly what it does, and really that is all you need. 
+            And I'm just shooting in the wind here, trying stuff out.
+            Somewhere out there could be a minimal set of functions that transforms web components into something resembling a framework,
+            and the idea excites me! Who knows, maybe in a few years the web community will return to writing projects in 
+            vanilla web code, dragging along the modern equivalent of <code>utilities.js</code> from project to project...
+        </p>
+        <br>
+        <p><em>What do you think?</em></p>
+    ]]></content>
+    </entry>
     <entry>
         <title><![CDATA[Poor man's signals]]></title>
         <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2024-08-30-poor-mans-signals/"/>
@@ -498,7 +865,7 @@ export const html = (strings, ...values) =&gt;
             <p>After careful consideration we present to you, an article page blueprint...</p>
             <pre><code>&lt;!doctype html&gt;
 &lt;html lang="en"&gt;
-&lt;head&gt;&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;
+&lt;head&gt;
     &lt;title&gt;A spiffy title!&lt;/title&gt;
     &lt;meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" /&gt;
     &lt;meta name="description" content="This is a spiffy article. You should read it."&gt;
@@ -590,7 +957,7 @@ export const html = (strings, ...values) =&gt;
                 Visually showing an index is not so difficult, as a web component built around a simple <code>&lt;li&gt;</code>-based
                 card design can be used to show both the recent posts and the archive page, and was straighforward to style with CSS.
             </p>
-            <pre><code>&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;&lt;ul class="cards"&gt;
+            <pre><code>&lt;ul class="cards"&gt;
     &lt;li class="card"&gt;
         &lt;img src="./articles/2024-08-17-lets-build-a-blog/image.webp" aria-hidden="true" loading="lazy" /&gt;
         &lt;h3&gt;&lt;a href="./articles/2024-08-17-lets-build-a-blog/"&gt;Let's build a blog, vanilla-style!&lt;/a&gt;&lt;/h3&gt;

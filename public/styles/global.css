@@ -190,3 +190,17 @@ section:hover > a.section-anchor:hover {
     opacity: 1;
     color: var(--link-color);
 }
+
+blockquote {
+    border-left: 10px solid var(--nav-background-color);
+    margin: 1.5em 0 1em 0.5em;
+    padding: 0.5em 10px;
+    quotes: "\201C""\201D""\2018""\2019";
+    color: var(--text-color-mute);
+    font-size: 90%;
+}
+
+cite {
+    display: block;
+    margin: 0 0 1em 0.5em;
+}
