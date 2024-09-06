@@ -204,3 +204,7 @@ cite {
     display: block;
     margin: 0 0 1em 0.5em;
 }
+
+table {
+    margin-bottom: 1em;
+}

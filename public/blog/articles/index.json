@@ -1,5 +1,12 @@
 [
     {
+        "slug": "2024-09-06-how-fast-are-web-components",
+        "title": "How fast are web components?",
+        "summary": "Benchmarking the relative performance of different web component techniques.",
+        "published": "2024-09-06",
+        "author": "Joeri Sebrechts"
+    },
+    {
         "slug": "2024-09-03-unix-philosophy",
         "title": "A unix philosophy for web development",
         "summary": "Maybe all web components need to be a light-weight framework is the right set of helper functions.",
