@@ -1,0 +1,7 @@
+<x-error-boundary>
+    <p slot="error">Something went wrong</p>
+    <x-suspense>
+        <p slot="fallback">Loading...</p>
+        <x-lazy><x-hello-world></x-hello-world></x-lazy>
+    </x-suspense>
+</x-error-boundary>

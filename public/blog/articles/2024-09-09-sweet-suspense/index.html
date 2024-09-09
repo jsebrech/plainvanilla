@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Sweet Suspense</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <meta name="description" content="React-style lazy loading of web components.">
+    <link rel="stylesheet" href="../../index.css">
+</head>
+<body>
+    <blog-header published="2024-09-09">
+        <img src="image.webp" alt="A shadowed figure in a city square, waiting on a woman" loading="lazy" />
+        <h2>Sweet Suspense</h2>
+        <p class="byline" aria-label="author">Joeri Sebrechts</p>
+    </blog-header>
+    <main>
+        <p>
+            I was reading Addy Osmani and Hassan Djirdeh's book <a href="https://largeapps.dev/">Building Large Scale Web Apps</a>.
+            (Which, by the way, I can definitely recommend.) In it they cover all the ways to make a React app sing at scale.
+            The chapter on <em>Modularity</em> was especially interesting to me, because JavaScript modules
+            are a common approach to modularity in both React and vanilla web code.
+        </p>
+        <p>
+            In that chapter on <em>Modularity</em> there was one particular topic that caught my eye,
+            and it was the use of <code>lazy()</code> and <code>Suspense</code>, paired with an <code>ErrorBoundary</code>.
+            These are the primitives that React gives us to asynchronously load UI components and their data on-demand while showing a fallback UI,
+            and replace the UI with an error message when something goes wrong.
+            If you're not familiar, here's a good <a href="https://refine.dev/blog/react-lazy-loading/#catching-loading-errors">overview page</a>.
+        </p>
+        <p>
+            It was at that time that I was visited by the imp of the perverse, which posed to me a simple challenge:
+            <em>can you bring React's lazy loading primitives to vanilla web components?</em>
+            To be clear, there are <a href="https://css-tricks.com/an-approach-to-lazy-loading-custom-elements/">many</a> 
+            <a href="https://github.com/codewithkyle/lazy-loader">ways</a> to 
+            <a href="https://www.webcomponents.org/element/st-lazy">load</a> web components 
+            <a href="https://lamplightdev.com/blog/2020/03/20/lazy-loading-web-components-with-intersection-observer/">lazily</a>. 
+            This is well-trodden territory. What wasn't out there was a straight port of lazy, suspense and error boundary. 
+            The idea would not let me go. So here goes nothing.
+        </p>
+
+        <h3>Lazy</h3>
+
+        <p>
+            The idea and execution of React's lazy is simple. Whenever you want to use a component in your code,
+            but you don't want to actually fetch its code yet until it needs to be rendered, wrap it using the <code>lazy()</code> function:<br>
+            <code>const MarkdownPreview = lazy(() => import('./MarkdownPreview.js'));</code><br>
+        </p>
+        <p>
+            React will automatically "suspend" rendering when it first bumps into this lazy component until the component has loaded, and then continue automatically.
+        </p>
+        <p>
+            This works in React because the markup of a component only looks like HTML, 
+            but is actually JavaScript in disguise, better known as <em>JSX</em>.
+            With web components however, the markup that the component is used in is actually HTML,
+            where there is no <code>import()</code> and no calling of functions.
+            That means our vanilla <em>lazy</em> cannot be a JavaScript function, but instead it must be an HTML custom element:<br>
+            <code>&lt;x-lazy&gt;&lt;x-hello-world&gt;&lt;/x-hello-world&gt;&lt;/x-lazy&gt;</code>
+        </p>
+
+        <p>
+            The basic setup is simple, when the lazy component is added to the DOM,
+            we'll scan for children that have a '-' in the name and therefore are custom elements,
+            see if they're not yet defined, and load and define them if so.
+            By using <code>display: contents</code> we can avoid having the <code>&lt;x-lazy&gt;</code> impact layout.
+        </p>
+        <x-code-viewer src="./lazy1.js" name="lazy.js"></x-code-viewer>
+
+        <p>
+            To actually load the element, we'll have to first find the JS file to import, and then run its register function.
+            By having the function that calls <code>customElements.define</code> as the default export by convention the problem is reduced to finding the path to the JS file.
+            The following code uses a heuristic that assumes components are in a <code>./components/</code> subfolder of the current document
+            and follow a consistent file naming scheme:
+        </p>
+        <x-code-viewer src="./lazy2-partial.js" name="lazy.js (continued)"></x-code-viewer>
+
+        <p>
+            One could get a lot more creative however, and for example use an 
+            <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script/type/importmap">import map</a> 
+            to map module names to files. This I leave as an exercise for the reader.
+        </p>
+
+        <h3>Suspense</h3>
+
+        <p>
+            While the lazy component is loading, we can't show it yet. This is true for custom elements just as much as for React.
+            That means we need a wrapper component that will show a fallback UI as long as any components in its subtree are loading,
+            the <code>&lt;x-suspense&gt;</code> component. This starts out as a tale of two slots. When the suspense element is loading it shows the fallback, otherwise the content.
+        </p>
+
+        <x-code-viewer src="./suspense1-partial.html" name="example.html"></x-code-viewer>
+        <x-code-viewer src="./suspense1.js" name="suspense.js"></x-code-viewer>
+
+        <p>
+            The trick now is, how to we get <code>loading = true</code> to happen?
+            In Plain Vanilla's applications page I showed how a React context can be simulated using the <code>element.closest()</code> API.
+            We can use the same mechanism to create a generic API that will let our suspense wait on a promise to complete.
+        </p>
+
+        <x-code-viewer src="./suspense2-partial.js" name="suspense.js (continued)"></x-code-viewer>
+
+        <p>
+            <code>Suspense.waitFor</code> will call the nearest ancestor <code>&lt;x-suspense&gt;</code>
+            to a given element, and give it a set of promises that it should wait on.
+            This API can then be called from our <code>&lt;x-lazy&gt;</code> component.
+            Note that <code>#loadElement</code> returns a promise that completes when the custom element is loaded or fails to load.
+        </p>
+        <x-code-viewer src="./lazy3-partial.js" name="lazy.js (continued)"></x-code-viewer>
+        <p>
+            The nice thing about the promise-based approach is that we can give it any promise, just like we would with React's suspense.
+            For example, when loading data in a custom element that is in the suspense's subtree, we can call the exact same API:<br>
+            <code>Suspense.waitFor(this, fetch(url).then(...))</code>
+        </p>
+
+        <h3>Error boundary</h3>
+
+        <p>
+            Up to this point, we've been assuming everything always works. This is <del>Sparta</del>software, it will never "always work".
+            What we need is a graceful way to intercept failed promises that are monitored by the suspense,
+            and show an error message instead. That is the role that React's error boundary plays.
+        </p>
+        <p>
+            The approach is similar to suspense:
+        </p>
+        <x-code-viewer src="./error-boundary-partial.html" name="example.html"></x-code-viewer>
+        <p>
+            And the code is also quite similar to suspense:
+        </p>
+        <x-code-viewer src="./error-boundary.js"></x-code-viewer>
+
+        <p>
+            Similar to suspense, this has an API <code>ErrorBoundary.showError()</code> that can be called
+            from anywhere inside the error boundary's subtree to show an error that occurs.
+            The suspense component is then modified to call this API when it bumps into a rejected promise.
+            To hide the error, the <code>reset()</code> method can be called on the error boundary element.
+        </p>
+        <p>
+            Finally, the <code>error</code> setter will set the error as a property or attribute
+            on all children in the error slot, which enables customizing the error message's behavior based on the error object's properties
+            by creating a custom <code>&lt;x-error-message&gt;</code> component.
+        </p>
+
+        <h3>Conclusion</h3>
+
+        <p>
+            Finally, we can bring all of this together in a single example,
+            that combines lazy, suspense, error boundary, a customized error message, and a lazy-loaded hello-world component.
+        </p>
+
+        <x-code-viewer src="./example/index.js" name="example/index.js"></x-code-viewer>
+        <iframe src="example/index.html" title="complete example" height="250"></iframe>
+
+        <p>
+            For the complete example's code, as well as the lazy, suspense and error-boundary components,
+            check out the <a href="https://github.com/jsebrech/sweet-suspense">sweet-suspense repo on Github</a>.
+        </p>
+    </main>
+    <blog-footer></blog-footer>
+    <script type="module" src="../../index.js"></script>
+</body>
+</html>

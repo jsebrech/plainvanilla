@@ -1,5 +1,12 @@
 [
     {
+        "slug": "2024-09-09-sweet-suspense",
+        "title": "Sweet Suspense",
+        "summary": "React-style lazy loading of web components.",
+        "published": "2024-09-09",
+        "author": "Joeri Sebrechts"
+    },
+    {
         "slug": "2024-09-06-how-fast-are-web-components",
         "title": "How fast are web components?",
         "summary": "Benchmarking the relative performance of different web component techniques.",
