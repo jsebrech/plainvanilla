@@ -1,3 +1,5 @@
+@import url("../../lib/speed-highlight/themes/github-dark.css");
+
 x-code-viewer {
     display: block;
     display: flex;
@@ -15,6 +17,7 @@ x-code-viewer code {
 
 x-code-viewer label {
     flex: 0 0 auto;
+    border-bottom: 1px dotted var(--border-color);
 }
 
 x-code-viewer label:empty {

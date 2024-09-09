@@ -1,0 +1,23 @@
+@import 'default.css';
+
+[class*="shj-lang-"] {
+	color: #c9d1d9;
+	background: #161b22
+}
+[class*="shj-lang-"]:before {color: #6f9aff}
+
+.shj-syn-insert {color: #98c379}
+.shj-syn-deleted,
+.shj-syn-err,
+.shj-syn-kwd {color: #ff7b72}
+.shj-syn-class {color: #ffa657}
+.shj-numbers,
+.shj-syn-cmnt {color: #8b949e}
+.shj-syn-type,
+.shj-syn-oper,
+.shj-syn-num,
+.shj-syn-section,
+.shj-syn-var,
+.shj-syn-bool {color: #79c0ff}
+.shj-syn-str {color: #a5d6ff}
+.shj-syn-func {color: #d2a8ff}

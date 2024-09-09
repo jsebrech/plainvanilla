@@ -1,0 +1,21 @@
+@import 'default.css';
+
+[class*="shj-lang-"] {
+	color: #24292f;
+	background: #fff
+}
+
+.shj-syn-deleted,
+.shj-syn-err,
+.shj-syn-kwd {color: #cf222e}
+.shj-syn-class {color: #953800}
+.shj-numbers,
+.shj-syn-cmnt {color: #6e7781}
+.shj-syn-type,
+.shj-syn-oper,
+.shj-syn-num,
+.shj-syn-section,
+.shj-syn-var,
+.shj-syn-bool {color: #0550ae}
+.shj-syn-str {color: #0a3069}
+.shj-syn-func {color: #8250df}

@@ -1,3 +1,5 @@
+import { highlightElement } from "../../lib/speed-highlight/index.js";
+
 /**
  * Code Viewer component
  * 
@@ -9,7 +11,7 @@ class CodeViewer extends HTMLElement {
     connectedCallback() {
         this.innerHTML = `
             <label></label>
-            <code class="microlight"></code>
+            <code></code>
         `;
         // load code (and name) from src attribute
         const src = this.getAttribute('src');
@@ -40,21 +42,16 @@ class CodeViewer extends HTMLElement {
         if (label && code) {
             label.textContent = this.getAttribute('name');
             code.textContent = this.getAttribute('code');
-            // microlight does a poor job with html and css
-            const highlight = !/\.(html|css)$/.test(this.getAttribute('src'));
-            code.classList.toggle('microlight', highlight);    
+            // should we syntax highlight?
+            const src = this.getAttribute('src') || '';
+            const lang = src.split('.').pop();
+            if (['html', 'js', 'css'].includes(lang)) {
+                code.classList.add('shj-lang-' + lang);
+                highlightElement(code);
+            }
         }
     }
 }
 
 export const registerCodeViewerComponent = 
-    () => {
-        customElements.define('x-code-viewer', CodeViewer);
-        // load microlight if not yet loaded
-        if (!document.querySelector('script#microlight')) {
-            const script = document.createElement('script');
-            script.src = new URL('../../lib/microlight/microlight.js', import.meta.url);
-            script.id = 'microlight';
-            document.head.appendChild(script);
-        }
-    }
+    () => customElements.define('x-code-viewer', CodeViewer);
