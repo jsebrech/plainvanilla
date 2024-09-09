@@ -46,9 +46,11 @@ class CodeViewer extends HTMLElement {
             const src = this.getAttribute('src') || '';
             const lang = src.split('.').pop();
             if (['html', 'js', 'css'].includes(lang)) {
-                code.classList.add('shj-lang-' + lang);
-                highlightElement(code);
+                code.className = 'shj-lang-' + lang;
+            } else {
+                code.className = 'shj-lang-plain';
             }
+            highlightElement(code);
         }
     }
 }
