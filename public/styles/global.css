@@ -115,10 +115,13 @@ aside {
     padding-bottom: 0.5em;
 }
 
+aside h3, 
 aside h4 {
     color: var(--panel-title-color);
     background-color: var(--panel-title-color-bg);
     padding: 1em;
+    font-size: 100%;
+    margin: 0;
 }
 
 aside p {

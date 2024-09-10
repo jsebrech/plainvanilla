@@ -100,7 +100,7 @@
                     After this line is called the custom element becomes available for use in HTML markup, and existing uses of it in already rendered markup will have their constructors called.</dd>
             </dl>
             <aside>
-                <h4>Why is it named <code>x-hello-world</code> instead of <code>hello-world</code>?</h4>
+                <h3>Why is it named <code>x-hello-world</code> instead of <code>hello-world</code>?</h3>
                 <p>
                 There are <a href="https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name">custom element tag naming rules</a>, in particular that the name must start with a lowercase letter and contain a dash.
                 While <code>hello-world</code> would also be a valid name, in general it is best to start all custom element tag names with <code>x-</code> or some other prefix of your choice.
@@ -189,7 +189,7 @@
                 but in modern browsers over HTTP/2 and in particular HTTP/3 the performance penalty of this approach is not that severe.
             </p>
             <aside>
-                <h4>Don't we need a bundler?</h4>
+                <h3>Don't we need a bundler?</h3>
                 <p>
                     If you've paid close attention, you have seen that we're using the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules">ES module syntax</a> for <code>import</code> and <code>export</code> in our code,
                     but we haven't set up any JavaScript bundler to transpile that syntax. The magic that makes this work is in the <code>index.html</code>,
@@ -266,7 +266,7 @@
                 </dd>
             </dl>
             <aside>
-                <h4>Detecting children</h4>
+                <h3>Detecting children</h3>
                 <p>
                     Knowing when children are added or removed to a web component is possible with a <a href="https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver">MutationObserver</a>, 
                     by calling its observe method with <code>observer.observe(this, { childList: true })</code>.
@@ -367,7 +367,7 @@
             </ul>
 
             <aside>
-                <h4>To shadow or not to shadow?</h4>
+                <h3>To shadow or not to shadow?</h3>
                 <p>
                     Because custom elements can contain children with or without a shadow DOM, you may be wondering when to use this feature.
                 </p>
@@ -445,7 +445,7 @@
         </section>
         <section>
             <aside>
-                <h4>The power of the browser</h4>
+                <h3>The power of the browser</h3>
                 <p>
                     A reminder that all of this code is still vanilla. It does not make use of any framework, library or build tool and works in all the major browsers.
                     It will never need changes to be compatible with new dependency versions.
