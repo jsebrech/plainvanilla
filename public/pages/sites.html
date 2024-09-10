@@ -63,6 +63,38 @@
                 </x-tab>
             </x-tab-panel>
             
+            <h3>Semantics matter</h3>
+
+            <p>
+                The markup in the page should default to using semantic HTML, to improve accessibility and SEO.
+                Web components should only be used in those cases where the level of complexity and interaction exceeds the capabilities of plain HTML markup.
+            </p>
+            <p>
+                Familiarize yourself with these aspects of semantic HTML:
+            </p>
+            <dl>
+                <dt><a href="https://developer.mozilla.org/en-US/blog/aria-accessibility-html-landmark-roles/">Landmarks</a></dt>
+                <dd>
+                    As mentioned above, landmarks are the backbone of a page's structure and deliver good structure and accessibility by default.
+                </dd>
+                <dt><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element">Elements</a></dt>
+                <dd>
+                    Being familiar with HTML's set of built-in elements saves time, 
+                    both in avoiding the need for custom elements and in easing implementation of the custom elements that are needed.
+                    When properly used HTML elements are accessibly by default.
+                </dd>
+                <dt><a href="https://developer.mozilla.org/en-US/docs/Learn/Forms">Forms</a></dt>
+                <dd>
+                    HTML's built-in forms can implement many interactivity use cases when used to their full extent.
+                    Be aware of capabilities like 
+                    <a href="https://developer.mozilla.org/en-US/docs/Learn/Forms/HTML5_input_types">rich input types</a>, 
+                    <a href="https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation">client-side validation</a> and 
+                    <a href="https://developer.mozilla.org/en-US/docs/Learn/Forms/UI_pseudo-classes">UI pseudo classes</a>.
+                    When a suitable form input type for a use case cannot be found, consider using <a href="https://web.dev/articles/more-capable-form-controls">form-associated custom elements</a> 
+                    but be aware of the <a href="https://caniuse.com/mdn-api_elementinternals">browser support for ElementInternals</a>.
+                </dd>
+            </dl>
+
             <h3>Favicons</h3>
 
             <p>
@@ -73,6 +105,7 @@
                 <li>Consider <a href="https://medium.com/swlh/are-you-using-svg-favicons-yet-a-guide-for-modern-browsers-836a6aace3df">SVG favicons</a>, but be aware that Safari does not support them. <a href="https://css-tricks.com/svg-favicons-in-action/">Embed dark mode</a> in the favicon SVG itself or use a generator like <a href="https://realfavicongenerator.net/">RealFaviconGenerator</a> for more convience.</li>
                 <li>Be aware that because favicons are not based on published web standards it is cumbersome to implement the <a href="https://dev.to/masakudamatsu/favicon-nightmare-how-to-maintain-sanity-3al7">de facto standard</a> fully.</li>
             </ul>
+
         </section>
         <section id="project">
             <a href="#project" class="section-anchor">#</a>
