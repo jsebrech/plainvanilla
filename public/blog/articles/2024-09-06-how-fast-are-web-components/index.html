@@ -16,12 +16,21 @@
     </style>
 </head>
 <body>
-    <blog-header published="2024-09-06">
+    <blog-header published="2024-09-06" updated="2024-09-15">
         <img src="image.webp" alt="A snail and a hare in a race" loading="lazy" />
         <h2>How fast are web components?</h2>
         <p class="byline" aria-label="author">Joeri Sebrechts</p>
     </blog-header>
     <main>
+        <aside>
+            <h3>Author's note</h3>
+            <p>
+                This article initially had somewhat different results and conclusions,
+                but deficiencies in the original benchmark were pointed out and addressed.
+                Where the conclusions were changed from the original article, this is pointed out in the text.
+            </p>
+        </aside>
+
         <p>
             It is often said that web components are slow.
             This was also my experience when I first tried building web components a few years ago.
@@ -49,7 +58,7 @@
 
         <p>
             To figure out the answer I made a benchmark as a vanilla web page (of course),
-            that rendered 100.000 very simple components containing only <code>&lt;span&gt;.&lt;/span&gt;</code>
+            that renders thousands of very simple components containing only <code>&lt;span&gt;.&lt;/span&gt;</code>
             and measured the elapsed time. This benchmark was then run on multiple devices and multiple browsers
             to figure out performance characteristics. The ultimate goal of this test is to figure out the absolute best performance
             that can be extracted from the most minimal web component.
@@ -65,8 +74,8 @@
         <h3>The test</h3>
 
         <p>
-            The test is simple: render 100.000 components using a specific technique, 
-            call <code>requestAnimationFrame()</code> to make sure they actually render,
+            The test is simple: render thousands of components using a specific technique, 
+            call <code>requestAnimationFrame()</code> repeatedly until they actually render,
             then measure elapsed time. This produces a <em>components per millisecond</em> number.
         </p>
         <p>The techniques being compared:</p>
@@ -76,35 +85,45 @@
             <li><strong>append (buffered):</strong> same as the append method, except all web components are first buffered to a document fragment which is then appended to the DOM</li>
             <li><strong>shadow + innerHTML:</strong> the same as innerHTML, except each component has a shadow DOM</li>
             <li><strong>shadow + append:</strong> the same as append, except each component has a shadow DOM</li>
-            <li><strong>lit:</strong> each web component is rendered using the lit framework, in the way that its documentation recommends</li>
             <li><strong>template + append:</strong> each web component renders its content by cloning a template and appending it</li>
-            <li><strong>react pure:</strong> rendering in React using a standard React component</li>
+            <li><strong>textcontent:</strong> each web component directly sets its textContent property, instead of adding a span (making the component itself be the span)
+            <li><strong>direct:</strong> appends spans instead of custom elements, to be able to measure custom element overhead</li>
+            <li><strong>lit:</strong> each web component is rendered using the lit framework, in the way that its documentation recommends</li>
+            <li><strong>react pure:</strong> rendering in React as a standard React component, to have a baseline for comparison to mainstream web development</li>
             <li><strong>react + wc:</strong> each React component wraps the append-style web component</li>
+            <li><strong>(norender):</strong> same as other strategies, except the component is only created but not added to the DOM, to separate out component construction cost</li>
         </ul>
         <p>
             This test was run on M1 in Brave, Chrome, Edge, Firefox and Safari. And on Chi in Chrome and Firefox.
-            It was run once to warm up the browser, then repeated three times.
+            It was run for 10 iterations and a geometric mean was taken of the results.
         </p>
 
         <h3>The results</h3>
 
         <p>First, let's compare techniques. The number here is components per millisecond, so <strong>higher is better</strong>.</p>
         
+        <p><strong>Author's note:</strong> the numbers from the previous version of this article are <del>crossed out</del>.</p>
         <table>
             <thead>
-                <tr><th colspan="2">Chrome on M1, best of three</th></tr>
+                <tr><th colspan="2">Chrome on M1</th></tr>
                 <tr><th>technique</th><th>components/ms</th></tr>
             </thead>
             <tbody>
-                <tr><td>innerHTML</td><td>143</td></tr>
-                <tr><td>append</td><td>233</td></tr>
-                <tr><td>append (buffered)</td><td>228</td></tr>
-                <tr><td>shadow + innerHTML</td><td>132</td></tr>
-                <tr><td>shadow + append</td><td>183</td></tr>
-                <tr><td>lit</td><td>133</td></tr>
-                <tr><td>template + append</td><td>181</td></tr>
-                <tr><td>react pure</td><td>275</td></tr>
-                <tr><td>react + wc</td><td>172</td></tr>
+                <tr><td>innerHTML</td><td><del>143</del> 135</td></tr>
+                <tr><td>append</td><td><del>233</del> 239</td></tr>
+                <tr><td>append (buffered)</td><td><del>228</del> 239</td></tr>
+                <tr><td>shadow + innerHTML</td><td><del>132</del> 127</td></tr>
+                <tr><td>shadow + append</td><td><del>183</del> 203</td></tr>
+                <tr><td>template + append</td><td><del>181</del> 198</td></tr>
+                <tr><td>textcontent</td><td>345</td></tr>
+                <tr><td>direct</td><td>461</td></tr>
+                <tr><td>lit</td><td><del>133</del> 137</td></tr>
+                <tr><td>react pure</td><td><del>275</del> 338</td></tr>
+                <tr><td>react + wc</td><td><del>172</del> 212</td></tr>
+                <tr><td>append (norender)</td><td>1393</td></tr>
+                <tr><td>shadow (norender)</td><td>814</td></tr>
+                <tr><td>direct (norender)</td><td>4277</td></tr>
+                <tr><td>lit (norender)</td><td>880</td></tr>
             </tbody>
         </table>
 
@@ -114,40 +133,56 @@
                 <tr><th>technique</th><th>components/ms</th></tr>
             </thead>
             <tbody>
-                <tr><td>innerHTML</td><td>25</td></tr>
-                <tr><td>append</td><td>55</td></tr>
-                <tr><td>append (buffered)</td><td>56</td></tr>
-                <tr><td>shadow + innerHTML</td><td>24</td></tr>
-                <tr><td>shadow + append</td><td>36</td></tr>
-                <tr><td>lit</td><td>30</td></tr>
-                <tr><td>template + append</td><td>45</td></tr>
-                <tr><td>react pure</td><td>77</td></tr>
-                <tr><td>react + wc</td><td>45</td></tr>
+                <tr><td>innerHTML</td><td><del>25</del> 29</td></tr>
+                <tr><td>append</td><td><del>55</del> 55</td></tr>
+                <tr><td>append (buffered)</td><td><del>56</del> 59</td></tr>
+                <tr><td>shadow + innerHTML</td><td><del>24</del> 26</td></tr>
+                <tr><td>shadow + append</td><td><del>36</del> 47</td></tr>
+                <tr><td>template + append</td><td><del>45</del> 46</td></tr>
+                <tr><td>textcontent</td><td>81</td></tr>
+                <tr><td>direct</td><td>116</td></tr>
+                <tr><td>lit</td><td><del>30</del> 33</td></tr>
+                <tr><td>react pure</td><td><del>77</del> 87</td></tr>
+                <tr><td>react + wc</td><td><del>45</del> 52</td></tr>
+                <tr><td>append (norender)</td><td>434</td></tr>
+                <tr><td>shadow (norender)</td><td>231</td></tr>
+                <tr><td>direct (norender)</td><td>1290</td></tr>
+                <tr><td>lit (norender)</td><td>239</td></tr>
             </tbody>
         </table>
 
         <p>
-            One relief right off the bat is that even the slowest implementation on the slow device
-            renders 100.000 components in 4 seconds. React is faster than well-written web components, but never by more than 2x.
+            One relief right off the bat is that even the slowest implementation on the slow device renders 100.000 components in 4 seconds.
+            React is roughly in the same performance class as well-written web components.
             That means for a typical web app performance is not a reason to avoid web components.
         </p>
+        <aside>
+            <h3>Author's note</h3>
+            <p>
+                The previous version of this article said React was faster than web components,
+                but this only the case if we make the web components render a span. Unlike a React component a web component
+                is itself part of the DOM, and so is itself the equivalent of a span. The <em>textcontent</em> strategy exploits this advantage
+                to functionally do the same as the React code, and it matches its performance.
+            </p>
+        </aside>
 
         <p>
             As far as web component technique goes, the performance delta between the fastest and the slowest technique is around 2x,
             so again for a typical web app that difference will not matter. Things that slow down web components
-            are shadow DOM and innerHTML. Appending cloned templates and avoiding shadow DOM is the right strategy
-            for a well-performing web component.
+            are shadow DOM and innerHTML. Appending directly created elements or cloned templates and avoiding shadow DOM is the right strategy
+            for a well-performing web component that needs to end up on the page thousands of times.
         </p>
 
         <p>
-            On the slow device the Lit framework is the worst performer, probably due to its use of shadow DOM and JS-heavy approaches.
+            On the slow device the Lit framework is a weak performer, probably due to its use of shadow DOM and JS-heavy approaches.
             Meanwhile, pure React is the best performer, because while it does more work in creating the virtual DOM and diffing it to the real DOM,
             it benefits from not having to initialize the web component class instances.
-            Consequently, when wrapping web components inside React components we see React's performance advantage disappear, and that it adds around a 20% performance tax.
+            Consequently, when wrapping web components inside React components we see React's performance advantage disappear, and that it adds a performance tax.
+            In the grand scheme of things however, the differences between React and optimized web components remains small.
         </p>
 
         <p>
-            The fast device is up to 6x faster than the slow device in Chrome, depending on the technique used,
+            The fast device is up to 5x faster than the slow device in Chrome, depending on the technique used,
             so it is really worth testing applications on slow devices to get an idea of the range of performance.
         </p>
 
@@ -161,11 +196,11 @@
                 <tr><th>browser</th><th>components/ms</th></tr>
             </thead>
             <tbody>
-                <tr><td>Brave</td><td>146</td></tr>
-                <tr><td>Chrome</td><td>233</td></tr>
-                <tr><td>Edge</td><td>224</td></tr>
-                <tr><td>Firefox</td><td>232</td></tr>
-                <tr><td>Safari</td><td>260</td></tr>
+                <tr><td>Brave</td><td><del>146</del> 145</td></tr>
+                <tr><td>Chrome</td><td><del>233</del> 239</td></tr>
+                <tr><td>Edge</td><td><del>224</del> 237</td></tr>
+                <tr><td>Firefox</td><td><del>232</del> 299</td></tr>
+                <tr><td>Safari</td><td><del>260</del> 239</td></tr>
             </tbody>
         </table>
 
@@ -175,27 +210,32 @@
                 <tr><th>browser</th><th>components/ms</th></tr>
             </thead>
             <tbody>
-                <tr><td>Chrome</td><td>55</td></tr>
-                <tr><td>Firefox</td><td>180</td></tr>
+                <tr><td>Chrome</td><td><del>55</del> 55</td></tr>
+                <tr><td>Firefox</td><td><del>180</del> 77</td></tr>
             </tbody>
         </table>
 
         <p>
-            Brave is really slow. Safari is pretty fast. Firefox is surprisingly decent,
-            and actually a great performer on slow devices where it outshines Chrome by a lot.
-            Using the "wrong" browser turns a fast machine into a slow machine (compare Brave on M1 to Firefox on Chi).
+            Brave is really slow, probably because of its built-in ad blocking. Ad blocking extensions also slow down the other browsers by a lot.
+            Safari, Chrome and Edge end up in roughly the same performance bucket. Firefox is the best performer overall.
+            Using the "wrong" browser can halve the performance of a machine.
+        </p>
+        <p>
+            <strong>Author's note:</strong>
+            due to a measurement error in measuring elapsed time, the previous version of this article had Safari as fastest and Firefox as middle of the pack.
         </p>
         <p>
             There is a large performance gap when you compare the slowest technique on the slowest browser on the slowest device,
-            with its fastest opposite combo. Specifically, there is a 13x performance gap:
+            with its fastest opposite combo. Specifically, there is a 16x performance gap:
         </p>
         <ul>
-            <li>React pure, Safari on M1: 316 components/ms</li>
-            <li>Shadow DOM + innerHTML, Chrome on Chi: 24 components/ms</li>
+            <li>textContent, Firefox on M1: 430 components/ms</li>
+            <li>Shadow DOM + innerHTML, Chrome on Chi: 26 components/ms</li>
         </ul>
         <p>
             That means it becomes worthwhile to carefully consider technique when having to support a wide range of browsers and devices,
             because a bad combination may lead to a meaningfully degraded user experience.
+            And of course, you should always test your web app on a slow device to make sure it still works ok.
         </p>
         
         <h3>Bottom line</h3>
