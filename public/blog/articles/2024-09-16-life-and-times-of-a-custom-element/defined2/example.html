@@ -1,0 +1,152 @@
+<!doctype html>
+<html>
+    <head>
+        <title>defined custom elements</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+        <style>
+            body { font-family: system-ui, sans-serif; margin: 1em; }
+            x-container { display: block; border: 1px dotted gray; padding: 1em; }
+            x-controls { display: block; margin-top: 1em; }
+            #placeholder:empty::after { content: '-' }
+            #log { border: 1px dotted gray; padding: 1em; font-size: 80%; }
+
+            x-lifecycle { background: #ddd; padding: 0.1em; }
+            x-lifecycle:not(:defined)::after {
+                content: '{defined: false}';
+            }
+            x-lifecycle:defined::after {
+                content: 
+                    '{defined: true, constructed: true'
+                    ', connected: ' attr(connected) 
+                    ', source: ' attr(source) '}';
+            }
+        </style>
+    </head>
+    <body>
+        <x-container>
+            <p>Static element: <x-lifecycle source="static"></x-lifecycle></p>
+            <p>Dynamic element: <span id="placeholder"></span></p>
+        </x-container>
+
+        <x-controls state="initial">
+            <button id="define" onclick="define()">Define</button>
+            <button id="create" onclick="create()">Create</button>
+            <button id="upgrade" onclick="upgrade()" disabled>Upgrade</button>
+            <button id="connect" onclick="connect()" disabled>Connect</button>
+            <button id="disconnect" onclick="disconnect()" disabled>Disconnect</button>
+            <button id="delete" onclick="deleteElement()" disabled>Delete</button>
+            <button onclick="location.reload()">Reload</button>
+        </x-controls>
+
+        <div>
+            <h4>Dynamic element (in-memory)</h4>
+            <p><span id="element-status"></span></p>
+        </div>
+
+        <div id="log"><h4>Reactions:</h4></div>
+
+        <script>
+            let storage = { };
+
+            update();
+
+            function define() {
+                customElements.define('x-lifecycle', class extends HTMLElement {
+                    get status() {
+                        return 'defined: true, constructed: true' +
+                               ', connected: ' + (this.getAttribute('connected') || 'false') +
+                               ', source: ' + (this.getAttribute('source') || 'unknown');
+                    }
+
+                    constructor() {
+                        super();
+                        update();
+                        appendLog('constructed');
+                    }
+
+                    connectedCallback() {
+                        this.setAttribute('connected', true);
+                        update();
+                        appendLog('connected');
+                    }
+
+                    disconnectedCallback() {
+                        this.setAttribute('connected', false);
+                        update();
+                        appendLog('disconnected');
+                    }
+
+                    static observedAttributes = ['source'];
+                    attributeChangedCallback() {
+                        appendLog('attributes changed');
+                    }
+                });
+                update();
+            }
+
+            function create() {
+                storage.element = document.createElement('x-lifecycle');
+                storage.element.setAttribute('source', 'createElement');
+                update();
+            }
+
+            function upgrade() {
+                customElements.upgrade(storage.element);
+                update();
+            }
+
+            function connect() {
+                document.querySelector('#placeholder').append(storage.element);
+                update();
+            }
+
+            function disconnect() {
+                storage.element.remove();
+                update();
+            }
+
+            function deleteElement() {
+                delete storage.element;
+                update();
+            }
+
+            function update() {
+                // definition
+                const isDefined = !!customElements.get('x-lifecycle');
+                // dynamic element
+                const isCreated = !!storage.element;
+                const isConstructed = isCreated && !!storage.element.status;
+                const isConnected = !!document.querySelector('#placeholder x-lifecycle');
+                document.querySelector('#element-status').textContent = 
+                    storage.element ? '{' + 
+                        ( storage.element.status || 
+                          (isDefined ? 'defined: true, constructed: false' : 'defined: false')) + 
+                    '}' : 'null';
+                // controls
+                setButtonDisabled('define', isDefined);
+                setButtonDisabled('create', isCreated);
+                setButtonDisabled('connect', !isCreated || isConnected);
+                setButtonDisabled('disconnect', !storage.element || !isConnected);
+                setButtonDisabled('upgrade', !isDefined || !isCreated || isConstructed || isConnected);
+                setButtonDisabled('delete', !isCreated || isConnected);
+            }
+
+            function getButton(id) {
+                return document.querySelector('button#' + id);
+            }
+
+            function setButtonDisabled(id, disabled) {
+                const btn = getButton(id);
+                if (btn) {
+                    disabled ? btn.setAttribute('disabled', true) : btn.removeAttribute('disabled');
+                }
+            }
+
+            function appendLog(text) {
+                const p = document.createElement('p');
+                p.textContent = text;
+                document.querySelector('#log').append(p);
+            }
+        </script>
+    </body>
+</html>

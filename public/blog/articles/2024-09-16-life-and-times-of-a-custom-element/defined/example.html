@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+        <title>defining the custom element</title>
+        <style>
+            body { font-family: system-ui, sans-serif; margin: 1em; }
+            x-example {
+                background-color: lavender;
+            }
+            x-example:not(:defined)::after {
+                content: '{defined: false}'
+            }
+            x-example:defined::after {
+                content: '{defined: true, status: ' attr(status) '}'
+            }
+        </style>
+    </head>
+    <body>
+        <p>Custom element: <x-example></x-example></p>
+        <button onclick="define()">Define</button>
+        <button onclick="location.reload()">Reload</button>
+
+        <script>
+            function define() {
+                customElements.define('x-example', class extends HTMLElement {
+                    constructor() {
+                        super();
+                    }
+                    connectedCallback() {
+                        this.setAttribute('status', 'ready');
+                    }
+                });
+            }
+        </script>
+    </body>
+</html>

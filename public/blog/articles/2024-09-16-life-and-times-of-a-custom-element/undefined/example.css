@@ -1,0 +1,47 @@
+body { font-family: system-ui, sans-serif; margin: 1em; }
+button { user-select: none; }
+/* based on https://github.com/argyleink/gui-challenges/blob/main/tooltips/tool-tip.css */
+x-tooltip {
+    --color: lightgray;
+    --bg: hsl(0 0% 20%);
+
+    pointer-events: none;
+    user-select: none;
+    /* animate in on hover or focus of parent element */
+    z-index: 1;
+    opacity: 0;
+    transition: opacity .2s ease;
+    transition-delay: 200ms;
+    :is(:hover, :focus-visible, :active) > & {
+        opacity: 1;
+    }
+    /* vertically center and move to the right */
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    left: calc(100% + 15px);
+    padding: 0.5em;
+    inline-size: max-content;
+    max-inline-size: 25ch;
+    /* color, backdrop and shadow */
+    color: var(--color);
+    filter: 
+        drop-shadow(0 3px 3px hsl(0 0% 0% / 50%)) 
+        drop-shadow(0 12px 12px hsl(0 0% 0% / 50%));
+    &::after {
+        content: "";
+        background: var(--bg);
+        position: absolute;
+        z-index: -1;
+        left: 0;
+        top: 50%;
+        transform:translateY(-50%);
+        width: 100%;
+        height: 100%;
+        border-radius: 5px;
+    }
+}
+
+button:has(> x-tooltip) {
+    position: relative;
+}

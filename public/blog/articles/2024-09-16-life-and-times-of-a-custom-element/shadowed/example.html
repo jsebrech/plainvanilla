@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+        <title>shadowed custom element</title>
+        <style>
+            body { font-family: system-ui, sans-serif; margin: 1em; }
+            x-shadowed, x-shadowed-later { background-color: lightgray; }
+        </style>
+    </head>
+    <body>
+        <p>&lt;x-shadowed&gt;: <x-shadowed>undefined, not shadowed</x-shadowed></p>
+        <p>&lt;x-shadowed-later&gt;: <x-shadowed-later>undefined, not shadowed</x-shadowed-later></p>
+        <button id="define" onclick="define()">Define</button>
+        <button onclick="location.reload()">Reload</button>
+
+        <script>
+        function define() {
+            customElements.define('x-shadowed', class extends HTMLElement {
+                constructor() {
+                    super();
+                    this.attachShadow({mode: 'open'});
+                    this.shadowRoot.innerHTML = `
+                        <span style="background-color: lightgreen">
+                            shadowed
+                        </span>
+                    `;
+                }
+            });
+            customElements.define('x-shadowed-later', class extends HTMLElement {
+                connectedCallback() {
+                    this.innerHTML = 'constructed, <a href="#">click to shadow</a>';
+                    this.querySelector('a').onclick = (e) => { e.preventDefault(); this.addShadow() };
+                }
+                addShadow() {
+                    this.attachShadow({mode: 'open'});
+                    this.shadowRoot.innerHTML = `
+                        <span style="background-color: lightgreen">
+                            shadowed
+                        </span>
+                    `;
+                }
+            });
+            document.querySelector('button#define').setAttribute('disabled', true);
+        }
+        </script>
+    </body>
+</html>

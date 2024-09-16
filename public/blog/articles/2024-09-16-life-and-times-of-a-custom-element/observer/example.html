@@ -1,0 +1,40 @@
+<!doctype html>
+<html> 
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+        <title>custom element with observer</title>
+        <style>
+            body { font-family: system-ui, sans-serif; margin: 1em; }
+            x-wall { display: block; margin-bottom: 1em; }
+        </style>
+    </head>
+    <body>
+        <x-wall><x-bottle></x-bottle></x-wall>
+        <button onclick="add()">Add one more</button>
+        <button onclick="location.reload()">Reload</button>
+
+        <script>
+        customElements.define('x-wall', class extends HTMLElement {
+            connectedCallback() {
+                if (this.line) return; // prevent double initialization
+                this.line = document.createElement('p');
+                this.insertBefore(this.line, this.firstChild);
+                new MutationObserver(() => this.update()).observe(this, { childList: true });
+                this.update();
+            }
+            update() {
+                const count = this.querySelectorAll('x-bottle').length;
+                this.line.textContent = 
+                    `${count} ${count === 1 ? 'bottle' : 'bottles'} of beer on the wall`;
+            }
+        });
+        customElements.define('x-bottle', class extends HTMLElement {
+            connectedCallback() { this.textContent = '🍺'; }
+        });
+        function add() {
+            document.querySelector('x-wall').append(
+                document.createElement('x-bottle'));
+        }
+        </script>
+    </body>
+</html>

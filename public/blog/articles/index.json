@@ -1,5 +1,12 @@
 [
     {
+        "slug": "2024-09-16-life-and-times-of-a-custom-element",
+        "title": "The life and times of a web component",
+        "summary": "The entire lifecycle of a web component, from original creation to when a shadow crosses.",
+        "published": "2024-09-16",
+        "author": "Joeri Sebrechts"
+    },
+    {
         "slug": "2024-09-09-sweet-suspense",
         "title": "Sweet Suspense",
         "summary": "React-style lazy loading of web components.",
