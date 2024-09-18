@@ -42,7 +42,7 @@ customElements.define('blog-generator', class BlogGenerator extends HTMLElement 
     }
 
     addClickListener() {
-        this.addEventListener('click', (e) => {
+        this.addEventListener('click', () => {
             if (this.#blogFolder) return;
             if (!window.showDirectoryPicker) {
                 this.showError('Opening folders with a picker is not supported in your browser.');

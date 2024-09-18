@@ -54,6 +54,7 @@ export class RouteComponent extends HTMLElement {
     }
 
     // for overriding in subclasses to detect parameters
+    // eslint-disable-next-line no-unused-vars
     routeChangedCallback(...matches) {}
 
     #matchesRoute(path, exact) {
@@ -65,7 +66,7 @@ export class RouteComponent extends HTMLElement {
             if (!activeRoutes.length) matches = ['*'];
         // normal routes
         } else {
-            const regex = new RegExp(`^#${path.replaceAll('/', '\/')}${exact ? '$' : ''}`, 'gi');
+            const regex = new RegExp(`^#${path.replaceAll('/', '\\/')}${exact ? '$' : ''}`, 'gi');
             const currentPath = window.location.hash || '#/';
             matches = regex.exec(currentPath);
         }
