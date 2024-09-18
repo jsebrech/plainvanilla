@@ -40,6 +40,8 @@ x-tooltip {
         height: 100%;
         border-radius: 5px;
     }
+    /* fix drop shadow in safari */
+    will-change: filter;
 }
 
 button:has(> x-tooltip) {
