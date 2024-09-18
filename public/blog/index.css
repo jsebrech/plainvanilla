@@ -12,6 +12,7 @@
 
 .card {
     display: block;
+    position: relative;
     list-style: none;
     padding: 1em;
     margin: 0 -1em;
