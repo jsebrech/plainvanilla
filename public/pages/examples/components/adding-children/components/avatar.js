@@ -5,7 +5,9 @@
  */
 class AvatarComponent extends HTMLElement {
     connectedCallback() {
-        this.appendChild(document.createElement('img'));
+        if (!this.querySelector('img')) {
+            this.append(document.createElement('img'));
+        }
         this.update();
     }
 

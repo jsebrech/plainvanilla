@@ -2,8 +2,10 @@ class BadgeComponent extends HTMLElement {
     #span;
 
     connectedCallback() {
-        this.#span = document.createElement('span');
-        this.#span.className = 'x-badge-label';
+        if (!this.#span) {
+            this.#span = document.createElement('span');
+            this.#span.className = 'x-badge-label';                
+        }
         this.insertBefore(this.#span, this.firstChild);
         this.update();
     }
