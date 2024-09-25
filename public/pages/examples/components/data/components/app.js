@@ -2,6 +2,7 @@ class SantasApp extends HTMLElement {
     #theList = [/* { name, nice } */];
 
     connectedCallback() {
+        if (this.querySelector('h1')) return;
         this.innerHTML = `
             <h1>Santa's List</h1>
             <santas-form></santas-form>

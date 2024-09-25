@@ -1,5 +1,6 @@
 class SantasForm extends HTMLElement {
     connectedCallback() {
+        if (this.querySelector('form')) return;
         this.innerHTML = `
             <form>
                 <label for="name">Name</label>

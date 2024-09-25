@@ -89,8 +89,11 @@
                     In theory it's possible to extend other classes &ndash; like <code>HTMLButtonElement</code> to extend a <code>&lt;button&gt;</code> &ndash;
                     but in practice this <a href="https://caniuse.com/mdn-api_customelementregistry_builtin_element_support">doesn't work yet in Safari</a>.</dd>
                 <dt><code>connectedCallback() {</code></dt>
-                <dd>This method is called when our element is added to the DOM,
-                    which means the element is ready to make DOM updates.</dd>
+                <dd>
+                    This method is called when our element is added to the DOM,
+                    which means the element is ready to make DOM updates.
+                    Note that it may be called multiple times when the element or one of its ancestors is moved around the DOM.
+                </dd>
                 <dt><code>this.textContent = 'hello world!';</code></dt>
                 <dd>The <code>this</code> in this case refers to our element, which has the full <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement">HTMLElement</a> API,
                     including its ancestors <code>Element</code> and <code>Node</code>, on which we can find the <code>textContent</code> property,
@@ -133,6 +136,10 @@
             <p>Some key elements that have changed:</p>
             <ul>
                 <li>The <code>observedAttributes</code> getter returns the element's attributes that when changed cause <code>attributeChangedCallback()</code> to be called by the browser, allowing us to update the UI.</li>
+                <li>
+                    The <code>connectedCallback</code> method is written in the assumption that it will be called multiple times.
+                    This method is in fact called when the element is first added to the DOM, but also when it is moved around.
+                </li>
                 <li>
                     The <code>update()</code> method handles initial render as well as updates, centralizing the UI logic.
                     Note that this method is written in a defensive way with the <code>if</code> statement, because it may be called from the <code>attributeChangedCallback()</code> method before <code>connectedCallback()</code> creates the <code>&lt;img&gt;</code> element.
@@ -372,14 +379,26 @@
                     Because custom elements can contain children with or without a shadow DOM, you may be wondering when to use this feature.
                 </p>
                 <p>
-                    In general shadow DOM should be avoided if possible, because it impacts accessibility, SEO and performance, and it suffers from a <abbr title="Flash Of Unstyled Content">FOUC</abbr> while the stylesheet from the <code>&lt;link&gt;</code> tag is loading. 
-                    Whenever possible, design web components to not need a shadow DOM.
+                    Shadow DOM comes with a number of downsides:
                 </p>
-                <p>Shadow DOM is however advised in these situations:</p>
+                <ul>
+                    <li>There is a <a href="../blog/articles/2024-09-06-how-fast-are-web-components/">performance penalty</a>, noticeable when putting hundreds of shadow DOMs on a page.</li>
+                    <li>It can cause <a href="https://nolanlawson.com/2022/11/28/shadow-dom-and-accessibility-the-trouble-with-aria/">acessibility issues</a>.</li>
+                    <li>While Google can crawl inside shadow DOM, <a href="https://help.siteimprove.com/support/solutions/articles/80001132321-shadow-dom-support">other crawlers may have trouble</a>.</li>
+                    <li>
+                        There can be a <abbr title="Flash Of Unstyled Content">FOUC</abbr> while a stylesheet from a <code>&lt;link&gt;</code> tag is loading.
+                        This can be worked around with <a href="https://web.dev/articles/constructable-stylesheets">constructable stylesheets</a>, 
+                        but this adds complexity and <a href="https://caniuse.com/mdn-api_document_adoptedstylesheets">browser support might be an issue</a>.
+                    </li>
+                </ul>
+                <p>
+                    For those reasons, whenever possible try to design web components to not need a shadow DOM.
+                </p>
+                <p>Shadow DOM is however recommended in these situations:</p>
                 <ul>
                     <li>Intermediate elements need to be created between the root element and the contained children, like the <code>&lt;header&gt;</code> in the example above. Only the use of a slot inside of a shadow DOM makes this possible.</li>
                     <li>Multiple places in the web component will accept children. Named slots provide this ability. This can be convenient for layout components.</li>
-                    <li>The styles should be maximally isolated from the containing page. This is often the case for web components designed to be embedded in third party sites.</li>
+                    <li>The styles or DOM should be maximally isolated from the containing page. This is often the case for web components designed to be embedded in third party sites.</li>
                 </ul>
             </aside>
         </section>
@@ -411,6 +430,15 @@
             <x-code-viewer src="./examples/components/data/components/list.js" name="components/list.js"></x-code-viewer>
             <p>The <code>list</code> setter calls the <code>update()</code> method to rerender the list.</p>
             <p>This is the recommended way to pass complex data to stateful web components.</p>
+
+            <aside>
+                <h3>Beware of XSS</h3>
+                <p>
+                    Keen observers may have noticed there's a cross-site scripting bug in the above example.
+                    This can be solved by properly encoding entities for <code>person.name</code>.
+                    To see how this can be done, check out the <a href="applications.html#entity-encoding">entity encoding</a> chapter on the Applications page.
+                </p>
+            </aside>
 
             <h3>Methods</h3>
             <p>The third way to pass complex data is by calling a method on the web component, as exemplified by the <code>&lt;santas-summary&gt;</code> component:</p>
@@ -450,6 +478,10 @@
                     A reminder that all of this code is still vanilla. It does not make use of any framework, library or build tool and works in all the major browsers.
                     It will never need changes to be compatible with new dependency versions.
                     And most importantly, it remains readable and maintainable.
+                </p>
+                <p>
+                    There's still more to say on web components. For a deeper dive into their lifecycle,
+                    check out this <a href="../blog/articles/2024-09-16-life-and-times-of-a-custom-element/">article on web component lifecycle</a>.
                 </p>
             </aside>
         </section>
