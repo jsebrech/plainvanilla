@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>The unreasonable effectiveness of vanilla JS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <meta name="description" content="A case study in porting intricate React code to vanilla.">
+    <link rel="stylesheet" href="../../index.css">
+</head>
+<body>
+    <blog-header published="2024-09-28">
+        <img src="image.webp" alt="A female comic book hero bearing a vanilla sigil on her chest" loading="lazy" />
+        <h2>The unreasonable effectiveness of vanilla JS</h2>
+        <p class="byline" aria-label="author">Joeri Sebrechts</p>
+    </blog-header>
+    <main>
+        <p>
+            I have a confession to make. At the end of the Plain Vanilla tutorial's <a href="../../../pages/applications.html">Applications page</a>
+            a challenge was posed to the reader: port <a href="https://react.dev">react.dev</a>'s final example 
+            <a href="https://react.dev/learn/scaling-up-with-reducer-and-context">Scaling Up with Reducer and Context</a> to vanilla web code.
+            Here's the confession: until today I had never actually ported over that example myself.
+        </p>
+        <p>
+            That example demonstrates a cornucopia of React's featureset.
+            Richly interactive UI showing a tasks application, making use of a context to lift the task state up,
+            and a reducer that the UI's controls dispatch to. React's DOM-diffing algorithm gets a real workout 
+            because each task in the list can be edited independently from and concurrently with the other tasks. 
+            It is an intricate and impressive demonstration. Here it is in its interactive glory:
+        </p>
+        <iframe src="./complete/index.html" title="complete example" height="250"></iframe>
+        <p>
+            But I lied. That interactive example is actually the vanilla version and it is identical.
+            If you want to verify that it is in fact identical, check out the <a href="https://codesandbox.io/p/sandbox/react-dev-wy7lfd">original React example</a>.
+            And with that out of the way, let's break apart the vanilla code.
+        </p>
+
+        <h3>Project setup</h3>
+
+        <p>The React version has these code files that we will need to port:</p>
+        <ul>
+            <li><strong>public/index.html</strong></li>
+            <li><strong>src/styles.css</strong></li>
+            <li><strong>src/index.js</strong>: imports the styles, bootstraps React and renders the App component</li>
+            <li><strong>src/App.js</strong>: renders the context's TasksProvider containing the AddTask and TaskList components</li>
+            <li><strong>src/AddTask.js</strong>: renders the simple form at the top to add a new task</li>
+            <li><strong>src/TaskList.js</strong>: renders the list of tasks</li>
+        </ul>
+        <p>
+            To make things fun, I chose the same set of files with the same filenames for the vanilla version.
+            Here's <strong>index.html</strong>:
+        </p>
+        <x-code-viewer src="./complete/index.html" name="index.html"></x-code-viewer>
+        <p>
+            The only real difference is that it links to <strong>index.js</strong> and <strong>styles.css</strong>.
+            The stylesheet was copied verbatim, but for the curious here's a link to <a href="./complete/styles.css">styles.css</a>.
+        </p>
+        
+        <h3>Get to the code</h3>
+
+        <p>
+            <strong>index.js</strong> is where it starts to get interesting.
+            Compare the React version to the vanilla version:
+        </p>
+        <x-code-viewer src="./react/src/index.js" name="index.js (React)"></x-code-viewer>
+        <x-code-viewer src="./complete/index.js" name="index.js (Vanilla)"></x-code-viewer>
+        <p>
+            Bootstrapping is different but also similar. All of the web components are imported first to load them,
+            and then the <code>&lt;tasks-app&gt;</code> component is rendered to the page.
+        </p>
+        <p>
+            The <strong>App.js</strong> code also bears more than a striking resemblance:
+        </p>
+        <x-code-viewer src="./react/src/App.js" name="App.js (React)"></x-code-viewer>
+        <x-code-viewer src="./complete/App.js" name="App.js (Vanilla)"></x-code-viewer>
+
+        <p>
+            What I like about the code so far is that it <em>feels</em> React-like. I generally find programming against React's API pleasing,
+            but I don't like the tooling, page weight and overall complexity baggage that it comes with.
+        </p>
+
+        <h3>Adding context</h3>
+
+        <p>
+            The broad outline of how to bring a React-like context to a vanilla web application is
+            already explained in the <a href="https://plainvanillaweb.com/pages/applications.html#managing-state">passing data deeply section</a> 
+            of the main Plain Vanilla tutorial, so I won't cover that again here.
+            What adds spice in this specific case is that the React context uses a reducer,
+            a function that accepts the old tasks and an action to apply to them, and returns the new tasks to show throughout the application.
+        </p>
+        <p>
+            Thankfully, the React example's reducer function and initial state were already vanilla JS code,
+            so those come along for the ride unchanged and ultimately the vanilla context is a very straightforward custom element:
+        </p>
+
+        <x-code-viewer src="./complete/TasksContext.js" name="TasksContext.js (Vanilla)"></x-code-viewer>
+
+        <p>
+            The actual context component is very bare bones, as it only needs to store the tasks,
+            emit change events for the other components to subscribe to, and provide a dispatch method 
+            for those components to call that will use the reducer function to update the tasks.
+        </p>
+
+        <h3>Adding tasks</h3>
+
+        <p>
+            The AddTask component ends up offering more of a challenge. It's a stateful component with event listeners that dispatches to the reducer:
+        </p>
+        <x-code-viewer src="./react/src/AddTask.js" name="AddTask.js (React)"></x-code-viewer>
+        <p>
+            The main wrinkle this adds for the vanilla web component is that the event listener on the button element
+            cannot be put inline with the markup. Luckily the handling of the input is much simplified
+            because we can rely on it keeping its state automatically, a convenience owed to not using a virtual DOM.
+            Thanks to the groundwork in the context component the actual dispatching of the action is easy:
+        </p>
+        <x-code-viewer src="./complete/AddTask.js" name="AddTask.js (Vanilla)"></x-code-viewer>
+        <p>
+            Fascinating to me is that <strong>index.js</strong>, <strong>App.js</strong>, <strong>TasksContext.js</strong> and <strong>AddTask.js</strong>
+            are all fewer lines of code in the vanilla version than their React counterpart while remaining functionally equivalent. 
+        </p>
+
+        <h3>Hard mode</h3>
+        <p>
+            The TaskList component is where React starts really pulling its weight.
+            The React version is clean and straightforward and juggles a lot of state with a constantly updating task list UI.
+        </p>
+        <x-code-viewer src="./react/src/TaskList.js" name="TaskList.js (React)"></x-code-viewer>
+
+        <p>
+            This proved to be a real challenge to port. The vanilla version ended up being a lot more verbose
+            because it has to do all the same DOM-reconciliation in explicit logic managed by the <strong>update()</strong> methods
+            of <code>&lt;task-list&gt;</code> and <code>&lt;task-item&gt;</code>.
+        </p>
+        <x-code-viewer src="./complete/TaskList.js" name="TaskList.js (Vanilla)"></x-code-viewer>
+        <p>
+            Some interesting take-aways:
+        </p>
+        <ul>
+            <li>
+                The <code>&lt;task-list&gt;</code> component's <strong>update()</strong> method implements a poor man's version of React reconciliation,
+                merging the current state of the <strong>tasks</strong> array into the child nodes of the <code>&lt;ul&gt;</code>.
+                In order to do this, it has to store a key on each list item, just like React requires, and here it becomes obvious why that is.
+                Without the key we can't find the existing <code>&lt;li&gt;</code> nodes that match up to task items,
+                and so would have to recreate the entire list. By adding the key it becomes possible to update the list in-place,
+                modifying task items instead of recreating them so that they can keep their on-going edit state.
+            </li>
+            <li>
+                That reconciliation code is very generic however, and it is easy to imagine a fully generic <strong>repeat()</strong>
+                function that converts an array of data to markup on the page. In fact, the Lit framework <a href="https://lit.dev/docs/templates/lists/#the-repeat-directive">contains exactly that</a>.
+                For brevity's sake this code doesn't go quite that far.
+            </li>
+            <li>
+                The <code>&lt;task-item&gt;</code> component cannot do what the React code does: create different markup depending on the current state.
+                Instead it creates the union of the markup across the various states, and then in the <strong>update()</strong>
+                shows the right subset of elements based on the current state.
+            </li>
+        </ul>
+        <p>
+            That wraps up the entire code. You can find the <a href="https://github.com/jsebrech/vanilla-context-and-reducer">ported example on Github</a>.
+        </p>
+
+        <h3>Some thoughts</h3>
+        
+        <p>
+            A peculiar result of this porting challenge is that the vanilla version ends up being roughly 
+            the same number of lines of code as the React version. The React code is still overall less verbose (all those querySelectors, oy!),
+            but it has its own share of boilerplate that disappears in the vanilla version.
+            This isn't a diss against React, it's more of a compliment to how capable browsers have gotten that vanilla web components
+            can carry us so far.
+        </p>
+        <p>
+            If I could have waved a magic wand, what would have made the vanilla version simpler?
+        </p>
+        <ul>
+            <li>
+                All of those <strong>querySelector</strong> calls get annoying. The alternatives are building the markup easily with innerHTML
+                and then fishing out references to the created elements using querySelector, or building the elements one by one verbosely using createElement,
+                but then easily having a reference to them. Either of those ends up very verbose. 
+                An alternative templating approach that makes it easy to create elements <em>and</em> get a reference to them would be very welcome.
+            </li>
+            <li>
+                As long as we're dreaming, I'm jealous of how easy it is to add the event listeners in JSX.
+                A real expression language in HTML templates that supports data and event binding and data-conditional markup would be very neat
+                and would take away most of the reason to still find a framework's templating language more convenient.
+                Web components are a perfectly fine alternative to React components, they just lack an easy built-in templating mechanism.
+            </li>
+            <li>
+                Browsers could get a little smarter about how they handle DOM updates during event handling.
+                In the logic that sorts the <code>&lt;li&gt;</code> to the right order in the list, 
+                the <em>if</em> condition before insertBefore proved necessary because the browser
+                didn't notice that the element was already placed where it needed to be inserted,
+                and click events would get lost as a consequence.
+                I've even noticed that assigning a textContent to a button mid-click will make Safari
+                lose track of that button's click event. All of that can be worked around with clever reconciliation logic,
+                but that's code that belongs in the browser, not in JavaScript.
+            </li>
+        </ul>
+        <p>
+            All in all though, I'm really impressed with vanilla JS. I call it unreasonably effective because it is
+            jarring just how capable the built-in abilities of browsers are, and just how many web developers despite that 
+            still default to web frameworks for every new project. Maybe one day...
+        </p>
+    </main>
+    <blog-footer></blog-footer>
+    <script type="module" src="../../index.js"></script>
+</body>
+</html>

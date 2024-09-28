@@ -146,9 +146,11 @@ customElements.define('blog-generator', class BlogGenerator extends HTMLElement 
         // inline code examples
         await Promise.all([...main.querySelectorAll('x-code-viewer')].map(async (elem) => {
             const text = await this.downloadFile(elem.getAttribute('src'), path);
-            const pre = document.createElement('pre');
-            pre.innerHTML = html`<code>${text}</code>`;
-            elem.replaceWith(pre);
+            const div = document.createElement('div');
+            const name = elem.getAttribute('name');
+            const label = name ? html`<p><em>${name}:</em></p>` : '';
+            div.innerHTML = html`${label}<pre><code>${text}</code></pre>`;
+            elem.replaceWith(div);
         }));
 
         // convert img src to absolute url

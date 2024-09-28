@@ -6,10 +6,536 @@
     <logo>https://plainvanillaweb.com/android-chrome-512x512.png</logo>
     <link rel="alternate" href="https://plainvanillaweb.com/blog/"/>
     <link rel="self" href="https://plainvanillaweb.com/blog/feed.xml"/>
-    <updated>2024-09-16T12:00:00.000Z</updated>
+    <updated>2024-09-28T12:00:00.000Z</updated>
     <author>
         <name>Joeri Sebrechts</name>
     </author>
+    <entry>
+        <title><![CDATA[The unreasonable effectiveness of vanilla JS]]></title>
+        <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2024-09-28-unreasonable-effectiveness-of-vanilla-js/"/>
+        <id>https://plainvanillaweb.com/blog/articles/2024-09-28-unreasonable-effectiveness-of-vanilla-js/</id>
+        <published>2024-09-28T12:00:00.000Z</published>
+        <updated>2024-09-28T12:00:00.000Z</updated>
+        <summary><![CDATA[A case study in porting intricate React code to vanilla.]]></summary>
+        <media:content url="https://plainvanillaweb.com/blog/articles/2024-09-28-unreasonable-effectiveness-of-vanilla-js/image.webp" type="image/webp" medium="image" />
+        <author><name><![CDATA[Joeri Sebrechts]]></name></author>
+        <content type="html"><![CDATA[
+        <p>
+            I have a confession to make. At the end of the Plain Vanilla tutorial's <a href="../../../pages/applications.html">Applications page</a>
+            a challenge was posed to the reader: port <a href="https://react.dev">react.dev</a>'s final example 
+            <a href="https://react.dev/learn/scaling-up-with-reducer-and-context">Scaling Up with Reducer and Context</a> to vanilla web code.
+            Here's the confession: until today I had never actually ported over that example myself.
+        </p>
+        <p>
+            That example demonstrates a cornucopia of React's featureset.
+            Richly interactive UI showing a tasks application, making use of a context to lift the task state up,
+            and a reducer that the UI's controls dispatch to. React's DOM-diffing algorithm gets a real workout 
+            because each task in the list can be edited independently from and concurrently with the other tasks. 
+            It is an intricate and impressive demonstration. Here it is in its interactive glory:
+        </p>
+        <p><a href="https://plainvanillaweb.com/blog/articles/2024-09-28-unreasonable-effectiveness-of-vanilla-js/complete/index.html">complete example</a></p>
+        <p>
+            But I lied. That interactive example is actually the vanilla version and it is identical.
+            If you want to verify that it is in fact identical, check out the <a href="https://codesandbox.io/p/sandbox/react-dev-wy7lfd">original React example</a>.
+            And with that out of the way, let's break apart the vanilla code.
+        </p>
+
+        <h3>Project setup</h3>
+
+        <p>The React version has these code files that we will need to port:</p>
+        <ul>
+            <li><strong>public/index.html</strong></li>
+            <li><strong>src/styles.css</strong></li>
+            <li><strong>src/index.js</strong>: imports the styles, bootstraps React and renders the App component</li>
+            <li><strong>src/App.js</strong>: renders the context's TasksProvider containing the AddTask and TaskList components</li>
+            <li><strong>src/AddTask.js</strong>: renders the simple form at the top to add a new task</li>
+            <li><strong>src/TaskList.js</strong>: renders the list of tasks</li>
+        </ul>
+        <p>
+            To make things fun, I chose the same set of files with the same filenames for the vanilla version.
+            Here's <strong>index.html</strong>:
+        </p>
+        <div><p><em>index.html:</em></p><pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;Document&lt;/title&gt;
+    &lt;link rel="stylesheet" href="styles.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id="root"&gt;&lt;/div&gt;
+    &lt;script type="module" src="index.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre></div>
+        <p>
+            The only real difference is that it links to <strong>index.js</strong> and <strong>styles.css</strong>.
+            The stylesheet was copied verbatim, but for the curious here's a link to <a href="./complete/styles.css">styles.css</a>.
+        </p>
+        
+        <h3>Get to the code</h3>
+
+        <p>
+            <strong>index.js</strong> is where it starts to get interesting.
+            Compare the React version to the vanilla version:
+        </p>
+        <div><p><em>index.js (React):</em></p><pre><code>import React, { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./styles.css";
+
+import App from "./App";
+
+const root = createRoot(document.getElementById("root"));
+root.render(
+  &lt;StrictMode&gt;
+    &lt;App /&gt;
+  &lt;/StrictMode&gt;
+);</code></pre></div>
+        <div><p><em>index.js (Vanilla):</em></p><pre><code>import './App.js';
+import './AddTask.js';
+import './TaskList.js';
+import './TasksContext.js';
+
+const render = () =&gt; {
+    const root = document.getElementById('root');
+    root.append(document.createElement('tasks-app'));
+}
+
+document.addEventListener('DOMContentLoaded', render);
+</code></pre></div>
+        <p>
+            Bootstrapping is different but also similar. All of the web components are imported first to load them,
+            and then the <code>&lt;tasks-app&gt;</code> component is rendered to the page.
+        </p>
+        <p>
+            The <strong>App.js</strong> code also bears more than a striking resemblance:
+        </p>
+        <div><p><em>App.js (React):</em></p><pre><code>import AddTask from './AddTask.js';
+import TaskList from './TaskList.js';
+import { TasksProvider } from './TasksContext.js';
+
+export default function TaskApp() {
+  return (
+    &lt;TasksProvider&gt;
+      &lt;h1&gt;Day off in Kyoto&lt;/h1&gt;
+      &lt;AddTask /&gt;
+      &lt;TaskList /&gt;
+    &lt;/TasksProvider&gt;
+  );
+}
+</code></pre></div>
+        <div><p><em>App.js (Vanilla):</em></p><pre><code>customElements.define('tasks-app', class extends HTMLElement {
+    connectedCallback() {
+        this.innerHTML = `
+            &lt;tasks-context&gt;
+                &lt;h1&gt;Day off in Kyoto&lt;/h1&gt;
+                &lt;task-add&gt;&lt;/task-add&gt;
+                &lt;task-list&gt;&lt;/task-list&gt;
+            &lt;/tasks-context&gt;
+        `;
+    }
+});
+</code></pre></div>
+
+        <p>
+            What I like about the code so far is that it <em>feels</em> React-like. I generally find programming against React's API pleasing,
+            but I don't like the tooling, page weight and overall complexity baggage that it comes with.
+        </p>
+
+        <h3>Adding context</h3>
+
+        <p>
+            The broad outline of how to bring a React-like context to a vanilla web application is
+            already explained in the <a href="https://plainvanillaweb.com/pages/applications.html#managing-state">passing data deeply section</a> 
+            of the main Plain Vanilla tutorial, so I won't cover that again here.
+            What adds spice in this specific case is that the React context uses a reducer,
+            a function that accepts the old tasks and an action to apply to them, and returns the new tasks to show throughout the application.
+        </p>
+        <p>
+            Thankfully, the React example's reducer function and initial state were already vanilla JS code,
+            so those come along for the ride unchanged and ultimately the vanilla context is a very straightforward custom element:
+        </p>
+
+        <div><p><em>TasksContext.js (Vanilla):</em></p><pre><code>customElements.define('tasks-context', class extends HTMLElement {
+    #tasks = structuredClone(initialTasks);
+    get tasks() { return this.#tasks; }
+    set tasks(tasks) {
+        this.#tasks = tasks;
+        this.dispatchEvent(new Event('change'));
+    }
+
+    dispatch(action) {
+        this.tasks = tasksReducer(this.tasks, action);
+    }
+
+    connectedCallback() {
+        this.style.display = 'content';
+    }
+});
+
+function tasksReducer(tasks, action) {
+    switch (action.type) {
+        case 'added': {
+            return [...tasks, {
+                id: action.id,
+                text: action.text,
+                done: false
+            }];
+        }
+        case 'changed': {
+            return tasks.map(t =&gt; {
+                if (t.id === action.task.id) {
+                    return action.task;
+                } else {
+                    return t;
+                }
+            });
+        }
+        case 'deleted': {
+            return tasks.filter(t =&gt; t.id !== action.id);
+        }
+        default: {
+            throw Error('Unknown action: ' + action.type);
+        }
+    }
+}
+
+const initialTasks = [
+    { id: 0, text: 'Philosopher’s Path', done: true },
+    { id: 1, text: 'Visit the temple', done: false },
+    { id: 2, text: 'Drink matcha', done: false }
+];
+</code></pre></div>
+
+        <p>
+            The actual context component is very bare bones, as it only needs to store the tasks,
+            emit change events for the other components to subscribe to, and provide a dispatch method 
+            for those components to call that will use the reducer function to update the tasks.
+        </p>
+
+        <h3>Adding tasks</h3>
+
+        <p>
+            The AddTask component ends up offering more of a challenge. It's a stateful component with event listeners that dispatches to the reducer:
+        </p>
+        <div><p><em>AddTask.js (React):</em></p><pre><code>import { useState } from 'react';
+import { useTasksDispatch } from './TasksContext.js';
+
+export default function AddTask() {
+  const [text, setText] = useState('');
+  const dispatch = useTasksDispatch();
+  return (
+    &lt;&gt;
+      &lt;input
+        placeholder="Add task"
+        value={text}
+        onChange={e =&gt; setText(e.target.value)}
+      /&gt;
+      &lt;button onClick={() =&gt; {
+        setText('');
+        dispatch({
+          type: 'added',
+          id: nextId++,
+          text: text,
+        }); 
+      }}&gt;Add&lt;/button&gt;
+    &lt;/&gt;
+  );
+}
+
+let nextId = 3;
+</code></pre></div>
+        <p>
+            The main wrinkle this adds for the vanilla web component is that the event listener on the button element
+            cannot be put inline with the markup. Luckily the handling of the input is much simplified
+            because we can rely on it keeping its state automatically, a convenience owed to not using a virtual DOM.
+            Thanks to the groundwork in the context component the actual dispatching of the action is easy:
+        </p>
+        <div><p><em>AddTask.js (Vanilla):</em></p><pre><code>customElements.define('task-add', class extends HTMLElement {
+    connectedCallback() {
+        this.innerHTML = `
+            &lt;input type="text" placeholder="Add task" /&gt;
+            &lt;button&gt;Add&lt;/button&gt;
+        `;
+        this.querySelector('button').onclick = () =&gt; {
+            const input = this.querySelector('input');
+            this.closest('tasks-context').dispatch({
+                type: 'added',
+                id: nextId++,
+                text: input.value
+            });
+            input.value = '';
+        };
+    }
+})
+
+let nextId = 3;
+</code></pre></div>
+        <p>
+            Fascinating to me is that <strong>index.js</strong>, <strong>App.js</strong>, <strong>TasksContext.js</strong> and <strong>AddTask.js</strong>
+            are all fewer lines of code in the vanilla version than their React counterpart while remaining functionally equivalent. 
+        </p>
+
+        <h3>Hard mode</h3>
+        <p>
+            The TaskList component is where React starts really pulling its weight.
+            The React version is clean and straightforward and juggles a lot of state with a constantly updating task list UI.
+        </p>
+        <div><p><em>TaskList.js (React):</em></p><pre><code>import { useState } from 'react';
+import { useTasks, useTasksDispatch } from './TasksContext.js';
+
+export default function TaskList() {
+  const tasks = useTasks();
+  return (
+    &lt;ul&gt;
+      {tasks.map(task =&gt; (
+        &lt;li key={task.id}&gt;
+          &lt;Task task={task} /&gt;
+        &lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+
+function Task({ task }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const dispatch = useTasksDispatch();
+  let taskContent;
+  if (isEditing) {
+    taskContent = (
+      &lt;&gt;
+        &lt;input
+          value={task.text}
+          onChange={e =&gt; {
+            dispatch({
+              type: 'changed',
+              task: {
+                ...task,
+                text: e.target.value
+              }
+            });
+          }} /&gt;
+        &lt;button onClick={() =&gt; setIsEditing(false)}&gt;
+          Save
+        &lt;/button&gt;
+      &lt;/&gt;
+    );
+  } else {
+    taskContent = (
+      &lt;&gt;
+        {task.text}
+        &lt;button onClick={() =&gt; setIsEditing(true)}&gt;
+          Edit
+        &lt;/button&gt;
+      &lt;/&gt;
+    );
+  }
+  return (
+    &lt;label&gt;
+      &lt;input
+        type="checkbox"
+        checked={task.done}
+        onChange={e =&gt; {
+          dispatch({
+            type: 'changed',
+            task: {
+              ...task,
+              done: e.target.checked
+            }
+          });
+        }}
+      /&gt;
+      {taskContent}
+      &lt;button onClick={() =&gt; {
+        dispatch({
+          type: 'deleted',
+          id: task.id
+        });
+      }}&gt;
+        Delete
+      &lt;/button&gt;
+    &lt;/label&gt;
+  );
+}
+</code></pre></div>
+
+        <p>
+            This proved to be a real challenge to port. The vanilla version ended up being a lot more verbose
+            because it has to do all the same DOM-reconciliation in explicit logic managed by the <strong>update()</strong> methods
+            of <code>&lt;task-list&gt;</code> and <code>&lt;task-item&gt;</code>.
+        </p>
+        <div><p><em>TaskList.js (Vanilla):</em></p><pre><code>customElements.define('task-list', class extends HTMLElement {
+    get context() { return this.closest('tasks-context'); }
+    
+    connectedCallback() {
+        this.context.addEventListener('change', () =&gt; this.update());
+        this.append(document.createElement('ul'));
+        this.update();
+    }
+
+    update() {
+        const ul = this.querySelector('ul');
+        let before = ul.firstChild;
+        this.context.tasks.forEach(task =&gt; {
+            let li = ul.querySelector(`:scope &gt; [data-key="${task.id}"]`);
+            if (!li) {
+                li = document.createElement('li');
+                li.dataset.key = task.id;
+                li.append(document.createElement('task-item'));
+            }
+            li.firstChild.task = task;
+            // move to the right position in the list if not there yet
+            if (li !== before) ul.insertBefore(li, before);
+            before = li.nextSibling;
+        });
+        // remove unknown nodes
+        while (before) {
+            const remove = before;
+            before = before.nextSibling;
+            ul.removeChild(remove);
+        }
+    }
+});
+
+customElements.define('task-item', class extends HTMLElement {
+    #isEditing = false;
+    #task;
+    set task(task) { this.#task = task; this.update(); }
+    get context() { return this.closest('tasks-context'); }
+
+    connectedCallback() {
+        if (this.querySelector('label')) return;
+        this.innerHTML = `
+            &lt;label&gt;
+                &lt;input type="checkbox" /&gt;
+                &lt;input type="text" /&gt;
+                &lt;span&gt;&lt;/span&gt;
+                &lt;button id="edit"&gt;Edit&lt;/button&gt;
+                &lt;button id="save"&gt;Save&lt;/button&gt;
+                &lt;button id="delete"&gt;Delete&lt;/button&gt;
+            &lt;/label&gt;
+        `;
+        this.querySelector('input[type=checkbox]').onchange = e =&gt; {
+            this.context.dispatch({
+                type: 'changed',
+                task: {
+                    ...this.#task,
+                    done: e.target.checked
+                }
+            });
+        };
+        this.querySelector('input[type=text]').onchange = e =&gt; {
+            this.context.dispatch({
+                type: 'changed',
+                task: {
+                    ...this.#task,
+                    text: e.target.value
+                }
+            });
+        };
+        this.querySelector('button#edit').onclick = () =&gt; {
+            this.#isEditing = true;
+            this.update();
+        };
+        this.querySelector('button#save').onclick = () =&gt; {
+            this.#isEditing = false;
+            this.update();
+        };
+        this.querySelector('button#delete').onclick = () =&gt; {
+            this.context.dispatch({
+                type: 'deleted',
+                id: this.#task.id
+            });
+        };
+        this.context.addEventListener('change', () =&gt; this.update());
+        this.update();
+    }
+
+    update() {
+        if (this.isConnected &amp;&amp; this.#task) {
+            this.querySelector('input[type=checkbox]').checked = this.#task.done;
+            const inputEdit = this.querySelector('input[type=text]');
+            inputEdit.style.display = this.#isEditing ? 'inline' : 'none';
+            inputEdit.value = this.#task.text;
+            const span = this.querySelector('span');
+            span.style.display = this.#isEditing ? 'none' : 'inline';
+            span.textContent = this.#task.text;
+            this.querySelector('button#edit').style.display = this.#isEditing ? 'none' : 'inline';
+            this.querySelector('button#save').style.display = this.#isEditing ? 'inline' : 'none';
+        }
+    }
+});
+</code></pre></div>
+        <p>
+            Some interesting take-aways:
+        </p>
+        <ul>
+            <li>
+                The <code>&lt;task-list&gt;</code> component's <strong>update()</strong> method implements a poor man's version of React reconciliation,
+                merging the current state of the <strong>tasks</strong> array into the child nodes of the <code>&lt;ul&gt;</code>.
+                In order to do this, it has to store a key on each list item, just like React requires, and here it becomes obvious why that is.
+                Without the key we can't find the existing <code>&lt;li&gt;</code> nodes that match up to task items,
+                and so would have to recreate the entire list. By adding the key it becomes possible to update the list in-place,
+                modifying task items instead of recreating them so that they can keep their on-going edit state.
+            </li>
+            <li>
+                That reconciliation code is very generic however, and it is easy to imagine a fully generic <strong>repeat()</strong>
+                function that converts an array of data to markup on the page. In fact, the Lit framework <a href="https://lit.dev/docs/templates/lists/#the-repeat-directive">contains exactly that</a>.
+                For brevity's sake this code doesn't go quite that far.
+            </li>
+            <li>
+                The <code>&lt;task-item&gt;</code> component cannot do what the React code does: create different markup depending on the current state.
+                Instead it creates the union of the markup across the various states, and then in the <strong>update()</strong>
+                shows the right subset of elements based on the current state.
+            </li>
+        </ul>
+        <p>
+            That wraps up the entire code. You can find the <a href="https://github.com/jsebrech/vanilla-context-and-reducer">ported example on Github</a>.
+        </p>
+
+        <h3>Some thoughts</h3>
+        
+        <p>
+            A peculiar result of this porting challenge is that the vanilla version ends up being roughly 
+            the same number of lines of code as the React version. The React code is still overall less verbose (all those querySelectors, oy!),
+            but it has its own share of boilerplate that disappears in the vanilla version.
+            This isn't a diss against React, it's more of a compliment to how capable browsers have gotten that vanilla web components
+            can carry us so far.
+        </p>
+        <p>
+            If I could have waved a magic wand, what would have made the vanilla version simpler?
+        </p>
+        <ul>
+            <li>
+                All of those <strong>querySelector</strong> calls get annoying. The alternatives are building the markup easily with innerHTML
+                and then fishing out references to the created elements using querySelector, or building the elements one by one verbosely using createElement,
+                but then easily having a reference to them. Either of those ends up very verbose. 
+                An alternative templating approach that makes it easy to create elements <em>and</em> get a reference to them would be very welcome.
+            </li>
+            <li>
+                As long as we're dreaming, I'm jealous of how easy it is to add the event listeners in JSX.
+                A real expression language in HTML templates that supports data and event binding and data-conditional markup would be very neat
+                and would take away most of the reason to still find a framework's templating language more convenient.
+                Web components are a perfectly fine alternative to React components, they just lack an easy built-in templating mechanism.
+            </li>
+            <li>
+                Browsers could get a little smarter about how they handle DOM updates during event handling.
+                In the logic that sorts the <code>&lt;li&gt;</code> to the right order in the list, 
+                the <em>if</em> condition before insertBefore proved necessary because the browser
+                didn't notice that the element was already placed where it needed to be inserted,
+                and click events would get lost as a consequence.
+                I've even noticed that assigning a textContent to a button mid-click will make Safari
+                lose track of that button's click event. All of that can be worked around with clever reconciliation logic,
+                but that's code that belongs in the browser, not in JavaScript.
+            </li>
+        </ul>
+        <p>
+            All in all though, I'm really impressed with vanilla JS. I call it unreasonably effective because it is
+            jarring just how capable the built-in abilities of browsers are, and just how many web developers despite that 
+            still default to web frameworks for every new project. Maybe one day...
+        </p>
+    ]]></content>
+    </entry>
     <entry>
         <title><![CDATA[The life and times of a web component]]></title>
         <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2024-09-16-life-and-times-of-a-custom-element/"/>
@@ -40,7 +566,7 @@
             Consider this example of an <code>&lt;x-tooltip&gt;</code> custom element that is HTML and CSS only:
         </p>
         <p><a href="https://plainvanillaweb.com/blog/articles/2024-09-16-life-and-times-of-a-custom-element/undefined/example.html">undefined/example.html</a></p>
-        <pre><code>&lt;!doctype html&gt;
+        <div><p><em>example.html:</em></p><pre><code>&lt;!doctype html&gt;
 &lt;html&gt;
     &lt;head&gt;
         &lt;meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" /&gt;
@@ -53,7 +579,7 @@
             &lt;x-tooltip inert role="tooltip"&gt;Thanks for hovering!&lt;/x-tooltip&gt;
         &lt;/button&gt;
     &lt;/body&gt;
-&lt;/html&gt;</code></pre>
+&lt;/html&gt;</code></pre></div>
         <p>
             <small>For the curious, here is the <a href="undefined/example.css">example.css</a>, but it is not important here.</small>
         </p>
@@ -73,7 +599,7 @@
             to implement its own logic.
         </p>
         <p><a href="https://plainvanillaweb.com/blog/articles/2024-09-16-life-and-times-of-a-custom-element/defined/example.html">defined/example.html</a></p>
-        <pre><code>&lt;!doctype html&gt;
+        <div><p><em>example.html:</em></p><pre><code>&lt;!doctype html&gt;
 &lt;html&gt;
     &lt;head&gt;
         &lt;meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" /&gt;
@@ -109,7 +635,7 @@
             }
         &lt;/script&gt;
     &lt;/body&gt;
-&lt;/html&gt;</code></pre>
+&lt;/html&gt;</code></pre></div>
         <p>
             What happens to the elements already in the markup at the moment <code>customElements.define()</code>
             is called is an <em>element upgrade</em>. The browser will take all custom elements already in the document,
@@ -267,7 +793,7 @@
         </p>
 
         <p><a href="https://plainvanillaweb.com/blog/articles/2024-09-16-life-and-times-of-a-custom-element/shadowed/example.html">shadowed/example.html</a></p>
-        <pre><code>&lt;!doctype html&gt;
+        <div><p><em>example.html:</em></p><pre><code>&lt;!doctype html&gt;
 &lt;html&gt;
     &lt;head&gt;
         &lt;meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" /&gt;
@@ -314,7 +840,7 @@
         }
         &lt;/script&gt;
     &lt;/body&gt;
-&lt;/html&gt;</code></pre>
+&lt;/html&gt;</code></pre></div>
 
         <p>
             While adding a shadow DOM can be done at any point, it is a one-way operation.
@@ -339,7 +865,7 @@
             Here's an example of a counter that automatically updates when new child elements are added:
         </p>
         <p><a href="https://plainvanillaweb.com/blog/articles/2024-09-16-life-and-times-of-a-custom-element/observer/example.html">observer/example.html</a></p>
-        <pre><code>&lt;!doctype html&gt;
+        <div><p><em>example.html:</em></p><pre><code>&lt;!doctype html&gt;
 &lt;html&gt; 
     &lt;head&gt;
         &lt;meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" /&gt;
@@ -378,7 +904,7 @@
         }
         &lt;/script&gt;
     &lt;/body&gt;
-&lt;/html&gt;</code></pre>
+&lt;/html&gt;</code></pre></div>
 
         <p>
             There is still more to tell, but already I can feel eyes glazing over and brains turning to mush,
@@ -453,7 +979,7 @@
             see if they're not yet defined, and load and define them if so.
             By using <code>display: contents</code> we can avoid having the <code>&lt;x-lazy&gt;</code> impact layout.
         </p>
-        <pre><code>customElements.define('x-lazy', class extends HTMLElement {
+        <div><p><em>lazy.js:</em></p><pre><code>customElements.define('x-lazy', class extends HTMLElement {
     connectedCallback() {
         this.style.display = 'contents';
         this.#loadLazy();
@@ -471,7 +997,7 @@
         // TODO: load the custom element
     }
 });
-</code></pre>
+</code></pre></div>
 
         <p>
             To actually load the element, we'll have to first find the JS file to import, and then run its register function.
@@ -479,7 +1005,7 @@
             The following code uses a heuristic that assumes components are in a <code>./components/</code> subfolder of the current document
             and follow a consistent file naming scheme:
         </p>
-        <pre><code>    #loadElement(element) {
+        <div><p><em>lazy.js (continued):</em></p><pre><code>    #loadElement(element) {
         // strip leading x- off the name
         const cleanName = element.localName.replace(/^x-/, '').toLowerCase();
         // assume component is in its own folder
@@ -487,7 +1013,7 @@
         // dynamically import, then register if not yet registered
         return import(new URL(url, document.location)).then(module =&gt; 
             !customElements.get(element.localName) &amp;&amp; module &amp;&amp; module.default());
-    }</code></pre>
+    }</code></pre></div>
 
         <p>
             One could get a lot more creative however, and for example use an 
@@ -503,11 +1029,11 @@
             the <code>&lt;x-suspense&gt;</code> component. This starts out as a tale of two slots. When the suspense element is loading it shows the fallback, otherwise the content.
         </p>
 
-        <pre><code>&lt;x-suspense&gt;
+        <div><p><em>example.html:</em></p><pre><code>&lt;x-suspense&gt;
     &lt;p slot="fallback"&gt;Loading...&lt;/p&gt;
     &lt;x-lazy&gt;&lt;x-hello-world&gt;&lt;/x-hello-world&gt;&lt;/x-lazy&gt;
-&lt;/x-suspense&gt;</code></pre>
-        <pre><code>export class Suspense extends HTMLElement {
+&lt;/x-suspense&gt;</code></pre></div>
+        <div><p><em>suspense.js:</em></p><pre><code>export class Suspense extends HTMLElement {
     #fallbackSlot;
     #contentSlot;
 
@@ -532,7 +1058,7 @@
         this.style.display = 'contents';
     }
 }
-customElements.define('x-suspense', Suspense);</code></pre>
+customElements.define('x-suspense', Suspense);</code></pre></div>
 
         <p>
             The trick now is, how to we get <code>loading = true</code> to happen?
@@ -540,7 +1066,7 @@ customElements.define('x-suspense', Suspense);</code></pre>
             We can use the same mechanism to create a generic API that will let our suspense wait on a promise to complete.
         </p>
 
-        <pre><code>    static waitFor(sender, ...promises) {
+        <div><p><em>suspense.js (continued):</em></p><pre><code>    static waitFor(sender, ...promises) {
         const suspense = sender.closest('x-suspense');
         if (suspense) suspense.addPromises(...promises);
     }
@@ -558,7 +1084,7 @@ customElements.define('x-suspense', Suspense);</code></pre>
                 this.loading = false;
             }
         });
-    }</code></pre>
+    }</code></pre></div>
 
         <p>
             <code>Suspense.waitFor</code> will call the nearest ancestor <code>&lt;x-suspense&gt;</code>
@@ -566,7 +1092,7 @@ customElements.define('x-suspense', Suspense);</code></pre>
             This API can then be called from our <code>&lt;x-lazy&gt;</code> component.
             Note that <code>#loadElement</code> returns a promise that completes when the custom element is loaded or fails to load.
         </p>
-        <pre><code>    #loadLazy() {
+        <div><p><em>lazy.js (continued):</em></p><pre><code>    #loadLazy() {
         const elements = 
             [...this.children].filter(_ =&gt; _.localName.includes('-'));
         const unregistered = 
@@ -576,7 +1102,7 @@ customElements.define('x-suspense', Suspense);</code></pre>
                 ...unregistered.map(_ =&gt; this.#loadElement(_))
             );
         }
-    }</code></pre>
+    }</code></pre></div>
         <p>
             The nice thing about the promise-based approach is that we can give it any promise, just like we would with React's suspense.
             For example, when loading data in a custom element that is in the suspense's subtree, we can call the exact same API:<br>
@@ -593,17 +1119,17 @@ customElements.define('x-suspense', Suspense);</code></pre>
         <p>
             The approach is similar to suspense:
         </p>
-        <pre><code>&lt;x-error-boundary&gt;
+        <div><p><em>example.html:</em></p><pre><code>&lt;x-error-boundary&gt;
     &lt;p slot="error"&gt;Something went wrong&lt;/p&gt;
     &lt;x-suspense&gt;
         &lt;p slot="fallback"&gt;Loading...&lt;/p&gt;
         &lt;x-lazy&gt;&lt;x-hello-world&gt;&lt;/x-hello-world&gt;&lt;/x-lazy&gt;
     &lt;/x-suspense&gt;
-&lt;/x-error-boundary&gt;</code></pre>
+&lt;/x-error-boundary&gt;</code></pre></div>
         <p>
             And the code is also quite similar to suspense:
         </p>
-        <pre><code>export class ErrorBoundary extends HTMLElement {
+        <div><pre><code>export class ErrorBoundary extends HTMLElement {
 
     static showError(sender, error) {
         if (!error) throw new Error('ErrorBoundary.showError: expected two arguments but got one');
@@ -663,7 +1189,7 @@ customElements.define('x-suspense', Suspense);</code></pre>
     }
 }
 customElements.define('x-error-boundary', ErrorBoundary);
-</code></pre>
+</code></pre></div>
 
         <p>
             Similar to suspense, this has an API <code>ErrorBoundary.showError()</code> that can be called
@@ -684,7 +1210,7 @@ customElements.define('x-error-boundary', ErrorBoundary);
             that combines lazy, suspense, error boundary, a customized error message, and a lazy-loaded hello-world component.
         </p>
 
-        <pre><code>import { registerLazy } from './components/lazy.js';
+        <div><p><em>example/index.js:</em></p><pre><code>import { registerLazy } from './components/lazy.js';
 import { registerSuspense } from './components/suspense.js';
 import { registerErrorBoundary } from './components/error-boundary.js';
 import { registerErrorMessage } from './components/error-message.js';
@@ -732,7 +1258,7 @@ customElements.define('x-demo', class extends HTMLElement {
     }
 
 });
-</code></pre>
+</code></pre></div>
         <p><a href="https://plainvanillaweb.com/blog/articles/2024-09-09-sweet-suspense/example/index.html">complete example</a></p>
 
         <p>
@@ -1080,7 +1606,7 @@ customElements.define('x-demo', class extends HTMLElement {
             The heart of the binding function is an HTML fragment iterator. 
             After all, before we can bind attributes we need to first find the ones that have binding directives.
         </p>
-        <pre><code>export const bind = (template) =&gt; {
+        <div><pre><code>export const bind = (template) =&gt; {
     const fragment = template.content.cloneNode(true);
     // iterate over all nodes in the fragment
     const iterator = document.createNodeIterator(
@@ -1116,7 +1642,7 @@ customElements.define('x-demo', class extends HTMLElement {
         }
     }
     return fragment;
-}</code></pre>
+}</code></pre></div>
         <p>
             This code will take an <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template">HTML template element</a>, 
             clone it to a <a href="https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment">document fragment</a>, 
@@ -1140,7 +1666,7 @@ customElements.define('x-demo', class extends HTMLElement {
             At the same time, it would be nice to just be able to pass in a string and have it auto-converted into a template.
             The beginning of our bind function then ends up looking like this:
         </p>
-        <pre><code>export const bind = (template, target) =&gt; {
+        <div><pre><code>export const bind = (template, target) =&gt; {
     if (!template.content) {
         const text = template;
         template = document.createElement('template');
@@ -1148,13 +1674,13 @@ customElements.define('x-demo', class extends HTMLElement {
     }
     const fragment = template.content.cloneNode(true);
 // ...
-}</code></pre>
+}</code></pre></div>
         <p>That just leaves us the TODO's. We can make those as simple or complicated as we want. I'll pick a middle ground.</p>
 
         <h3>Binding to events</h3>
 
         <p>This 20 line handler binds events to methods, signals or properties:</p>
-        <pre><code>// check for custom event listener attributes
+        <div><pre><code>// check for custom event listener attributes
 if (attr.name.startsWith('@')) {
     const event = attr.name.slice(1);
     const property = attr.value;
@@ -1173,11 +1699,11 @@ if (attr.name.startsWith('@')) {
     elem.addEventListener(event, listener);
     // remove (non-standard) attribute from element
     elem.removeAttributeNode(attr);
-}</code></pre>
+}</code></pre></div>
 
         <p>That probably doesn't explain much, so let me give an example of what this enables:</p>
         <p><a href="https://plainvanillaweb.com/blog/articles/2024-09-03-unix-philosophy/example-bind3/example.html">Binding to events example</a></p>
-        <pre><code>import { bind } from './bind.js';
+        <div><pre><code>import { bind } from './bind.js';
 import { signal } from './signals.js';
 
 customElements.define('x-example', class Example extends HTMLElement {
@@ -1222,7 +1748,7 @@ customElements.define('x-example', class Example extends HTMLElement {
             +this.getAttribute('a') + +this.getAttribute('b') + +this.c;
     }
 });
-</code></pre>
+</code></pre></div>
 
         <ul>
             <li><code>input#a</code>'s input event is handled by calling the <code>onClickA()</code> method.</li>
@@ -1240,7 +1766,7 @@ customElements.define('x-example', class Example extends HTMLElement {
             Having established the pattern for events that automatically update properties, 
             we now reverse the polarity to make data values automatically set element properties or attributes.
         </p>
-        <pre><code>// ...
+        <div><pre><code>// ...
     if (attr.name.startsWith(':')) {
         // extract the name and value of the attribute/property
         let name = attr.name.slice(1);
@@ -1274,7 +1800,7 @@ function getPropertyForAttribute(name, obj) {
                 }
             }   
     }
-}</code></pre>
+}</code></pre></div>
         <p>
             The <code>getPropertyForAttribute</code> function is necessary because the attributes that contain the directives
             will have names that are case-insensitive, and these must be mapped to property names that are case-sensitive.
@@ -1304,7 +1830,7 @@ function getPropertyForAttribute(name, obj) {
             Svelte's Rich Harris lays out the case against web components. He demonstrates how this simple 9 line Svelte component
             <code>&lt;Adder a={1} b={2}/&gt;</code> becomes an incredible verbose 59 line monstrosity when ported to a vanilla web component.
         </p>
-        <pre><code>&lt;script&gt;
+        <div><pre><code>&lt;script&gt;
   export let a;
   export let b;
 &lt;/script&gt;
@@ -1312,13 +1838,13 @@ function getPropertyForAttribute(name, obj) {
 &lt;input type="number" bind:value={a}&gt;
 &lt;input type="number" bind:value={b}&gt;
 
-&lt;p&gt;{a} + {b} = {a + b}&lt;/p&gt;</code></pre>
+&lt;p&gt;{a} + {b} = {a + b}&lt;/p&gt;</code></pre></div>
 
         <p>
             Now that we have assembled our three helper functions <code>html()</code>, <code>signal()</code> and <code>bind()</code>
             on top of the web components baseline, at a total budget of around 150 lines of code, how close can we get for a web component <code>&lt;x-adder a="1" b="2"&gt;&lt;/x-adder&gt;</code>?
         </p>
-        <pre><code>import { bind } from './bind.js';
+        <div><pre><code>import { bind } from './bind.js';
 import { signal, computed } from './signals.js';
 import { html } from './html.js';
 
@@ -1338,7 +1864,7 @@ customElements.define('x-adder', class Adder extends HTMLElement {
         `, this));
     }
 });
-</code></pre>
+</code></pre></div>
         <p><a href="https://plainvanillaweb.com/blog/articles/2024-09-03-unix-philosophy/example-combined/example.html">combined example</a></p>
 
         <p>
@@ -1379,7 +1905,7 @@ customElements.define('x-adder', class Adder extends HTMLElement {
             In case you've been living under a rock, here's the example from Preact's documentation 
             that neatly summarizes what signals do:
         </p>
-        <pre><code>import { signal, computed, effect } from "@preact/signals";
+        <div><pre><code>import { signal, computed, effect } from "@preact/signals";
 
 const name = signal("Jane");
 const surname = signal("Doe");
@@ -1392,7 +1918,7 @@ effect(() =&gt; console.log(fullName.value));
 // Updating `name` updates `fullName`, which triggers the effect again:
 name.value = "John";
 // Logs: "John Doe"
-</code></pre>
+</code></pre></div>
         <p>
             Simply put, signals wrap values and computations 
             in a way that allows us to easily respond to every change to those values and results in a targeted way,
@@ -1409,7 +1935,7 @@ name.value = "John";
             Signals are at heart nothing more than a wrapper for a value that sends events when the value changes.
             That's nothing that a little trickery with the not well known but very handy <code>EventTarget</code> base class can't fix for us.
         </p>
-        <pre><code>class Signal extends EventTarget {
+        <div><pre><code>class Signal extends EventTarget {
     #value;
     get value () { return this.#value; }
     set value (value) {
@@ -1422,20 +1948,20 @@ name.value = "John";
         super();
         this.#value = value;
     }
-}</code></pre>
+}</code></pre></div>
         <p>
             This gets us a very barebones signals experience:
         </p>
-        <pre><code>const name = new Signal('Jane');
+        <div><pre><code>const name = new Signal('Jane');
 name.addEventListener('change', () =&gt; console.log(name.value));
 name.value = 'John';
-// Logs: John</code></pre>
+// Logs: John</code></pre></div>
         <p>
             But that's kind of ugly. The <code>new</code> keyword went out of fashion a decade ago,
             and that <code>addEventListener</code> sure is unwieldy.
             So let's add a little syntactic sugar.
         </p>
-        <pre><code>class Signal extends EventTarget {
+        <div><pre><code>class Signal extends EventTarget {
     #value;
     get value () { return this.#value; }
     set value (value) {
@@ -1460,15 +1986,15 @@ name.value = 'John';
 }
 
 const signal = _ =&gt; new Signal(_);
-</code></pre>
+</code></pre></div>
         <p>
             Now our barebones example is a lot nicer to use:
         </p>
-        <pre><code>const name = signal('Jane');
+        <div><pre><code>const name = signal('Jane');
 name.effect(() =&gt; console.log(name.value));
 // Logs: Jane
 name.value = 'John';
-// Logs: John</code></pre>
+// Logs: John</code></pre></div>
         <p>
             The <code>effect(fn)</code> method will call the specified function,
             and also subscribe it to changes in the signal's value.
@@ -1490,7 +2016,7 @@ name.value = 'John';
             That means supporting computed values. Where the base signals are a wrapper around a value,
             computed signals are a wrapper around a function.
         </p>
-        <pre><code>class Computed extends Signal {
+        <div><pre><code>class Computed extends Signal {
     constructor (fn, deps) {
         super(fn(...deps));
         for (const dep of deps) {
@@ -1501,7 +2027,7 @@ name.value = 'John';
 }
 
 const computed = (fn, deps) =&gt; new Computed(fn, deps);
-</code></pre>
+</code></pre></div>
         <p>
             The computed signal calculates its value from a function.
             It also depends on other signals, and when they change it will recompute its value.
@@ -1511,7 +2037,7 @@ const computed = (fn, deps) =&gt; new Computed(fn, deps);
         <p>
             This enables porting Preact's signals example to vanilla JS.
         </p>
-        <pre><code>const name = signal('Jane');
+        <div><pre><code>const name = signal('Jane');
 const surname = signal('Doe');
 const fullName = computed(() =&gt; `${name} ${surname}`, [name, surname]);
 // Logs name every time it changes:
@@ -1521,7 +2047,7 @@ fullName.effect(() =&gt; console.log(fullName.value));
 // Updating `name` updates `fullName`, which triggers the effect again:
 name.value = 'John';
 // -&gt; John Doe
-</code></pre>
+</code></pre></div>
 
         <h3>Can you use it in a sentence?</h3>
         <p>
@@ -1529,7 +2055,7 @@ name.value = 'John';
             but how do you use this stuff in actual web development?
             This simple adder demonstrates how signals can be combined with web components:
         </p>
-        <pre><code>import { signal, computed } from './signals.js';
+        <div><pre><code>import { signal, computed } from './signals.js';
 
 customElements.define('x-adder', class extends HTMLElement {
     a = signal(1);
@@ -1550,7 +2076,7 @@ customElements.define('x-adder', class extends HTMLElement {
             e =&gt; this[e.target.name].value = e.target.value);
     }
 });
-</code></pre>
+</code></pre></div>
         <p>
             And here's a live demo:
         </p>
@@ -1602,7 +2128,7 @@ customElements.define('x-adder', class extends HTMLElement {
         <p>
             The basic problem we need to solve is that vanilla web components end up having a lot of code that looks like this:
         </p>
-        <pre><code>class MyComponent extends HTMLElement {
+        <div><pre><code>class MyComponent extends HTMLElement {
     connectedCallback() {
         const btn = `&lt;button&gt;${this.getAttribute('foo')}&lt;/button&gt;`;
         this.innerHTML = `
@@ -1614,7 +2140,7 @@ customElements.define('x-adder', class extends HTMLElement {
         `;
     }
 }
-customElements.define('my-component', MyComponent);</code></pre>
+customElements.define('my-component', MyComponent);</code></pre></div>
         <p>
             If any of <code>foo</code>, <code>bar</code>, <code>baz</code> or <code>xyzzy</code> contain one of the dangerous HTML entities,
             we risk seeing our component break, and worst-case risk seeing an attacker inject a malicious payload into the page.
@@ -1625,7 +2151,7 @@ customElements.define('my-component', MyComponent);</code></pre>
         <p>
             A naive fix is creating a html-encoding function and using it consistently:
         </p>
-        <pre><code>function htmlEncode(s) {
+        <div><pre><code>function htmlEncode(s) {
     return s.replace(/[&amp;&lt;&gt;'"]/g,
         tag =&gt; ({
             '&amp;': '&amp;amp;',
@@ -1648,7 +2174,7 @@ class MyComponent extends HTMLElement {
         `;
     }
 }
-customElements.define('my-component', MyComponent);</code></pre>
+customElements.define('my-component', MyComponent);</code></pre></div>
         <p>
             While this does work to defend against XSS, it is verbose and ugly, not pleasant to type and not pleasant to read.
             What really kills it though, is that it assumes attention to detail from us messy humans. We can never forget,
@@ -1667,7 +2193,7 @@ customElements.define('my-component', MyComponent);</code></pre>
         <p>
             Ideally, the fixed example should look more like this:
         </p>
-        <pre><code>import { html } from './html.js';
+        <div><pre><code>import { html } from './html.js';
 
 class MyComponent extends HTMLElement {
     connectedCallback() {
@@ -1681,7 +2207,7 @@ class MyComponent extends HTMLElement {
         `;
     }
 }
-customElements.define('my-component', MyComponent);</code></pre>
+customElements.define('my-component', MyComponent);</code></pre></div>
         <p>
             The <code>html``</code> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#tagged_templates">tagged template function</a> 
             would automatically encode entities, in a way that we don't even have to think about it.
@@ -1689,7 +2215,7 @@ customElements.define('my-component', MyComponent);</code></pre>
             It would be so minimal as to disappear in the background, barely impacting readability, maybe even improving it.
             You may be thinking that doing that correctly would involve an impressive amount of code. I must disappoint.
         </p>
-        <pre><code>class Html extends String { }
+        <div><pre><code>class Html extends String { }
 
 /** 
  * tag a string as html not to be encoded
@@ -1727,7 +2253,7 @@ export const htmlEncode = (value) =&gt; {
  */
 export const html = (strings, ...values) =&gt; 
     htmlRaw(String.raw({ raw: strings }, ...values.map(htmlEncode)));
-</code></pre>
+</code></pre></div>
         <p>
             Those couple dozen lines of code are all that is needed. Let's go through it from top to bottom.
         </p>
@@ -1838,7 +2364,7 @@ export const html = (strings, ...values) =&gt;
             </p>
 
             <p>After careful consideration we present to you, an article page blueprint...</p>
-            <pre><code>&lt;!doctype html&gt;
+            <div><pre><code>&lt;!doctype html&gt;
 &lt;html lang="en"&gt;
 &lt;head&gt;
     &lt;title&gt;A spiffy title!&lt;/title&gt;
@@ -1858,7 +2384,7 @@ export const html = (strings, ...values) =&gt;
     &lt;blog-footer mastodon-url="https://example.com/@jmalkovich/12345"&gt;&lt;/blog-footer&gt;
     &lt;script type="module" src="index.js"&gt;&lt;/script&gt;
 &lt;/body&gt;
-&lt;/html&gt;</code></pre>
+&lt;/html&gt;</code></pre></div>
 
             <p>
                 This does several things for me. It keeps the &lt;head&gt; section as minimal as possible.
@@ -1932,7 +2458,7 @@ export const html = (strings, ...values) =&gt;
                 Visually showing an index is not so difficult, as a web component built around a simple <code>&lt;li&gt;</code>-based
                 card design can be used to show both the recent posts and the archive page, and was straighforward to style with CSS.
             </p>
-            <pre><code>&lt;ul class="cards"&gt;
+            <div><pre><code>&lt;ul class="cards"&gt;
     &lt;li class="card"&gt;
         &lt;img src="./articles/2024-08-17-lets-build-a-blog/image.webp" aria-hidden="true" loading="lazy" /&gt;
         &lt;h3&gt;&lt;a href="./articles/2024-08-17-lets-build-a-blog/"&gt;Let's build a blog, vanilla-style!&lt;/a&gt;&lt;/h3&gt;
@@ -1941,7 +2467,7 @@ export const html = (strings, ...values) =&gt;
             &lt;time datetime="2024-08-17"&gt;August 17, 2024&lt;/time&gt;
         &lt;/small&gt;
     &lt;/li&gt;
-&lt;/ul&gt;</code></pre>
+&lt;/ul&gt;</code></pre></div>
             <p>
                 Getting that data in a convenient form however is another matter.
                 The RSS feed contains full text contents, so needs a separate step to build from the articles' HTML.
@@ -1984,7 +2510,7 @@ export const html = (strings, ...values) =&gt;
                 the HTML can be transformed into something that can be used as RSS feed entry contents.
             </p>
             <p>The core logic of the generator extracts the article's metadata and transforms the HTML:</p>
-            <pre><code>customElements.define('blog-generator', class BlogGenerator extends HTMLElement {
+            <div><pre><code>customElements.define('blog-generator', class BlogGenerator extends HTMLElement {
 
     // ...
 
@@ -2046,7 +2572,7 @@ export const html = (strings, ...values) =&gt;
 
     // ...
 
-});</code></pre>
+});</code></pre></div>
 
             <p>To give you an idea of what <a href="../../generator.html">generator.html</a> looks like in use:</p>
             <img src="https://plainvanillaweb.com/blog/articles/2024-08-17-lets-build-a-blog/generator.webp" alt="generator page screenshot">
