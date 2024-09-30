@@ -1,5 +1,12 @@
 [
     {
+        "slug": "2024-09-30-lived-experience",
+        "title": "Lived experience",
+        "summary": "Thoughts on the past and future of frameworks, web components and web development.",
+        "published": "2024-09-30",
+        "author": "Joeri Sebrechts"
+    },
+    {
         "slug": "2024-09-28-unreasonable-effectiveness-of-vanilla-js",
         "title": "The unreasonable effectiveness of vanilla JS",
         "summary": "A case study in porting intricate React code to vanilla.",

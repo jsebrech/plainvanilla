@@ -6,10 +6,194 @@
     <logo>https://plainvanillaweb.com/android-chrome-512x512.png</logo>
     <link rel="alternate" href="https://plainvanillaweb.com/blog/"/>
     <link rel="self" href="https://plainvanillaweb.com/blog/feed.xml"/>
-    <updated>2024-09-28T12:00:00.000Z</updated>
+    <updated>2024-09-30T12:00:00.000Z</updated>
     <author>
         <name>Joeri Sebrechts</name>
     </author>
+    <entry>
+        <title><![CDATA[Lived experience]]></title>
+        <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2024-09-30-lived-experience/"/>
+        <id>https://plainvanillaweb.com/blog/articles/2024-09-30-lived-experience/</id>
+        <published>2024-09-30T12:00:00.000Z</published>
+        <updated>2024-09-30T12:00:00.000Z</updated>
+        <summary><![CDATA[Thoughts on the past and future of frameworks, web components and web development.]]></summary>
+        <media:content url="https://plainvanillaweb.com/blog/articles/2024-09-30-lived-experience/image.webp" type="image/webp" medium="image" />
+        <author><name><![CDATA[Joeri Sebrechts]]></name></author>
+        <content type="html"><![CDATA[
+        <p>
+            Ryan Carniato shared a hot take a few days ago, <a href="https://dev.to/ryansolid/web-components-are-not-the-future-48bh">Web Components Are Not the Future</a>.
+            As hot takes tend to do, it got some responses, like Nolan Lawson's piece <a href="https://nolanlawson.com/2024/09/28/web-components-are-okay/">Web components are okay</a>,
+            or Cory LaViska's <a href="https://www.abeautifulsite.net/posts/web-components-are-not-the-future-they-re-the-present/">Web Components Are Not the Future — They're the Present</a>.
+            They do an excellent job of directly engaging Ryan's arguments, so I'm not going to do that here.
+            Instead I want to talk about my lived experience of web development, and where I hope it is headed in the future.
+            Take it in the spirit it is intended, one of optimism and possibility.
+        </p>
+
+        <h3>A galaxy far, far away</h3>
+        <p>
+            So I've been making web sites since a long time ago, since before CSS and HTML4.
+            I say this not to humblebrag, but to explain that I was here for all of it.
+            Every time when the definition of <em>modern web development</em> changed I would update my priors, following along.
+        </p>
+        <p>
+            For the longest time making web pages do anything except show text and images was an exercise in frustration.
+            Browsers were severely lacking in features, were wildly incompatible with web standards and each other,
+            and the tools that web developers needed to bring them to order were missing or lacking.
+            I built my share of vanilla JS components back in the IE6 days, and it made me dream of a better way.
+            When frameworks first started coming on the scene with that better way, adding missing features, abstracting away incompatibility,
+            and providing better tooling, I was ready for them. I was all-in.
+        </p>
+        <p>
+            I bought into ExtJS, loved it for a time, and then got a hundred thousand line codebase stuck on ExtJS 3 because version 4 changed things
+            so much that porting was too costly. I then bought into Backbone, loved that too, but had to move on when its principal developer did.
+            I joined a team that bought into AngularJS and got stuck painted into a corner when the Angular team went in a totally different direction for v2.
+            I helped rewrite a bunch of frontends in Angular v2 and React, 
+            and found myself sucked into constant forced maintenance when their architecture and ecosystems churned.
+        </p>
+        <p>
+            Did I make bad choices? Even in hindsight I would say I picked the right choices for the time.
+            Time just moved on.
+        </p>
+
+        <h3>The cost of change</h3>
+        <p>
+            This lived experience taught me a strong awareness of rates of change in dependencies, and the costs they impose.
+            I imagine a web page as a thin old man sitting astride a tall pile of dependencies, each changing at their own pace.
+            Some dependencies are stable for decades, like HTML's core set of elements, or CSS 2's set of layout primitives. 
+            They're so stable that we don't even consider them dependencies, they're just <em>the web</em>.
+        </p>
+        <p>
+            Other dependencies change every few years, like module systems, or new transpiled languages, 
+            or the preferred build and bundling tool of the day, or what framework is in vogue.
+            Then there are the dependencies that change yearly, like major framework and OS releases.
+            Finally there are the dependencies that change constantly, like the many packages that contribute
+            to a typical web application built with a popular framework.
+        </p>
+        <p>
+            As a web developer who loves their user, taking on those dependencies creates a Solomon's choice.
+            Either you keep up with the churn, and spend a not insignificant amount of your day working and reworking code
+            that already works, instead of working on the things your user cares about. 
+            Or, you stick it out for as long as you can on old versions, applying ever more workarounds to get 
+            old framework releases and their outdated build and CLI tools to work in new OS and ecosystem environments,
+            slowly boiling a frog that will at some point force a deep rewrite, again at the expense of the user.
+        </p>
+        <p>
+            Which is not to say the frameworks don't add value. They absolutely do, and they keep getting better. 
+            Writing new code on a new framework is a steadily rising tide of developer experience. 
+            But let us not pretend these benefits don't come at a cost.
+            Wherever there is a codebase too complicated to understand and maintain yourself, wherever there is a set of build tools 
+            that must be kept compatible with changes in operating systems and ecosystems,
+            there is a shelf life. Sooner or later the makers of every framework and of every tool will move on,
+            even if it's just to a new long-term supported release, and the web developers that they served will have to move with them.
+        </p>
+        <p>
+            I hold this truth to be self-evident: the larger the abstraction layer a web developer uses on top of web standards,
+            the shorter the shelf life of their codebase becomes, and the more they will feel the churn.
+        </p>
+
+        <h3>The rising tide</h3>
+        <p>
+            Why do modern web projects built with modern frameworks depend on so much <em>stuff</em>?
+            At first there was no other option. Interacting with the DOM was painful, 
+            and web frameworks rightly made choices to keep component systems outside the DOM, minimizing and abstracting away those interactions
+            in increasingly clever DOM reconciliation strategies. Supporting the brittle browsers and slow devices of the day required many workarounds and polyfills,
+            and web frameworks rightly added intricate tools to build, bundle and minify the user's code.
+        </p>
+        <p>
+            They needed a way to bring dependencies into those build systems, and sanely settled on the convention of node modules
+            and the NPM ecosystem. It got easy to add more dependencies, and just as water always finds the easy way down,
+            dependencies found the easy way in. As the abstraction layer grew the load time cost imposed by it grew right along,
+            and so we got server-side rendering, client-side hydration, lazy loading, and many other load time reduction strategies.
+        </p>
+        <p>
+            DOM-diffing, synthetic event systems, functional components, JSX, reactive data layers, server-side rendering and streaming, bundlers, tree shaking, 
+            transpilers and compilers, and all the other complications that you won't find in web standards but you will find in every major web framework —
+            they are the things invented to make the modern web possible, but they are not the web. The web is what ships to the browser.
+            And all of those things are downstream from the decision to abstract away the browser,
+            a decision once made in good faith and for good reasons. A decision which now needs revisiting.
+        </p>
+        <p>
+            Browsers were not standing still. They saw what web developers were doing in userland to compensate 
+            for the deficiencies in browser API's, and they kept improving and growing the platform, a rising tide slowly catching up to what frameworks did.
+            When Microsoft bid IE <a href="https://blogs.windows.com/windowsexperience/2022/06/15/internet-explorer-11-has-retired-and-is-officially-out-of-support-what-you-need-to-know/">a well-deserved farewell</a> on June 15, 2022 a tipping point was reached.
+            For the first time the browser platform was so capable that it felt to me like it didn't need so much abstracting away anymore.
+            It wasn't a great platform, not as cleanly designed or complete as the API's of the popular frameworks,
+            but it was <em>Good Enough™</em> as a foundation, and that was all that mattered.
+        </p>
+
+        <h3>Holding my breath</h3>
+
+        <p>
+            I was very excited for what would happen in the framework ecosystem. There was a golden opportunity for frameworks 
+            to tear down their abstraction layers, make something far simpler, far more closely aligned with the base web platform. 
+            They could have a component system built on top of web components,
+            leveraging browser events and built-in DOM API's. All the frameworks could become cross-compatible, 
+            easily plugging into each other's data layers and components while preserving what makes them unique.
+            The page weights would shrink by an order of magnitude with so much infrastructure code removed,
+            and that in combination with the move to HTTP/3 could make build tools optional.
+            It would do less, so inevitably be worse in some ways, but sometimes <a href="https://en.wikipedia.org/wiki/Worse_is_better">worse is better</a>.
+        </p>
+        <p>
+            I gave a talk about how good the browser's platform had gotten, 
+            showing off <a href="https://github.com/jsebrech/create-react-app-zero">a version of Create React App</a> that didn't need any build tools
+            and was extremely light-weight, and the developer audience was just as excited as I was.
+            And I held my breath waiting on framework churn to for once go in the other direction, towards simplicity...
+        </p>
+        <p>
+            But nothing happened. In fact, the major frameworks kept building up their abstraction layers instead of building down.
+            We got React Server Components and React Compiler, exceedingly clever, utterly incomprehensible, 
+            workarounds for self-imposed problems caused by overengineering.
+            Web developers don't seem to mind, but they struggle quietly with how to keep up with these tools and deliver good user experiences. 
+            The bigger the abstraction layer gets, the more they feel the churn.
+        </p>
+        <p>
+            The irony is not lost on me that now the framework authors also feel the churn in their dependencies,
+            struggling to adapt to web components as foundational technology. React 19 is supposed to finally support web components
+            in a way that isn't incredibly painful, or so they say, we'll see. I confess to feeling some satisfaction
+            in their struggle. The shoe is on the other foot. Welcome to modern web development.
+        </p>
+        
+        <h3>The road ahead</h3>
+
+        <p>
+            What the frameworks are doing, that's fine for them, and they can keep doing it. 
+            But I'm done with all that unless someone is paying me to do it.
+            They're on a fundamentally different path from where I want web development to go, from how I want to make web pages.
+            The web is what ships to the browser. Reducing the distance between what the developer writes and what ships to the browser
+            is valuable and necessary. This blog and this site are my own stake in the ground for this idea, 
+            showing just how much you can get done without any framework code or build tools at all. 
+            But let's be honest: web components are not a framework, no matter how hard I tried to explain them as one.
+        </p>
+
+        <blockquote>
+            <p>Comparing web components to React is like comparing a good bicycle with a cybertruck.</p>
+            <p>They do very different things, and they're used by different people with very, very different mindsets.</p>
+        </blockquote>
+        <cite><a href="https://adactio.com/notes/21455">Jeremy Keith</a></cite>
+
+        <p>
+            I want a motorbike, not a cybertruck. I still want frameworks, only much lighter. 
+            Frameworks less than 10 KB in size, that are a thin layer on top of web standards
+            but still solve the problems that frameworks solve. I call this idea the <em>interoperable web framework</em>:
+        </p>
+        <ul>
+            <li>Its components are just web components.</li>
+            <li>Its events are just DOM events.</li>
+            <li>Its templates are just HTML templates.</li>
+            <li>It doesn't need to own the DOM that its components take part in.</li>
+            <li>Its data and event binding works on all HTML elements, built-in or custom, made with the framework or with something else.</li>
+            <li>It can be easily mixed together on a page with other interoperable web frameworks, with older versions of itself, or with vanilla code.</li>
+            <li>It doesn't need its own build tools.</li>
+        </ul>
+        <p>
+            I just feel it on my bones such a thing can be built now. Maybe I'm wrong and Ryan Carniato is right.
+            After all, he knows a lot more about frameworks than I do. But the more vanilla code that I write the more certain that I feel on this.
+            Some existing solutions like Lit are close, but none are precisely what I am looking for. 
+            I would love to see a community of vanilla developers come together to figure out what that could look like,
+            running experiments and iterating on the results. For now I will just keep holding my breath, waiting for the tide to come in.
+        </p>
+    ]]></content>
+    </entry>
     <entry>
         <title><![CDATA[The unreasonable effectiveness of vanilla JS]]></title>
         <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2024-09-28-unreasonable-effectiveness-of-vanilla-js/"/>
