@@ -18,8 +18,8 @@
 
     --border-color: black;
 
-    --code-text-color: black;
-    --code-text-color-bg: hsl(195, 50%, 84%);
+    --code-text-color: var(--text-color);
+    --code-text-color-bg: inherit;
 
     --panel-title-color: black;
     --panel-title-color-bg: cornsilk;
