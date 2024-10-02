@@ -11,7 +11,7 @@ customElements.define('tasks-context', class extends HTMLElement {
     }
 
     connectedCallback() {
-        this.style.display = 'content';
+        this.style.display = 'contents';
     }
 });
 
