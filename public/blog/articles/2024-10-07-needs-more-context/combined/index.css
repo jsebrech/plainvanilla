@@ -1,0 +1,43 @@
+body {
+    margin: 1em;
+    font-family: system-ui, sans-serif;
+}
+
+theme-panel {
+    display: block;
+    border: 1px dotted gray;
+    min-height: 2em;
+    max-width: 400px;
+    padding: 1em;
+    margin-bottom: 1em;
+}
+
+.panel-light {
+    color: #222;
+    background: #fff;
+}
+
+.panel-dark {
+    color: #fff;
+    background: rgb(23, 32, 42);
+}
+
+theme-toggle button {
+    margin: 0;
+    padding: 5px;
+}
+
+.button-light,
+.button-dark {
+    border: 1px solid #777;
+}
+
+.button-dark {
+    background: #222;
+    color: #fff;
+}
+
+.button-light {
+    background: #fff;
+    color: #222;
+}

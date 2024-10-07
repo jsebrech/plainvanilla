@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Needs more context</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <meta name="description" content="A better way to do context for web components.">
+    <link rel="stylesheet" href="../../index.css">
+</head>
+<body>
+    <blog-header published="2024-10-07">
+        <img src="image.webp" alt="A comic book page showing a cowbell being rang" loading="lazy" />
+        <h2>Needs more context</h2>
+        <p class="byline" aria-label="author">Joeri Sebrechts</p>
+    </blog-header>
+    <main>
+        <p>
+            In the earlier article <a href="../2024-09-28-unreasonable-effectiveness-of-vanilla-js/">the unreasonable effectiveness of vanilla JS</a>
+            I explained a vanilla web version of the React tutorial example <em>Scaling up with Reducer and Context</em>.
+            That example used a technique for <em>context</em> based on <code>Element.closest()</code>.
+            While that way of obtaining a context is very simple, which definitely has its merits,
+            it also has some downsides:
+        </p>
+        <ul>
+            <li>It cannot be used from inside a shadow DOM to find a context that lives outside of it without <a href="https://stackoverflow.com/q/54520554/20980">clumsy workarounds</a>.</li>
+            <li>It requires a custom element to be the context.</li>
+            <li>There has to be separate mechanism to subscribe to context updates.</li>
+        </ul>
+        <p>
+            There is in fact, or so I learned recently, a better and more standard way to solve this
+            known as the <a href="https://github.com/webcomponents-cg/community-protocols/blob/main/proposals/context.md">context protocol</a>. 
+            It's not a browser feature, but a protocol for how to implement a context in web components.
+        </p>
+        <p>
+            This is how it works: the consumer starts by dispatching a <code>context-request</code> event.
+        </p>
+        <x-code-viewer src="context-request-1.js" name=""></x-code-viewer>
+        <p>
+            The event will travel up the DOM tree (bubbles = true), piercing any shadow DOM boundaries (composed = true),
+            until it reaches a listener that responds to it. This listener is attached to the DOM by a context provider.
+            The context provider uses the <code>e.context</code> property to detect whether it should respond,
+            then calls <code>e.callback</code> with the appropriate context value.
+            Finally it calls <code>e.stopPropagation()</code> so the event will stop bubbling up the DOM tree.
+        </p>
+        <p>
+            This whole song and dance is guaranteed to happen synchronously, which enables this elegant pattern:
+        </p>
+        <x-code-viewer src="context-request-2.js" name=""></x-code-viewer>
+        <p>
+            If no provider is registered the event's callback is never called and the default value will be used instead.
+        </p>
+        <p>
+            Instead of doing a one-off request for a context's value it's also possible to subscribe to updates
+            by setting its subscribe property to true.
+            Every time the context's value changes the callback will be called again.
+            To ensure proper cleanup the subscribing element has to unsubscribe on disconnect.
+        </p>
+        <x-code-viewer src="context-request-3.js" name=""></x-code-viewer>
+        <p>
+            It is recommended, but not required, to listen for and call unsubscribe functions in one-off requests,
+            just in case a provider is overzealously creating subscriptions.
+            However, this is not necessary when using only spec-compliant providers.
+        </p>
+        <x-code-viewer src="context-request-4.js" name=""></x-code-viewer>
+        <p>
+            Providers are somewhat more involved to implement.
+            There are several spec-compliant libraries that implement them,
+            like <a href="https://lit.dev/docs/data/context/">@lit/context</a> 
+            and <a href="https://blikblum.github.io/wc-context/">wc-context</a>.
+            A very minimal implementation is this one:
+        </p>
+        <x-code-viewer src="context-provider.js"></x-code-viewer>
+        <p>
+            This minimal provider can then be used in a custom element like this:
+        </p>
+        <x-code-viewer src="theme-context.js"></x-code-viewer>
+        <p>
+            Which would be used on a page like this, with <code>&lt;my-subscriber&gt;</code> requesting 
+            the theme by dispatching a <code>context-request</code> event.
+        </p>
+        <x-code-viewer src="theme-context-fragment.html" name=""></x-code-viewer>
+        <p>
+            Notice in the above example that the <code>theme-toggle</code> context is providing a function.
+            This unlocks a capability for dependency injection where API's to control page behavior
+            are provided by a context to any subscribing custom element.
+        </p>
+        <p>
+            Don't let this example mislead you however. A provider doesn't actually need a dedicated custom element,
+            and can be attached to any DOM node, even the body element itself.
+            This means a context can be provided or consumed from anywhere on the page.
+        </p>
+        <x-code-viewer src="theme-provider.js"></x-code-viewer>
+        <p>
+            And because there can be more than one event listener on a page,
+            there can be more than one provider providing the same context.
+            The first one to handle the event will win.
+        </p>
+        <p>
+            Here's an example that illustrates a combination of a global provider attached to the body (top panel),
+            and a local provider using a <code>&lt;theme-context&gt;</code> (bottom panel).
+            Every time the <code>&lt;theme-toggle&gt;</code> is reparented it resubscribes to the theme from the nearest provider.
+        </p>
+        <iframe src="combined/index.html" title="combined example" height="250"></iframe>
+        <x-code-viewer src="combined/index.js" name="index.js"></x-code-viewer>
+
+        <p>
+            The full implementation of this protocol can be found in the <a href="https://github.com/jsebrech/tiny-context">tiny-context repo</a> on Github.
+        </p>
+    </main>
+    <blog-footer></blog-footer>
+    <script type="module" src="../../index.js"></script>
+</body>
+</html>

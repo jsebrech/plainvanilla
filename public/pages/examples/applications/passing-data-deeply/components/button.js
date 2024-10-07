@@ -1,8 +1,13 @@
+import { ContextRequestEvent } from "../lib/tiny-context.js";
+
 class ButtonComponent extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
     }
+
+    #theme = 'light';
+    #unsubscribe;
 
     connectedCallback() {
         this.shadowRoot.innerHTML = `
@@ -11,16 +16,24 @@ class ButtonComponent extends HTMLElement {
                 <slot></slot>
             </button>
         `;
-        const themeContext = this.closest('x-theme-context');
-        themeContext.addEventListener('themechange', () => this.update());
-        this.shadowRoot.querySelector('button').addEventListener('click', 
-            () => themeContext.toggleTheme());
+        this.dispatchEvent(new ContextRequestEvent('theme', (theme, unsubscribe) => {
+            this.#theme = theme;
+            this.#unsubscribe = unsubscribe;
+            this.update();
+        }, true));
+        this.dispatchEvent(new ContextRequestEvent('theme-toggle', (toggle) => {
+            this.shadowRoot.querySelector('button').onclick = toggle;
+        }));
         this.update();
+    }
+
+    disconnectedCallback() {
+        this.#unsubscribe?.();
     }
 
     update() {
         const button = this.shadowRoot.querySelector('button');
-        if (button) button.className = 'button-' + this.closest('x-theme-context').theme;
+        if (button) button.className = 'button-' + this.#theme;
     }
 }
 

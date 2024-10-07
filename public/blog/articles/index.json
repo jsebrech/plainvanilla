@@ -1,5 +1,12 @@
 [
     {
+        "slug": "2024-10-07-needs-more-context",
+        "title": "Needs more context",
+        "summary": "A better way to do context for web components.",
+        "published": "2024-10-07",
+        "author": "Joeri Sebrechts"
+    },
+    {
         "slug": "2024-09-30-lived-experience",
         "title": "Lived experience",
         "summary": "Thoughts on the past and future of frameworks, web components and web development.",

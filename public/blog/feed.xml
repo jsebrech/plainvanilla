@@ -6,10 +6,297 @@
     <logo>https://plainvanillaweb.com/android-chrome-512x512.png</logo>
     <link rel="alternate" href="https://plainvanillaweb.com/blog/"/>
     <link rel="self" href="https://plainvanillaweb.com/blog/feed.xml"/>
-    <updated>2024-09-30T12:00:00.000Z</updated>
+    <updated>2024-10-07T12:00:00.000Z</updated>
     <author>
         <name>Joeri Sebrechts</name>
     </author>
+    <entry>
+        <title><![CDATA[Needs more context]]></title>
+        <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2024-10-07-needs-more-context/"/>
+        <id>https://plainvanillaweb.com/blog/articles/2024-10-07-needs-more-context/</id>
+        <published>2024-10-07T12:00:00.000Z</published>
+        <updated>2024-10-07T12:00:00.000Z</updated>
+        <summary><![CDATA[A better way to do context for web components.]]></summary>
+        <media:content url="https://plainvanillaweb.com/blog/articles/2024-10-07-needs-more-context/image.webp" type="image/webp" medium="image" />
+        <author><name><![CDATA[Joeri Sebrechts]]></name></author>
+        <content type="html"><![CDATA[
+        <p>
+            In the earlier article <a href="../2024-09-28-unreasonable-effectiveness-of-vanilla-js/">the unreasonable effectiveness of vanilla JS</a>
+            I explained a vanilla web version of the React tutorial example <em>Scaling up with Reducer and Context</em>.
+            That example used a technique for <em>context</em> based on <code>Element.closest()</code>.
+            While that way of obtaining a context is very simple, which definitely has its merits,
+            it also has some downsides:
+        </p>
+        <ul>
+            <li>It cannot be used from inside a shadow DOM to find a context that lives outside of it without <a href="https://stackoverflow.com/q/54520554/20980">clumsy workarounds</a>.</li>
+            <li>It requires a custom element to be the context.</li>
+            <li>There has to be separate mechanism to subscribe to context updates.</li>
+        </ul>
+        <p>
+            There is in fact, or so I learned recently, a better and more standard way to solve this
+            known as the <a href="https://github.com/webcomponents-cg/community-protocols/blob/main/proposals/context.md">context protocol</a>. 
+            It's not a browser feature, but a protocol for how to implement a context in web components.
+        </p>
+        <p>
+            This is how it works: the consumer starts by dispatching a <code>context-request</code> event.
+        </p>
+        <div><pre><code>class ContextRequestEvent extends Event {
+    constructor(context, callback, subscribe) {
+        super('context-request', {
+            bubbles: true,
+            composed: true,
+        });
+        this.context = context;
+        this.callback = callback;
+        this.subscribe = subscribe;
+    }
+}
+
+customElements.define('my-component', class extends HTMLElement {
+    connectedCallback() {
+        this.dispatchEvent(
+            new ContextRequestEvent('theme', (theme) =&gt; {
+                // ...
+            })
+        );
+    }
+});
+</code></pre></div>
+        <p>
+            The event will travel up the DOM tree (bubbles = true), piercing any shadow DOM boundaries (composed = true),
+            until it reaches a listener that responds to it. This listener is attached to the DOM by a context provider.
+            The context provider uses the <code>e.context</code> property to detect whether it should respond,
+            then calls <code>e.callback</code> with the appropriate context value.
+            Finally it calls <code>e.stopPropagation()</code> so the event will stop bubbling up the DOM tree.
+        </p>
+        <p>
+            This whole song and dance is guaranteed to happen synchronously, which enables this elegant pattern:
+        </p>
+        <div><pre><code>customElements.define('my-component', class extends HTMLElement {
+    connectedCallback() {
+        let theme = 'light'; // default value
+        this.dispatchEvent(
+            new ContextRequestEvent('theme', t =&gt; theme = t)
+        );
+        // do something with theme
+    }
+});
+</code></pre></div>
+        <p>
+            If no provider is registered the event's callback is never called and the default value will be used instead.
+        </p>
+        <p>
+            Instead of doing a one-off request for a context's value it's also possible to subscribe to updates
+            by setting its subscribe property to true.
+            Every time the context's value changes the callback will be called again.
+            To ensure proper cleanup the subscribing element has to unsubscribe on disconnect.
+        </p>
+        <div><pre><code>customElements.define('my-component', class extends HTMLElement {
+    #unsubscribe;
+    connectedCallback() {
+        this.dispatchEvent(
+            new ContextRequestEvent('theme', (theme, unsubscribe) =&gt; {
+                this.#unsubscribe = unsubscribe;
+                // do something with theme
+            }, true)
+        );
+    }
+    disconnectedCallback() {
+        this.#unsubscribe?.();
+    }
+});
+</code></pre></div>
+        <p>
+            It is recommended, but not required, to listen for and call unsubscribe functions in one-off requests,
+            just in case a provider is overzealously creating subscriptions.
+            However, this is not necessary when using only spec-compliant providers.
+        </p>
+        <div><pre><code>customElements.define('my-component', class extends HTMLElement {
+    connectedCallback() {
+        let theme = 'light';
+        this.dispatchEvent(
+            new ContextRequestEvent('theme', (t, unsubscribe) =&gt; {
+                theme = t;
+                unsubscribe?.();
+            })
+        );
+        // do something with theme
+    }
+});
+</code></pre></div>
+        <p>
+            Providers are somewhat more involved to implement.
+            There are several spec-compliant libraries that implement them,
+            like <a href="https://lit.dev/docs/data/context/">@lit/context</a> 
+            and <a href="https://blikblum.github.io/wc-context/">wc-context</a>.
+            A very minimal implementation is this one:
+        </p>
+        <div><pre><code>export class ContextProvider extends EventTarget {
+    #value;
+    get value() { return this.#value }
+    set value(v) { this.#value = v; this.dispatchEvent(new Event('change')); }
+
+    #context;
+    get context() { return this.#context }
+
+    constructor(target, context, initialValue = undefined) {
+        super();
+        this.#context = context;
+        this.#value = initialValue;
+        this.handle = this.handle.bind(this);
+        if (target) this.attach(target);
+    }
+    
+    attach(target) {
+        target.addEventListener('context-request', this.handle);
+    }
+
+    detach(target) {
+        target.removeEventListener('context-request', this.handle);
+    }
+
+    /**
+     * Handle a context-request event
+     * @param {ContextRequestEvent} e 
+     */
+    handle(e) {
+        if (e.context === this.context) {
+            if (e.subscribe) {
+                const unsubscribe = () =&gt; this.removeEventListener('change', update);
+                const update = () =&gt; e.callback(this.value, unsubscribe);
+                this.addEventListener('change', update);
+                update();
+            } else {
+                e.callback(this.value);
+            }
+            e.stopPropagation();
+        }
+    }
+}
+</code></pre></div>
+        <p>
+            This minimal provider can then be used in a custom element like this:
+        </p>
+        <div><pre><code>customElements.define('theme-context', class extends HTMLElement {
+    themeProvider = new ContextProvider(this, 'theme', 'light');
+    toggleProvider = new ContextProvider(this, 'theme-toggle', () =&gt; {
+        this.themeProvider.value = this.themeProvider.value === 'light' ? 'dark' : 'light';
+    });
+    connectedCallback() {
+        this.style.display = 'contents';
+    }
+});
+</code></pre></div>
+        <p>
+            Which would be used on a page like this, with <code>&lt;my-subscriber&gt;</code> requesting 
+            the theme by dispatching a <code>context-request</code> event.
+        </p>
+        <div><pre><code>&lt;theme-context&gt;
+    &lt;div&gt;
+        &lt;my-subscriber&gt;&lt;/my-subscriber&gt;
+    &lt;/div&gt;
+&lt;/theme-context&gt;
+</code></pre></div>
+        <p>
+            Notice in the above example that the <code>theme-toggle</code> context is providing a function.
+            This unlocks a capability for dependency injection where API's to control page behavior
+            are provided by a context to any subscribing custom element.
+        </p>
+        <p>
+            Don't let this example mislead you however. A provider doesn't actually need a dedicated custom element,
+            and can be attached to any DOM node, even the body element itself.
+            This means a context can be provided or consumed from anywhere on the page.
+        </p>
+        <div><pre><code>// loaded with &lt;script type="module" src="theme-provider.js"&gt;&lt;/script&gt;
+
+import { ContextProvider } from "./context-provider.js";
+
+const themeProvider = new ContextProvider(document.body, 'theme', 'light');
+const toggleProvider = new ContextProvider(document.body, 'theme-toggle', () =&gt; {
+    themeProvider.value = themeProvider.value === 'light' ? 'dark' : 'light';
+});
+</code></pre></div>
+        <p>
+            And because there can be more than one event listener on a page,
+            there can be more than one provider providing the same context.
+            The first one to handle the event will win.
+        </p>
+        <p>
+            Here's an example that illustrates a combination of a global provider attached to the body (top panel),
+            and a local provider using a <code>&lt;theme-context&gt;</code> (bottom panel).
+            Every time the <code>&lt;theme-toggle&gt;</code> is reparented it resubscribes to the theme from the nearest provider.
+        </p>
+        <p><a href="https://plainvanillaweb.com/blog/articles/2024-10-07-needs-more-context/combined/index.html">combined example</a></p>
+        <div><p><em>index.js:</em></p><pre><code>import { ContextRequestEvent } from "./context-request.js";
+import "./theme-provider.js"; // global provider on body
+import "./theme-context.js"; // element with local provider
+
+customElements.define('theme-demo', class extends HTMLElement {
+    connectedCallback() {
+        this.innerHTML = `
+            &lt;theme-panel id="first"&gt;
+                &lt;theme-toggle&gt;&lt;/theme-toggle&gt;
+            &lt;/theme-panel&gt;
+            &lt;theme-context&gt;
+                &lt;theme-panel id="second"&gt;
+                &lt;/theme-panel&gt;
+            &lt;/theme-context&gt;
+            &lt;button&gt;Reparent toggle&lt;/button&gt;
+        `;
+        this.querySelector('button').onclick = reparent;
+    }
+});
+
+customElements.define('theme-panel', class extends HTMLElement {
+    #unsubscribe;
+
+    connectedCallback() {
+        this.dispatchEvent(new ContextRequestEvent('theme', (theme, unsubscribe) =&gt; {
+            this.className = 'panel-' + theme;
+            this.#unsubscribe = unsubscribe;
+        }, true));
+    }
+
+    disconnectedCallback() {
+        this.#unsubscribe?.();
+    }
+});
+
+customElements.define('theme-toggle', class extends HTMLElement {
+    #unsubscribe;
+
+    connectedCallback() {
+        this.innerHTML = '&lt;button&gt;Toggle&lt;/button&gt;';
+        this.dispatchEvent(new ContextRequestEvent('theme-toggle', (toggle) =&gt; {
+            this.querySelector('button').onclick = toggle;
+        }));
+        this.dispatchEvent(new ContextRequestEvent('theme', (theme, unsubscribe) =&gt; {
+            this.querySelector('button').className = 'button-' + theme;
+            this.#unsubscribe = unsubscribe;
+        }, true));
+    }
+
+    disconnectedCallback() {
+        this.#unsubscribe?.();
+    }
+});
+
+function reparent() {
+    const toggle = document.querySelector('theme-toggle');
+    const first = document.querySelector('theme-panel#first');
+    const second = document.querySelector('theme-panel#second');
+    if (toggle.parentNode === second) {
+        first.append(toggle);
+    } else {
+        second.append(toggle);
+    }
+}</code></pre></div>
+
+        <p>
+            The full implementation of this protocol can be found in the <a href="https://github.com/jsebrech/tiny-context">tiny-context repo</a> on Github.
+        </p>
+    ]]></content>
+    </entry>
     <entry>
         <title><![CDATA[Lived experience]]></title>
         <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2024-09-30-lived-experience/"/>
@@ -353,7 +640,7 @@ export default function TaskApp() {
     }
 
     connectedCallback() {
-        this.style.display = 'content';
+        this.style.display = 'contents';
     }
 });
 

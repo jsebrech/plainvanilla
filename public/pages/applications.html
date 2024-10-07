@@ -275,6 +275,9 @@
                 <x-tab title="theme-context.js">
                     <x-code-viewer src="./examples/applications/passing-data-deeply/components/theme-context.js" name="components/theme-context.js"></x-code-viewer>
                 </x-tab>
+                <x-tab title="tiny-context.js">
+                    <x-code-viewer src="./examples/applications/passing-data-deeply/lib/tiny-context.js" name="lib/tiny-context.js"></x-code-viewer>
+                </x-tab>
                 <x-tab title="panel.js">
                     <x-code-viewer src="./examples/applications/passing-data-deeply/components/panel.js" name="components/panel.js"></x-code-viewer>
                 </x-tab>
@@ -283,21 +286,29 @@
                 </x-tab>
             </x-tab-panel>
 
-            <p>An explanation of salient points:</p>
+            <p>Some key take-aways:</p>
             <ul>
                 <li>
-                    The <code>x-theme-context</code> component uses <code>display: contents</code> to avoid impacting the layout.
+                    The <code>x-theme-context</code> component applies the <a href="https://github.com/webcomponents-cg/community-protocols/blob/main/proposals/context.md">context protocol</a>, a convention for how web components can implement a context pattern.
+                    It does this by making use of a minimal implementation of the protocol provided in <code>tiny-context.js</code>.
+                </li>
+                <li>
+                    The context component also uses <code>display: contents</code> to avoid impacting the layout.
                     It exists in the DOM hierarchy, but it becomes effectively invisible.
                 </li>
                 <li>
-                    Instead of <code>useContext</code> every component obtains the nearest theme context with <code>this.closest('x-theme-context')</code> utilizing the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/closest">Element.closest</a> API.
-                    To be notified of theme changes, those components subscribe to the <code>themechange</code> event of the context.
+                    Instead of <code>useContext</code> every component obtains the nearest theme context by dispatching a <code>context-request</code> event,
+                    whose callback will be answered by the nearest provider higher up in the DOM that provides the asked for context.
+                    By passing <code>true</code> as the subscribe parameter the components can subscribe to updates.
                 </li>
                 <li>
-                    Context components can implement additional methods that provide convenience API's around the context's state,
-                    like the <code>toggleTheme()</code> method in this example. 
+                    The <code>theme-toggle</code> function is also provided to the button by the context component. This mechanism can be used for dependency injection across web components.
                 </li>
             </ul>
+
+            <p>
+                The <a href="../blog/articles/2024-10-07-needs-more-context/">needs more context</a> article does a deeper dive into the context protocol and the tiny-context implementation of it.
+            </p>
             
             <aside>
                 <h4>Challenge</h4>

@@ -106,7 +106,8 @@
                 <h3>Why is it named <code>x-hello-world</code> instead of <code>hello-world</code>?</h3>
                 <p>
                 There are <a href="https://html.spec.whatwg.org/multipage/custom-elements.html#valid-custom-element-name">custom element tag naming rules</a>, in particular that the name must start with a lowercase letter and contain a dash.
-                While <code>hello-world</code> would also be a valid name, in general it is best to start all custom element tag names with <code>x-</code> or some other prefix of your choice.
+                On top of that, all tags take part in a global namespace, where there is always a risk of conflicting naming.
+                While <code>hello-world</code> would also be a valid name, in general it is best to start all custom element tag names with a unique prefix of your choice. On this site the placeholder prefix <code>x-</code> was chosen.
                 </p>
                 <p>
                 Another gotcha is that custom element tags cannot be self-closing.
@@ -392,13 +393,13 @@
                     </li>
                 </ul>
                 <p>
-                    For those reasons, whenever possible try to design web components to not need a shadow DOM.
+                    For those reasons, if you're not making components for someone else, you may find it easier to avoid shadow DOM.
                 </p>
                 <p>Shadow DOM is however recommended in these situations:</p>
                 <ul>
                     <li>Intermediate elements need to be created between the root element and the contained children, like the <code>&lt;header&gt;</code> in the example above. Only the use of a slot inside of a shadow DOM makes this possible.</li>
                     <li>Multiple places in the web component will accept children. Named slots provide this ability. This can be convenient for layout components.</li>
-                    <li>The styles or DOM should be maximally isolated from the containing page. This is often the case for web components designed to be embedded in third party sites.</li>
+                    <li>The styles and DOM need to be isolated from the containing page. This is often the case for web components designed to be used by others or embedded in third-party sites.</li>
                 </ul>
             </aside>
         </section>

@@ -1,8 +1,13 @@
+import { ContextRequestEvent } from "../lib/tiny-context.js";
+
 class PanelComponent extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
     }
+
+    #theme = 'light';
+    #unsubscribe;
 
     connectedCallback() {
         this.shadowRoot.innerHTML = `
@@ -12,8 +17,16 @@ class PanelComponent extends HTMLElement {
                 <slot></slot>
             </section>
         `;
-        this.closest('x-theme-context').addEventListener('themechange', () => this.update());
+        this.dispatchEvent(new ContextRequestEvent('theme', (theme, unsubscribe) => {
+            this.#theme = theme;
+            this.#unsubscribe = unsubscribe;
+            this.update();
+        }, true));
         this.update();
+    }
+
+    disconnectedCallback() {
+        this.#unsubscribe?.();
     }
 
     static get observedAttributes() {
@@ -27,9 +40,8 @@ class PanelComponent extends HTMLElement {
     update() {
         const h1 = this.shadowRoot.querySelector('h1');
         const section = this.shadowRoot.querySelector('section');
-        const themeContext = this.closest('x-theme-context');
         if (section && h1) {
-            section.className = 'panel-' + themeContext.theme;
+            section.className = 'panel-' + this.#theme;
             h1.textContent = this.getAttribute('title');
         }
     }
