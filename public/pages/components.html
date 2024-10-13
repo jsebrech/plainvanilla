@@ -318,6 +318,18 @@
                     Putting child elements in a slot is similar to using a <code>children</code> prop in a React component.
                     The use of slots is only possible in web components that have a shadow DOM.
                 </dd>
+                <dt><code>constructor() {</code></dt>
+                <dd>
+                    <p>
+                        This is the first example that uses a constructor. The constructor is called when the element is first created,
+                        but before it's ready for DOM interaction. The default behavior of a constructor is to call the parent class's constructor <code>super()</code>.
+                        So if all that is needed is the default HTMLElement constructor behavior then no constructor needs to be specified.
+                    </p>
+                    <p>
+                        The reason it is specified here is because the constructor is guaranteed to be called exactly once,
+                        which makes it the ideal place to attach a shadow DOM.
+                    </p>
+                </dd>
                 <dt><code>if (!this.shadowRoot) { this.attachShadow({ mode: 'open' });</code></dt>
                 <dd>
                     <p>
