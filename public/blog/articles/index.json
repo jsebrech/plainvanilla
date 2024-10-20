@@ -1,5 +1,12 @@
 [
     {
+        "slug": "2024-10-20-editing-plain-vanilla",
+        "title": "Editing Plain Vanilla",
+        "summary": "How to set up VS Code for a vanilla web project.",
+        "published": "2024-10-20",
+        "author": "Joeri Sebrechts"
+    },
+    {
         "slug": "2024-10-07-needs-more-context",
         "title": "Needs more context",
         "summary": "A better way to do context for web components.",

@@ -6,10 +6,171 @@
     <logo>https://plainvanillaweb.com/android-chrome-512x512.png</logo>
     <link rel="alternate" href="https://plainvanillaweb.com/blog/"/>
     <link rel="self" href="https://plainvanillaweb.com/blog/feed.xml"/>
-    <updated>2024-10-07T12:00:00.000Z</updated>
+    <updated>2024-10-20T12:00:00.000Z</updated>
     <author>
         <name>Joeri Sebrechts</name>
     </author>
+    <entry>
+        <title><![CDATA[Editing Plain Vanilla]]></title>
+        <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2024-10-20-editing-plain-vanilla/"/>
+        <id>https://plainvanillaweb.com/blog/articles/2024-10-20-editing-plain-vanilla/</id>
+        <published>2024-10-20T12:00:00.000Z</published>
+        <updated>2024-10-20T12:00:00.000Z</updated>
+        <summary><![CDATA[How to set up VS Code for a vanilla web project.]]></summary>
+        <media:content url="https://plainvanillaweb.com/blog/articles/2024-10-20-editing-plain-vanilla/image.webp" type="image/webp" medium="image" />
+        <author><name><![CDATA[Joeri Sebrechts]]></name></author>
+        <content type="html"><![CDATA[
+        <p>
+            I'm typing this up in Visual Studio Code, after realizing I should probably explain how I use it to make this site.
+            But the whole idea behind Plain Vanilla is no build, no framework, no tools.
+            And VS Code is definitely a tool. So what gives?
+        </p>
+        <p>
+            There's a difference between tools that sit in between the code and a deployed site, and tools that only act in support of editing or deploying.
+            The first category, like npm or typescript, impose continued maintenance on the project because they form a direct dependency.
+            The second category, like VS Code or git, are easily replaced without impacting the project's ability to be edited.
+            There's a tension between the ability to get things done faster, and the burden created by additional dependencies.
+            For this project I draw the line in accepting the second category while rejecting the first.
+        </p>
+        <h3>Setting up a profile</h3>
+        <p>
+            I use VS Code for framework-based work projects as well as vanilla web development.
+            To keep those two realms neatly separated I've <a href="https://code.visualstudio.com/docs/editor/profiles">set up a separate Vanilla profile</a>. 
+            In that profile is a much leaner suite of extensions, configured for only vanilla web development.
+        </p>
+        <ul>
+            <li><strong>ESLint</strong>, to automatically lint the JS code while editing</li>
+            <li><strong>webhint</strong>, to lint the HTML and CSS code, and detect accessibility issues</li>
+            <li><strong>html-in-template-string</strong>, to syntax highlight HTML template strings</li>
+            <li><strong>Todo Tree</strong>, to keep track of TODO's while doing larger changes</li>
+            <li><strong>Live Preview</strong>, to get a live preview of the page that I'm working on</li>
+            <li><strong>VS Code Counter</strong>, for quick comparative line counts when porting framework code to vanilla</li>
+            <li><strong>Intellicode</strong>, for simple code completion</li>
+            <li><strong>Codeium</strong>, for AI-assisted code completion, works great for web component boilerplate</li>
+        </ul>
+        <p>
+            Modern web development can be very overburdened by tools, sometimes all but requiring the latest Macbook Pro with decadent amounts of RAM
+            just to edit a basic project. The combination of a no build plain vanilla codebase with a lean VS Code profile guarantees quick editing,
+            even on my oldest and slowest laptops.
+        </p>
+        <h3>Linting</h3>
+        <p>
+            Nobody's perfect, myself included, so something needs to be scanning the code for goofs.
+            The first linting tool that's set up is ESLint. The VS Code extension regrettably does not come bundled with an eslint installation,
+            so this has to be installed explicitly. By doing it once globally this can be reused across vanilla web projects.
+        </p>
+        <p><code>npm install -g eslint @eslint/js globals</code></p>
+        <p>
+            Because I use nvm to manage node versions the global eslint install was not automatically detectable.
+            This required setting a NODE_PATH in <code>.zshrc</code> that VS Code then picked up.
+        </p>
+        <p><code>export NODE_PATH=$(npm root -g)</code></p>
+        <p>
+            In addition, in order to lint successfully it needs a configuration file, located in the project's root.
+        </p>
+        <div><p><em>/eslint.config.cjs:</em></p><pre><code>/* eslint-disable no-undef */
+const globals = require("globals");
+const js = require("@eslint/js");
+
+module.exports = [
+    js.configs.recommended, 
+    {
+        languageOptions: {
+            globals: {
+                ...globals.browser,
+                ...globals.mocha
+            },
+            ecmaVersion: 2022,
+            sourceType: "module",
+        }
+    },
+    {
+        ignores: [
+            "public/blog/articles/",
+            "**/lib/",
+            "**/react/",
+        ]
+    }
+];</code></pre></div>
+        <p>
+            Setting the <code>ecmaVersion</code> to 2022 ensures that I don't accidentally use newer and unsupported Javascript features,
+            like in this example trying to use ES2024's <a href="https://2ality.com/2024/06/ecmascript-2024.html#regular-expression-flag-%2Fv">v flag</a> in regular expressions.
+            This version could be set to whatever browser compatibility a project requires.
+        </p>
+        <img src="https://plainvanillaweb.com/blog/articles/2024-10-20-editing-plain-vanilla/eslinterror.png" alt="ESLint error for ECMAScript 2024 feature" loading="lazy" width="561">
+        <p>
+            The <code>ignores</code> blocks excludes external libraries to placate my OCD that wants to see zero errors or warnings reported by eslint project-wide.
+            The article folders are excluded for a similar reason, because they contain a lot of incomplete and deliberately invalid example JS files.
+        </p>
+        <p>
+            The webhint extension is installed to do automatic linting on HTML and CSS.
+            Luckily it out of the box comes bundled with a webhint installation and applies the default <code>development</code> ruleset.
+            A nice thing about this extension is that it reports accessibility issues.
+        </p>
+        <img src="https://plainvanillaweb.com/blog/articles/2024-10-20-editing-plain-vanilla/webhinterror.png" alt="Webhint error for accessibility" loading="lazy" width="842">
+        <p>
+            Only a few tweaks were made to the webhint configuration to again get to that all-important zero warnings count.
+        </p>
+        <div><p><em>/.hintrc:</em></p><pre><code>{
+  "extends": [
+    "development"
+  ],
+  "hints": {
+    "compat-api/html": [
+      "default",
+      {
+        "ignore": [
+          "iframe[loading]"
+        ]
+      }
+    ],
+    "no-inline-styles": "off"
+  }
+}</code></pre></div>
+
+        <h3>html-in-template-string</h3>
+        <p>
+            I've mentioned it before in the <a href="../2024-08-25-vanilla-entity-encoding/">entity encoding article</a>,
+            but this neat little extension formats HTML inside tagged template strings in web component JS code.
+        </p>
+        <img src="https://plainvanillaweb.com/blog/articles/2024-10-20-editing-plain-vanilla/syntax-highlighting.webp" loading="lazy" alt="Syntax highlighting in template strings" width="849">
+
+        <h3>Live Preview</h3>
+        <p>
+            The center piece for a smooth editing workflow is the Live Preview extension.
+            I can right-click on any HTML file in the project and select "Show Preview" to get a live preview of the page.
+            This preview automatically refreshes when files are saved. Because vanilla web pages always load instantly
+            this provides the hot-reloading workflow from framework projects, except even faster and with zero setup.
+            The only gotcha is that all paths in the site have to be relative paths so the previewed page can resolve them.
+        </p>
+        <img src="https://plainvanillaweb.com/blog/articles/2024-10-20-editing-plain-vanilla/live-preview.webp" alt="Live Preview of this article while editing" loading="lazy">
+        <p>
+            The preview's URL can be pasted into a "real browser" to debug tricky javascript issues
+            and do compatibility testing. Very occasionally I'll need to spin up a "real server", 
+            but most of the code in my vanilla projects is written with only a Live Preview tab open.
+        </p>
+        <p>
+            Previewing is also how I get a realtime view of unit tests while working on components or infrastructure code,
+            by opening the tests web page and selecting the right test suite to hot reload while editing.
+        </p>
+
+        <h3>Bonus: working offline</h3>
+        <p>
+            Because I live at the beach and work in the big city I regularly need to take long train rides with spotty internet connection.
+            Like many developers I cannot keep web API's in my head and have to look them up regularly while coding.
+            To have a complete offline vanilla web development setup with me at all times I use <a href="">devdocs.io</a>.
+            All my projects folders are set up to sync automatically with <a href="https://syncthing.net/">Syncthing</a>, 
+            so whatever I was doing on the desktop can usually be smoothly continued offline on the laptop 
+            without having to do any prep work to make that possible.
+        </p>
+        <img src="https://plainvanillaweb.com/blog/articles/2024-10-20-editing-plain-vanilla/devdocs.webp" alt="devdocs.io screenshot" loading="lazy">
+
+        <p>
+            There, that's my lean vanilla web development setup.
+            What should I add to this, or do differently? Feel free to let me know.
+        </p>
+    ]]></content>
+    </entry>
     <entry>
         <title><![CDATA[Needs more context]]></title>
         <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2024-10-07-needs-more-context/"/>
