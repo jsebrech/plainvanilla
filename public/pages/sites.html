@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <title>Plain Vanilla - Sites</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width" />
     <meta name="description" content="An explainer for making web sites using only vanilla techniques.">
     <link rel="icon" href="../favicon.ico">
     <link rel="apple-touch-icon" href="../apple-touch-icon.png">
@@ -39,6 +40,11 @@
                 <dd>The lang attribute is recommended to make sure browsers don't misdetect the language used in the page.</dd>
                 <dt><code>&lt;head&gt;&lt;title&gt;</code></dt>
                 <dd>The title will be used for the browser tab and when bookmarking, making it effectively non-optional.</dd>
+                <dt><code>&lt;head&gt;&lt;meta charset="utf-8"&gt;</code></dt>
+                <dd>
+                    This is borderline unnecessary, but just to make sure a page is properly interpreted as UTF-8 this line should be included.
+                    Obviously the editor used to make the page should equally be set to UTF-8.
+                </dd>
                 <dt><code>&lt;head&gt;&lt;meta name="viewport"&gt;</code></dt>
                 <dd>The viewport meta is necessary to have mobile-friendly layout.</dd>
                 <dt><code>&lt;head&gt;&lt;link rel="stylesheet" href="index.css"&gt;</code></dt>
@@ -161,7 +167,7 @@
                 These libraries can be obtained from unpkg.com:
             </p>
             <ol>
-                <li>Browse to <code>unpkg.com/[library]/</code> (trailing slash matters), for example <a href="https://unpkg.com/microlight/" target="_blank">unpkg.com/microlight/</a></li>
+                <li>Browse to <code>unpkg.com/[library]/</code> (trailing slash matters), for example <a href="https://unpkg.com/microlight/" target="_blank" rel="noopener">unpkg.com/microlight/</a></li>
                 <li>Look for and download the library js file, which may be in a subfolder, like <code>dist</code>, <code>esm</code> or <code>umd</code></li>
                 <li>Place the library file in the <code>lib/</code> folder</li>
             </ol>

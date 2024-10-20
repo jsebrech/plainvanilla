@@ -8,7 +8,7 @@ module.exports = [
         languageOptions: {
             globals: {
                 ...globals.browser,
-                ...globals.jest
+                ...globals.mocha
             },
             ecmaVersion: 2022,
             sourceType: "module",
