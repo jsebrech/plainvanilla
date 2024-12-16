@@ -6,10 +6,242 @@
     <logo>https://plainvanillaweb.com/android-chrome-512x512.png</logo>
     <link rel="alternate" href="https://plainvanillaweb.com/blog/"/>
     <link rel="self" href="https://plainvanillaweb.com/blog/feed.xml"/>
-    <updated>2024-10-20T12:00:00.000Z</updated>
+    <updated>2024-12-16T12:00:00.000Z</updated>
     <author>
         <name>Joeri Sebrechts</name>
     </author>
+    <entry>
+        <title><![CDATA[Caching vanilla sites]]></title>
+        <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2024-12-16-caching-vanilla-sites/"/>
+        <id>https://plainvanillaweb.com/blog/articles/2024-12-16-caching-vanilla-sites/</id>
+        <published>2024-12-16T12:00:00.000Z</published>
+        <updated>2024-12-16T12:00:00.000Z</updated>
+        <summary><![CDATA[Strategies for cache invalidation on vanilla web sites.]]></summary>
+        <media:content url="https://plainvanillaweb.com/blog/articles/2024-12-16-caching-vanilla-sites/image.webp" type="image/webp" medium="image" />
+        <author><name><![CDATA[Joeri Sebrechts]]></name></author>
+        <content type="html"><![CDATA[
+        <p>
+            If you go to a typical website built with a framework, you'll see a lot of this:
+        </p>
+        <img src="https://plainvanillaweb.com/blog/articles/2024-12-16-caching-vanilla-sites/vercel.webp" width="865" alt="browser devtools showing network requests for vercel.com" loading="lazy">
+        <p>
+            Those long cryptic filenames are not meant to discourage casual snooping.
+            They're meant to ensure the filename is changed every time a single byte in that file changes,
+            because the site is using <em>far-future expire headers</em>, 
+            a technique where the browser is told to cache files indefinitely, until the end of time.
+            On successive page loads those resources will then always be served from cache.
+            The only drawback is having to change the filename each time the file's contents change, 
+            but a framework's build steps typically take care of that.
+        </p>
+        <p>
+            For vanilla web sites, this strategy doesn't work. By abandoning a build step there is no way to automatically generate filenames,
+            and unless nothing makes you happier than renaming all files manually every time you deploy a new version,
+            we have to look towards other strategies.
+        </p>
+
+        <h3>How caching works</h3>
+
+        <p>
+            Browser cache behavior is complicated, and a deep dive into the topic deserves <a href="https://web.dev/articles/http-cache">its own article</a>.
+            However, very simply put, what you'll see is mostly these response headers:
+        </p>
+        <dl>
+            <dt>Cache-Control</dt>
+            <dd>
+                <p>
+                    The cache control response header determines whether the browser should cache the response, and how long it should serve the response from cache.
+                </p>
+                <p><code>Cache-Control: public, max-age: 604800</code></p>
+                <p>
+                    This will cache the resource and only check if there's a new version after one week.
+                </p>
+            </dd>
+            <dt>Age</dt>
+            <dd>
+                <p>
+                    The <code>max-age</code> directive does not measure age from the time that the response is received,
+                    but from the time that the response was originally served:
+                </p>
+                <p><code>Age: 10</code></p>
+                <p>
+                    This response header indicates the response was served on the origin server 10 seconds ago.
+                </p>
+            </dd>
+            <dt>Etag</dt>
+            <dd>
+                <p>
+                    The <code>Etag</code> header is a unique hash of the resource's contents, an identifier for that version of the resource.
+                </p>
+                <p><code>ETag: "33a64df551425fcc55e4d42a148795d9f25f89d4"</code></p>
+                <p>
+                    When the browser requests that resource again from the server, knowing the Etag it can pass an <code>If-None-Match</code>
+                    header with the Etag's value. If the resource has not changed it will still have the same Etag value,
+                    and the server will respond with <code>304 Not Modified</code>. 
+                </p>
+                <p><code>If-None-Match: "33a64df551425fcc55e4d42a148795d9f25f89d4"</code></p>
+            </dd>
+            <dt>Last-Modified</dt>
+            <dd>
+                <p>
+                    The <code>Last-Modified</code> header works similarly to Etag, except instead of sending a hash of the contents,
+                    it sends a timestamp of when the resource was last changed. 
+                    Like Etag's <code>If-None-Match</code> it is matched by the <code>If-Modified-Since</code> header when requesting the resource from the server again.
+                </p>
+            </dd>
+        </dl>
+
+        <p>
+            With that basic review of caching headers, let's look at some strategies for making good use of them in vanilla web projects.
+        </p>
+
+        <h3>Keeping it simple: GitHub Pages</h3>
+
+        <p>
+            The simplest strategy is what GitHub Pages does: cache files for 10 minutes.
+            Every file that's downloaded has <code>Cache-Control: max-age</code> headers that make it expire 10 minutes into the future.
+            After that if the file is loaded again it will be requested from the network.
+            The browser will add <code>If-None-Match</code> or <code>If-Modified-Since</code> headers
+            to allow the server to avoid sending the file if it hasn't been changed, saving bytes but not a roundtrip.
+        </p>
+        <p>
+            If you want to see it in action, just open the browser devtools and reload this page.
+        </p>
+        <img src="https://plainvanillaweb.com/blog/articles/2024-12-16-caching-vanilla-sites/plainvanilla.webp" width="660" loading="lazy" alt="browser devtools showing network requests for plainvanillaweb.com">  
+        <p>
+            Visitors never get a page that is more than 10 minutes out of date,
+            and as they navigate around the site they mostly get fast cache-served responses.
+            However, on repeat visits they will get a slow first-load experience.
+            Also, if the server updates in the middle of a page load then different resources may end up mismatched and belong to a different version of the site, causing unpredictable bugs.
+            Well, for 10 minutes at least.
+        </p>
+
+        <h3>Extending cache durations</h3>
+        <p>
+            While the 10 minute cache policy is ok for HTML content and small JS and CSS files,
+            it can be improved by increasing cache times on large resources like libraries and images.
+            By using a caching proxy that allows setting rules on specific types or folders of files we can increase the cache duration.
+            For sites <a href="https://blog.cloudflare.com/secure-and-fast-github-pages-with-cloudflare/">proxied through Cloudflare</a>, 
+            their <a href="https://developers.cloudflare.com/cache/concepts/customize-cache/">cache customization settings</a> 
+            can be used to set these resource-specific policies.
+        </p>
+        <p>
+            By setting longer cache durations on some resources, we can ensure they're served from local cache more often.
+            However, what to do if the resource changes? In those cases we need to modify the fetched URL of the resource every place that it is referred to.
+            For example, by appending a unique query parameter:
+        </p>
+        <p>
+            <code>&lt;img src="image.jpg?v=2" alt="My cached image" /&gt;</code>
+        </p>
+        <p>
+            The awkward aspect of having to change the referred URL in every place that a changed file is used
+            makes extending cache durations inconvenient for files that are changed often or are referred in many places.
+        </p>
+        <p>
+            Also, applying such policies to JavaScript or CSS becomes a minefield,
+            because a mismatched combination of JS or CSS files could end up in the browser cache indefinitely,
+            breaking the website for the user until URL's are changed or their browser cache is cleared.
+            For that reason, I don't think it's prudent to do this for anything but files that never change or that have some kind of version marker in their URL.
+        </p>
+
+        <h3>Complete control with service workers</h3>
+
+        <p>
+            A static web site can take complete control over its cache behavior by <a href="https://web.dev/learn/pwa/service-workers">using a service worker</a>.
+            The service worker intercepts every network request and then decides whether to serve it from a local cache or from the network.
+            For example, here's a service worker that will cache all resources indefinitely, until its version is changed:
+        </p>
+        <div><pre><code>let cacheName = 'cache-worker-v1';
+// these are automatically cached when the site is first loaded
+let initialAssets = [
+    './',
+    'index.html',
+    'index.js',
+    'index.css',
+    'manifest.json',
+    'android-chrome-512x512.png',
+    'favicon.ico',
+    'apple-touch-icon.png',
+    'styles/reset.css',
+    // the rest will be auto-discovered
+];
+
+// initial bundle (on first load)
+self.addEventListener('install', (event) =&gt; {
+    event.waitUntil(
+        caches.open(cacheName).then((cache) =&gt; {
+            return cache.addAll(initialAssets);
+        })
+    );
+});
+
+// clear out stale caches after service worker update
+self.addEventListener('activate', (event) =&gt; {
+    event.waitUntil(
+        caches.keys().then((cacheNames) =&gt; {
+            return Promise.all(
+                cacheNames.map((cacheName) =&gt; {
+                    if (cacheName !== self.cacheName) {
+                        return caches.delete(cacheName);
+                    }
+                })
+            );
+        })
+    );
+});
+
+// default to fetching from cache, fallback to network
+self.addEventListener('fetch', (event) =&gt; {
+    const url = new URL(event.request.url);
+
+    // other origins bypass the cache
+    if (url.origin !== location.origin) {
+        networkOnly(event);
+    // default to fetching from cache, and updating asynchronously
+    } else {
+        staleWhileRevalidate(event);
+    }
+});
+
+const networkOnly = (event) =&gt; {
+    event.respondWith(fetch(event.request));
+}
+
+// fetch events are serviced from cache if possible, but also updated behind the scenes
+const staleWhileRevalidate = (event) =&gt; {
+    event.respondWith(
+        caches.match(event.request).then(cachedResponse =&gt; {
+            const networkUpdate = 
+                fetch(event.request).then(networkResponse =&gt; {
+                    caches.open(cacheName).then(
+                        cache =&gt; cache.put(event.request, networkResponse));
+                    return networkResponse.clone();
+                }).catch(_ =&gt; /*ignore because we're probably offline*/_);
+            return cachedResponse || networkUpdate;
+        })
+    );
+}</code></pre></div>
+        <p>
+            This recreates the <em>far-future expiration</em> strategy but does it client-side, inside the service worker.
+            Because only the version at the top of the <code>sw.js</code> file needs to be updated when the site's contents change,
+            this becomes practical to do without adding a build step. However, because the service worker intercepts network requests
+            to change their behavior there is a risk that bugs could lead to a broken site, so this strategy is only for the careful and well-versed.
+            (And no, the above service worker code hasn't been baked in production, so be careful when copying it to your own site.)
+        </p>
+        
+        <h3>Wrapping up</h3>
+        <p>
+            Setting sane cache policies meant to optimize page load performance is one of the things typically in the domain
+            of full-fat frameworks or application servers. But, abandoning build steps and server-side logic does not necessarily 
+            have to mean having poor caching performance. There are multiple strategies with varying amounts of cache control,
+            and there is probably a suitable strategy for any plain vanilla site.
+        </p>
+        <p>
+            Last but not least, an even better way to speed up page loading is to keep the web page itself light.
+            Using a plain vanilla approach to pages with zero dependencies baked into the page weight
+            already puts you in pole position for good page load performance, before caching even enters the picture.
+        </p>
+    ]]></content>
+    </entry>
     <entry>
         <title><![CDATA[Editing Plain Vanilla]]></title>
         <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2024-10-20-editing-plain-vanilla/"/>
@@ -352,7 +584,7 @@ customElements.define('my-component', class extends HTMLElement {
             Which would be used on a page like this, with <code>&lt;my-subscriber&gt;</code> requesting 
             the theme by dispatching a <code>context-request</code> event.
         </p>
-        <div><pre><code>&lt;theme-context&gt;
+        <div><pre><code>&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;&lt;theme-context&gt;
     &lt;div&gt;
         &lt;my-subscriber&gt;&lt;/my-subscriber&gt;
     &lt;/div&gt;
@@ -689,7 +921,7 @@ function reparent() {
         </p>
         <div><p><em>index.html:</em></p><pre><code>&lt;!DOCTYPE html&gt;
 &lt;html lang="en"&gt;
-&lt;head&gt;
+&lt;head&gt;&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;
     &lt;meta charset="UTF-8"&gt;
     &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
     &lt;title&gt;Document&lt;/title&gt;
@@ -1200,7 +1432,7 @@ customElements.define('task-item', class extends HTMLElement {
         <p><a href="https://plainvanillaweb.com/blog/articles/2024-09-16-life-and-times-of-a-custom-element/undefined/example.html">undefined/example.html</a></p>
         <div><p><em>example.html:</em></p><pre><code>&lt;!doctype html&gt;
 &lt;html&gt;
-    &lt;head&gt;
+    &lt;head&gt;&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;
         &lt;meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" /&gt;
         &lt;link rel="stylesheet" href="example.css"&gt;
         &lt;title&gt;undefined custom element&lt;/title&gt;
@@ -1233,7 +1465,7 @@ customElements.define('task-item', class extends HTMLElement {
         <p><a href="https://plainvanillaweb.com/blog/articles/2024-09-16-life-and-times-of-a-custom-element/defined/example.html">defined/example.html</a></p>
         <div><p><em>example.html:</em></p><pre><code>&lt;!doctype html&gt;
 &lt;html&gt;
-    &lt;head&gt;
+    &lt;head&gt;&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;
         &lt;meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" /&gt;
         &lt;title&gt;defining the custom element&lt;/title&gt;
         &lt;style&gt;
@@ -1427,7 +1659,7 @@ customElements.define('task-item', class extends HTMLElement {
         <p><a href="https://plainvanillaweb.com/blog/articles/2024-09-16-life-and-times-of-a-custom-element/shadowed/example.html">shadowed/example.html</a></p>
         <div><p><em>example.html:</em></p><pre><code>&lt;!doctype html&gt;
 &lt;html&gt;
-    &lt;head&gt;
+    &lt;head&gt;&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;
         &lt;meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" /&gt;
         &lt;title&gt;shadowed custom element&lt;/title&gt;
         &lt;style&gt;
@@ -1499,7 +1731,7 @@ customElements.define('task-item', class extends HTMLElement {
         <p><a href="https://plainvanillaweb.com/blog/articles/2024-09-16-life-and-times-of-a-custom-element/observer/example.html">observer/example.html</a></p>
         <div><p><em>example.html:</em></p><pre><code>&lt;!doctype html&gt;
 &lt;html&gt; 
-    &lt;head&gt;
+    &lt;head&gt;&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;
         &lt;meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" /&gt;
         &lt;title&gt;custom element with observer&lt;/title&gt;
         &lt;style&gt;
@@ -1661,7 +1893,7 @@ customElements.define('task-item', class extends HTMLElement {
             the <code>&lt;x-suspense&gt;</code> component. This starts out as a tale of two slots. When the suspense element is loading it shows the fallback, otherwise the content.
         </p>
 
-        <div><p><em>example.html:</em></p><pre><code>&lt;x-suspense&gt;
+        <div><p><em>example.html:</em></p><pre><code>&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;&lt;x-suspense&gt;
     &lt;p slot="fallback"&gt;Loading...&lt;/p&gt;
     &lt;x-lazy&gt;&lt;x-hello-world&gt;&lt;/x-hello-world&gt;&lt;/x-lazy&gt;
 &lt;/x-suspense&gt;</code></pre></div>
@@ -1751,7 +1983,7 @@ customElements.define('x-suspense', Suspense);</code></pre></div>
         <p>
             The approach is similar to suspense:
         </p>
-        <div><p><em>example.html:</em></p><pre><code>&lt;x-error-boundary&gt;
+        <div><p><em>example.html:</em></p><pre><code>&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;&lt;x-error-boundary&gt;
     &lt;p slot="error"&gt;Something went wrong&lt;/p&gt;
     &lt;x-suspense&gt;
         &lt;p slot="fallback"&gt;Loading...&lt;/p&gt;
@@ -2998,7 +3230,7 @@ export const html = (strings, ...values) =&gt;
             <p>After careful consideration we present to you, an article page blueprint...</p>
             <div><pre><code>&lt;!doctype html&gt;
 &lt;html lang="en"&gt;
-&lt;head&gt;
+&lt;head&gt;&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;
     &lt;title&gt;A spiffy title!&lt;/title&gt;
     &lt;meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" /&gt;
     &lt;meta name="description" content="This is a spiffy article. You should read it."&gt;
@@ -3090,7 +3322,7 @@ export const html = (strings, ...values) =&gt;
                 Visually showing an index is not so difficult, as a web component built around a simple <code>&lt;li&gt;</code>-based
                 card design can be used to show both the recent posts and the archive page, and was straighforward to style with CSS.
             </p>
-            <div><pre><code>&lt;ul class="cards"&gt;
+            <div><pre><code>&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;&lt;ul class="cards"&gt;
     &lt;li class="card"&gt;
         &lt;img src="./articles/2024-08-17-lets-build-a-blog/image.webp" aria-hidden="true" loading="lazy" /&gt;
         &lt;h3&gt;&lt;a href="./articles/2024-08-17-lets-build-a-blog/"&gt;Let's build a blog, vanilla-style!&lt;/a&gt;&lt;/h3&gt;

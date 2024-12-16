@@ -1,5 +1,12 @@
 [
     {
+        "slug": "2024-12-16-caching-vanilla-sites",
+        "title": "Caching vanilla sites",
+        "summary": "Strategies for cache invalidation on vanilla web sites.",
+        "published": "2024-12-16",
+        "author": "Joeri Sebrechts"
+    },
+    {
         "slug": "2024-10-20-editing-plain-vanilla",
         "title": "Editing Plain Vanilla",
         "summary": "How to set up VS Code for a vanilla web project.",
