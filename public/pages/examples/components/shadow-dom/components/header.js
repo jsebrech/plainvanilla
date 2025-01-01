@@ -1,6 +1,6 @@
 const template = document.createElement('template');
 template.innerHTML = `
-    <link rel="stylesheet" href="${new URL('header.css', import.meta.url)}">
+    <link rel="stylesheet" href="${import.meta.resolve('./header.css')}">
     <header>
         <h1></h1>
         <slot></slot>

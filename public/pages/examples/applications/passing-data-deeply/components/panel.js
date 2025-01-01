@@ -11,7 +11,7 @@ class PanelComponent extends HTMLElement {
 
     connectedCallback() {
         this.shadowRoot.innerHTML = `
-            <link rel="stylesheet" href="${new URL('../index.css', import.meta.url)}">
+            <link rel="stylesheet" href="${import.meta.resolve('../index.css')}">
             <section>
                 <h1></h1>
                 <slot></slot>

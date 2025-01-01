@@ -6,7 +6,7 @@ class LatestPosts extends HTMLElement {
     connectedCallback() {
         this.textContent = "Loading...";
         // show the most recent items from the RSS feed
-        fetch(new URL('../feed.xml', import.meta.url))
+        fetch(import.meta.resolve('../feed.xml'))
             .then(response => response.text())
             .then(text => new DOMParser().parseFromString(text, "text/xml"))
             .then(data => {

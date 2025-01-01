@@ -3,7 +3,7 @@ class ExampleComponent extends HTMLElement {
         super();
         this.attachShadow({mode: 'open'});
         this.shadowRoot.innerHTML = `
-            <link rel="stylesheet" href="${new URL('example.css', import.meta.url)}">
+            <link rel="stylesheet" href="${import.meta.resolve('./example.css')}">
             <p>For example...</p>
             <slot></slot>
         `;

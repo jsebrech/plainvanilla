@@ -12,8 +12,8 @@ class BlogHeader extends HTMLElement {
             <p>A blog about vanilla web development &mdash; no frameworks, just standards.</p>
             <nav aria-label="breadcrumb">
                 <ol>
-                    <li><a href="${new URL('../../index.html', import.meta.url)}">Plain Vanilla</a></li>
-                    <li><a href="${new URL('../index.html', import.meta.url)}">Blog</a></li>
+                    <li><a href="${import.meta.resolve('../../index.html')}">Plain Vanilla</a></li>
+                    <li><a href="${import.meta.resolve('../index.html')}">Blog</a></li>
                     <li><a aria-current="page">
                         <time datetime="${published}">
                             ${new Date(published).toLocaleDateString('en-US', { dateStyle: 'long' })}

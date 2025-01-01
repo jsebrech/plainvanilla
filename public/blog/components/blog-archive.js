@@ -3,7 +3,7 @@ import { html } from '../../lib/html.js';
 class BlogArchive extends HTMLElement {
     connectedCallback() {
         this.textContent = 'Loading...';
-        fetch(new URL('../articles/index.json', import.meta.url))
+        fetch(import.meta.resolve('../articles/index.json'))
             .then(response => response.json())
             .then(articles => {
                 // sort articles by published descending
@@ -13,7 +13,7 @@ class BlogArchive extends HTMLElement {
                 this.innerHTML = '<ul class="cards">' +
                     articles.map(item => html`
                         <li class="card">
-                            <h3><a href="${new URL(`../articles/${item.slug}/`, import.meta.url)}">${item.title}</a></h3>
+                            <h3><a href="${import.meta.resolve(`../articles/${item.slug}/`)}">${item.title}</a></h3>
                             <p>${item.summary}</p>
                             <small>
                                 <time datetime="${item.published}">

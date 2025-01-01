@@ -307,11 +307,12 @@
                     For complex web components that have a lot of markup, the use of a template is often more convenient.
                     By instantiating the template outside the class, it can be reused across all instances of the <code>&lt;x-header&gt;</code> component.
                 </dd>
-                <dt><code>&lt;link rel="stylesheet" href="${new URL('header.css', import.meta.url)}"&gt;</code></dt>
+                <dt><code>&lt;link rel="stylesheet" href="${import.meta.resolve('./header.css')}"&gt;</code></dt>
                 <dd>
                     Because this component uses a shadow DOM, it is isolated from the styles of the containing page and starts out unstyled.
                     The <code>header.css</code> needs to be imported into the shadow DOM using the <code>&lt;link&gt;</code> tag.
-                    The special <code>import.meta.url</code> trick imports the CSS file from the same path as the <code>header.js</code> file.
+                    The special <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import.meta/resolve">import.meta.resolve</a> trick 
+                    imports the CSS file from the same path as the <code>header.js</code> file.
                 </dd>
                 <dt><code>&lt;slot&gt;&lt;/slot&gt;</code></dt>
                 <dd>

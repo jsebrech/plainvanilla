@@ -4,7 +4,7 @@ class AnalyticsComponent extends HTMLElement {
 
     constructor() {
         super();
-        fetch(new URL('../../analytics.template', import.meta.url))
+        fetch(import.meta.resolve('../../analytics.template'))
             .then(res => res.ok && res.text())
             .then(template => {
                 this.#template = template;
