@@ -1,5 +1,12 @@
 [
     {
+        "slug": "2025-01-01-new-years-resolve",
+        "title": "New year's resolve",
+        "summary": "import.meta.resolve and other ways to avoid bundling",
+        "published": "2025-01-01",
+        "author": "Joeri Sebrechts"
+    },
+    {
         "slug": "2024-12-16-caching-vanilla-sites",
         "title": "Caching vanilla sites",
         "summary": "Strategies for cache invalidation on vanilla web sites.",

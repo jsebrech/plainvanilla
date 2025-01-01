@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>New year's resolve</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="description" content="import.meta.resolve and other ways to avoid bundling">
+    <link rel="stylesheet" href="../../index.css">
+</head>
+<body>
+    <blog-header published="2025-01-01">
+        <img src="image.webp" alt="New year's fireworks" loading="lazy" />
+        <h2>New year's resolve</h2>
+        <p class="byline" aria-label="author">Joeri Sebrechts</p>
+    </blog-header>
+    <main>
+        <p>
+            Today I was looking at what I want to write about in the coming year,
+            and while checking out custom element micro-frameworks came across <code>import.meta.resolve</code>
+            in the documentation for the <a href="https://github.com/jhuddle/ponys">Ponys</a> micro-framework. 
+            That one simple trick is part of the essential toolbox that allows skipping build-time bundling,
+            unlocking the vanilla web development achievement in the browser.
+        </p>
+        <p>
+            We need this toolbox because the build-time bundler does a lot of work for us:
+        </p>
+        <ul>
+            <li><em>Combining JS and CSS files</em> to avoid slow page loads.</li>
+            <li><em>Resolving paths to the JS and CSS dependencies</em> so we can have clean import statements.</li>
+            <li><em>Optimizing the bundled code</em>, by stripping out whitespace, and removing unused imports thanks to a tree shaking algorithm.</li>
+        </ul>
+        <p>
+            It is not immediately apparent how to get these benefits without using a bundler.
+        </p>
+
+        <h3>Combining JS and CSS files</h3>
+        <p>
+            A typical framework-based web project contains hundreds or thousands of files.
+            Having all those files loaded separately on a page load would be intolerably slow,
+            hence the need for a bundler to reduce the file count. Even by stripping away third party dependencies
+            we can still end up with dozens or hundreds of files constituting a vanilla web project.
+        </p>
+        <p>
+            When inspecting a page load in the browser's developer tools, we would then expect to see a lot of this:
+        </p>
+        <img src="http1.png" alt="a waterfall of network requests in browser devtools over http1" loading="lazy" />
+        <p>
+            The browser would download 6 files at a time and the later requests would block until those files downloaded.
+            This limitation of HTTP/1 let to not just the solution of bundlers to reduce file count, but because the limitation of 6 parallel downloads
+            was per domain it also led to the popularity of CDN networks which allowed <em>cheating</em> and downloading 12 files at once instead of 6.
+        </p> 
+        <p>
+            However. It's 2025. What you're likely to see in this modern era is more like this:
+        </p>
+        <img src="http2.png" alt="parallel network requests in browser devtools over http2" loading="lazy" />
+        <p>
+            Because almost all web servers have shifted over to HTTP/2, which no longer has this limitation of only having 6 files in flight at a time,
+            we now see that all the files that are requested in parallel get downloaded in parallel.
+            There's still a small caveat on lossy connections called head-of-line-blocking, <a href="https://http3-explained.haxx.se/en/why-quic/why-tcphol">fixed in HTTP/3</a>,
+            which is presently starting to roll out to web servers across the internet.
+        </p>
+        <p>
+            But the long and short of it is this: requesting a lot of files all at once just isn't that big of a problem anymore.
+            We don't need to bundle up the files in a vanilla web project until the file counts get ridiculous.
+        </p>
+
+        <h3>Resolving paths</h3>
+
+        <p>
+            Another thing that bundlers do is resolving relative paths pointing to imported JS and CSS files.
+            See, for example, the elegance of CSS modules for importing styles into a react component from a relative path:
+        </p>
+        <x-code-viewer src="layout.tsx" name="layout.tsx (React)"></x-code-viewer>
+        <p>
+            However. It's 2025. And our browsers now have a modern vanilla toolbox for importing.
+            When we bootstrap our JS with the magic incantation <code>&lt;script src="index.js" type="module"&gt;&lt;/script&gt;</code>
+            we unlock the magic ability to import JS files using <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules#importing_features_into_your_script">ES module</a> import notation:
+        </p>
+        <x-code-viewer src="example-index.js" name="index.js"></x-code-viewer>
+        <p>
+            Inside of such files we also get access to <code>import.meta.url</code>, the URL of the current JS file,
+            and <code>import.meta.resolve()</code>, a function that resolves a path relative to the current file,
+            even a path to a CSS file:
+        </p>
+        <x-code-viewer src="layout.js"></x-code-viewer>
+        <p>
+            While not quite the same as what the bundler does, it still enables accessing any file by its relative path,
+            and that in turn allows <a href="https://medium.com/@devwares/best-folder-structure-for-modern-web-application-3894e1238bd">organizing projects in whatever way we want</a>, for example in a feature-based folder organization.
+            All without needing a build step.
+        </p>
+        <p>
+            This ability to do relative imports can be super-charged by <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script/type/importmap">import maps</a>,
+            which decouple the name of what is imported from the path of the file it is imported from,
+            again all without involving a build step.
+        </p>
+
+        <h3>Optimizing bundled code</h3>
+
+        <p>
+            Another thing bundlers can do is optimizing the bundled code, by splitting the payload into things loaded initially,
+            and things loaded later on lazily. And also by minifying it, stripping away unnecessary whitespace and comments so it will load faster.
+        </p>
+        <p>
+            However. It's 2025. We can transparently enable gzip or brotli compression on the server,
+            and as it turns out that gets <a href="https://css-tricks.com/the-difference-between-minification-and-gzipping/">almost all the benefit of minifying</a>. 
+            While minifying is nice, gzipping is what we really want, and we can get that without a build step.
+        </p>
+        <p>
+            And lazy loading, that works fine using <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import">dynamic import</a>, and with a bit due diligence we can put some of the code behind such an import statement.
+            I wrote before how React's <a href="../2024-09-09-sweet-suspense/">lazy and suspense can be ported</a> easily to vanilla web components.
+        </p>
+
+        <h3>Happy new year!</h3>
+
+        <p>
+            Great news! It's 2025, and the browser landscape is looking better than ever. It gives us enough tools that for many web projects
+            we can drop the bundler and do just fine. You wouldn't believe it based on what the mainstream frameworks are doing though.
+            Maybe 2025 is the year we finally see a wide recognition of just how powerful the browser platform has gotten,
+            and a return to old school simplicity in web development practice, away from all those complicated build steps. 
+            It's my new year's resolve to do my part in spreading the word.
+        </p>
+    </main>
+    <blog-footer></blog-footer>
+    <script type="module" src="../../index.js"></script>
+</body>
+</html>
