@@ -22,23 +22,22 @@ export class ContextProvider extends EventTarget {
         super();
         this.#context = context;
         this.#value = initialValue;
-        this.handle = this.handle.bind(this);
         if (target) this.attach(target);
     }
     
     attach(target) {
-        target.addEventListener('context-request', this.handle);
+        target.addEventListener('context-request', this);
     }
 
     detach(target) {
-        target.removeEventListener('context-request', this.handle);
+        target.removeEventListener('context-request', this);
     }
 
     /**
      * Handle a context-request event
      * @param {ContextRequestEvent} e 
      */
-    handle(e) {
+    handleEvent(e) {
         if (e.context === this.context) {
             if (e.subscribe) {
                 const unsubscribe = () => this.removeEventListener('change', update);
