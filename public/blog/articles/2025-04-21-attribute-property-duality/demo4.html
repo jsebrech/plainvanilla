@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <title>demo 4</title>
+        <link rel="stylesheet" href="../../index.css">
+    </head>
+    <body>
+        <p>Markup: <span id="markup"></span></p>
+        <p>Outputs: <my-hello value="world"></my-hello></p>
+
+        <button onclick="myHello.glam = !myHello.glam">toggle myHello.glam</button>
+
+        <script>
+            const span = document.getElementById('markup');
+            const myHello = document.querySelector('my-hello');
+            const m = new MutationObserver(() => {
+                span.textContent = myHello.outerHTML.replace(/\>.*\<\//g, '><');
+            });
+            m.observe(document.body, { subtree: true, childList: true });
+        </script>
+        <script src="demo4.js"></script></script>
+    </body>
+</html>

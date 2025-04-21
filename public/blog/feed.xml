@@ -6,10 +6,236 @@
     <logo>https://plainvanillaweb.com/android-chrome-512x512.png</logo>
     <link rel="alternate" href="https://plainvanillaweb.com/blog/"/>
     <link rel="self" href="https://plainvanillaweb.com/blog/feed.xml"/>
-    <updated>2025-01-01T12:00:00.000Z</updated>
+    <updated>2025-04-21T12:00:00.000Z</updated>
     <author>
         <name>Joeri Sebrechts</name>
     </author>
+    <entry>
+        <title><![CDATA[The attribute/property duality]]></title>
+        <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2025-04-21-attribute-property-duality/"/>
+        <id>https://plainvanillaweb.com/blog/articles/2025-04-21-attribute-property-duality/</id>
+        <published>2025-04-21T12:00:00.000Z</published>
+        <updated>2025-04-21T12:00:00.000Z</updated>
+        <summary><![CDATA[How to work with attributes and properties in custom elements.]]></summary>
+        <media:content url="https://plainvanillaweb.com/blog/articles/2025-04-21-attribute-property-duality/image.webp" type="image/webp" medium="image" />
+        <author><name><![CDATA[Joeri Sebrechts]]></name></author>
+        <content type="html"><![CDATA[
+        <p>
+            Web components, a.k.a. custom elements, are HTML elements
+            that participate in HTML markup. As such they can have attributes:
+        </p>
+        <p><code>&lt;my-hello value="world"&gt;&lt;/my-hello&gt;</code></p>
+        <p>
+            But, they are also JavaScript objects, and as such they can have object properties.
+        </p>
+        <p><code>let myHello = document.querySelector('my-hello'); myHello.value = 'foo';</code></p>
+        <p>
+            And here's the tricky part about that: <em>these are not the same thing!</em>
+            In fact, custom element attributes and properties by default have <em>zero</em> relationship between them,
+            even when they share a name. Here's a live proof of this fact:
+        </p>
+
+        <div><pre><code>customElements.define('my-hello', class extends HTMLElement {
+    connectedCallback() {
+        this.textContent = `Hello, ${ this.value || 'null' }!`;
+    }
+});
+</code></pre></div>
+        <p><a href="https://plainvanillaweb.com/blog/articles/2025-04-21-attribute-property-duality/demo1.html">Demo: no connection between attribute and property</a></p>
+
+        <p>
+            Now, to be fair, we can get at the attribute value just fine from JavaScript:
+        </p>
+
+        <div><pre><code>customElements.define('my-hello', class extends HTMLElement {
+    connectedCallback() {
+        this.textContent = `Hello, ${ this.getAttribute('value') || 'null' }!`;
+    }
+});
+</code></pre></div>
+        <p><a href="https://plainvanillaweb.com/blog/articles/2025-04-21-attribute-property-duality/demo2.html">Demo: displaying the attribute</a></p>
+
+        <p>
+            But what if we would also like it to have a <code>value</code> <em>property</em>?
+            What should the relationship between attribute and property be like?
+        </p>
+        <ul>
+            <li>Does updating the attribute always update the property?</li>
+            <li>Does updating the property always update the attribute?</li>
+            <li>When updates can go either way, does the property read and update the value of the attribute, or do both attribute and property wrap around a private field on the custom element's class?</li>
+            <li>When updates can go either way, how to avoid loops where the property updates the attribute, which updates the property, which...</li>
+            <li>When is it fine to have just an attribute without a property, or a property without an attribute?</li>
+        </ul>
+
+        <p>
+            In framework-based code, we typically don't get a say in these things.
+            Frameworks generally like to pretend that attributes and properties are the same thing,
+            and they automatically create code to make sure this is the case.
+            In vanilla custom elements however, not only do we get to decide these things, we <em>must</em> decide them.
+        </p>
+
+        <h3>Going native</h3>
+
+        <p>
+            Seasoned developers will intuitively grasp what the sensible relationship between attributes and properties should be.
+            This is because built-in HTML elements all implement similar kinds of relationships between their attributes and their properties.
+            To explore that in depth, I recommend reading <a href="https://blog.ltgt.net/web-component-properties/">Making Web Component properties behave closer to the platform</a>.
+            Without fully restating that article, here's a quick recap:
+        </p>
+        <ul>
+            <li>Properties can exist independent of an attribute, but an attribute will typically have a related property.</li>
+            <li>If changing the attribute updates the property, then updating the property will update the attribute.</li>
+            <li>Properties <em>reflect</em> either an internal value of an element, or the value of the corresponding attribute.</li>
+            <li>Assigning a value of an invalid type will coerce the value to the right type, instead of rejecting the change.</li>
+            <li>Change events are only dispatched for changes by user input, not from programmatic changes to attribute or property.</li>
+        </ul>
+
+        <p>An easy way to get much of this behavior is to make a property wrap around an attribute:</p>
+
+        <div><pre><code>customElements.define('my-hello', class extends HTMLElement {
+    get value() {
+        return this.getAttribute('value');
+    }
+    set value(v) {
+        this.setAttribute('value', String(v));
+    }
+    
+    static observedAttributes = ['value'];
+    attributeChangedCallback() {
+        this.textContent = `Hello, ${ this.value || 'null' }!`;
+    }
+});
+</code></pre></div>
+        <p><a href="https://plainvanillaweb.com/blog/articles/2025-04-21-attribute-property-duality/demo3.html">Demo: property wraps attribute</a></p>
+
+        <p>
+            Notice how updating the property will update the attribute in the HTML representation,
+            and how the property's assigned value is coerced into the attribute's string type.
+            Attributes are always strings.
+        </p>
+        
+        <h3>Into the weeds</h3>
+
+        <p>
+            Up to this point, things are looking straightforward. But this is web development,
+            things are never as straightforward as they seem.
+            For instance, what boolean attribute value should make a corresponding boolean property become true?
+            The surprising but <a href="https://developer.mozilla.org/en-US/docs/Glossary/Boolean/HTML">standard behavior</a> on built-in elements is that 
+            any attribute value will be interpreted as true, and only the absence of the attribute will be interpreted as false.
+        </p>
+        <p>
+            Time for another iteration of our element:
+        </p>
+
+        <div><pre><code>customElements.define('my-hello', class extends HTMLElement {
+    get value() {
+        return this.getAttribute('value');
+    }
+    set value(v) {
+        this.setAttribute('value', String(v));
+    }
+
+    get glam() {
+        return this.hasAttribute('glam');
+    }
+    set glam(v) {
+        if (v) {
+            this.setAttribute('glam', 'true');
+        } else {
+            this.removeAttribute('glam');
+        }
+    }
+    
+    static observedAttributes = ['value', 'glam'];
+    attributeChangedCallback() {
+        this.textContent = 
+            `Hello, ${ this.value || 'null' }!` +
+            (this.glam ? '!!@#!' : '');
+    }
+});
+</code></pre></div>
+        <p><a href="https://plainvanillaweb.com/blog/articles/2025-04-21-attribute-property-duality/demo4.html">Demo: adding a boolean property</a></p>
+
+        <p>
+            Which leaves us with the last bit of tricky trivia:
+            it's possible for the custom element's class to be instantiated and attached to the element
+            <em>after</em> the property is assigned. In that case the property's setter is never called,
+            and the attribute is not updated.
+        </p>
+        
+        <div><pre><code>// html:
+&lt;my-hello value="world"&gt;&lt;/my-hello&gt;
+// js:
+const myHello = document.querySelector('my-hello');
+myHello.value = 42; // setter not called before define
+customElements.define('my-hello', /* ... */);
+console.log(myHello.getAttribute('value')); // -&gt; "world"
+</code></pre></div>
+
+        <p>
+            This can be avoided by reassigning any previously set properties when the element is connected:
+        </p>
+
+        <div><pre><code>customElements.define('my-hello', class extends HTMLElement {
+    get value() {
+        return this.getAttribute('value');
+    }
+    set value(v) {
+        this.setAttribute('value', String(v));
+    }
+
+    get glam() {
+        return this.hasAttribute('glam');
+    }
+    set glam(v) {
+        if (v) {
+            this.setAttribute('glam', 'true');
+        } else {
+            this.removeAttribute('glam');
+        }
+    }
+    
+    static observedAttributes = ['value', 'glam'];
+    attributeChangedCallback() {
+        this.textContent = 
+            `Hello, ${ this.value || 'null' }!` +
+            (this.glam ? '!!@#!' : '');
+    }
+
+    connectedCallback() {
+        this.#upgradeProperty('value');
+        this.#upgradeProperty('glam');
+    }
+
+    #upgradeProperty(prop) {
+        if (this.hasOwnProperty(prop)) {
+            let value = this[prop];
+            delete this[prop];
+            this[prop] = value;
+        }
+    }
+});
+</code></pre></div>
+
+        <h3>In conclusion</h3>
+
+        <p>
+            If that seems like a lot of work to do a very simple thing, that is because it is.
+            The good news is: we don't have to always do this work.
+        </p>
+        <p>
+            When we're using web components as framework components in a codebase that we control,
+            we don't have to follow any of these unwritten rules and can keep the web component code as simple as we like.
+            However, when using web components as custom elements to be used in HTML markup 
+            then we do well to follow these best practices to avoid surprises, 
+            especially when making web components that may be used by others. YMMV.
+        </p>
+        <p>
+            In the next article, I'll be looking into custom elements that accept input, and how that adds twists to the plot.
+        </p>
+
+    ]]></content>
+    </entry>
     <entry>
         <title><![CDATA[New year's resolve]]></title>
         <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2025-01-01-new-years-resolve/"/>
@@ -727,7 +953,7 @@ customElements.define('my-component', class extends HTMLElement {
             Which would be used on a page like this, with <code>&lt;my-subscriber&gt;</code> requesting 
             the theme by dispatching a <code>context-request</code> event.
         </p>
-        <div><pre><code>&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;&lt;theme-context&gt;
+        <div><pre><code>&lt;theme-context&gt;
     &lt;div&gt;
         &lt;my-subscriber&gt;&lt;/my-subscriber&gt;
     &lt;/div&gt;
@@ -1064,7 +1290,7 @@ function reparent() {
         </p>
         <div><p><em>index.html:</em></p><pre><code>&lt;!DOCTYPE html&gt;
 &lt;html lang="en"&gt;
-&lt;head&gt;&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;
+&lt;head&gt;
     &lt;meta charset="UTF-8"&gt;
     &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
     &lt;title&gt;Document&lt;/title&gt;
@@ -1575,7 +1801,7 @@ customElements.define('task-item', class extends HTMLElement {
         <p><a href="https://plainvanillaweb.com/blog/articles/2024-09-16-life-and-times-of-a-custom-element/undefined/example.html">undefined/example.html</a></p>
         <div><p><em>example.html:</em></p><pre><code>&lt;!doctype html&gt;
 &lt;html&gt;
-    &lt;head&gt;&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;
+    &lt;head&gt;
         &lt;meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" /&gt;
         &lt;link rel="stylesheet" href="example.css"&gt;
         &lt;title&gt;undefined custom element&lt;/title&gt;
@@ -1608,7 +1834,7 @@ customElements.define('task-item', class extends HTMLElement {
         <p><a href="https://plainvanillaweb.com/blog/articles/2024-09-16-life-and-times-of-a-custom-element/defined/example.html">defined/example.html</a></p>
         <div><p><em>example.html:</em></p><pre><code>&lt;!doctype html&gt;
 &lt;html&gt;
-    &lt;head&gt;&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;
+    &lt;head&gt;
         &lt;meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" /&gt;
         &lt;title&gt;defining the custom element&lt;/title&gt;
         &lt;style&gt;
@@ -1802,7 +2028,7 @@ customElements.define('task-item', class extends HTMLElement {
         <p><a href="https://plainvanillaweb.com/blog/articles/2024-09-16-life-and-times-of-a-custom-element/shadowed/example.html">shadowed/example.html</a></p>
         <div><p><em>example.html:</em></p><pre><code>&lt;!doctype html&gt;
 &lt;html&gt;
-    &lt;head&gt;&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;
+    &lt;head&gt;
         &lt;meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" /&gt;
         &lt;title&gt;shadowed custom element&lt;/title&gt;
         &lt;style&gt;
@@ -1874,7 +2100,7 @@ customElements.define('task-item', class extends HTMLElement {
         <p><a href="https://plainvanillaweb.com/blog/articles/2024-09-16-life-and-times-of-a-custom-element/observer/example.html">observer/example.html</a></p>
         <div><p><em>example.html:</em></p><pre><code>&lt;!doctype html&gt;
 &lt;html&gt; 
-    &lt;head&gt;&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;
+    &lt;head&gt;
         &lt;meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" /&gt;
         &lt;title&gt;custom element with observer&lt;/title&gt;
         &lt;style&gt;
@@ -2036,7 +2262,7 @@ customElements.define('task-item', class extends HTMLElement {
             the <code>&lt;x-suspense&gt;</code> component. This starts out as a tale of two slots. When the suspense element is loading it shows the fallback, otherwise the content.
         </p>
 
-        <div><p><em>example.html:</em></p><pre><code>&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;&lt;x-suspense&gt;
+        <div><p><em>example.html:</em></p><pre><code>&lt;x-suspense&gt;
     &lt;p slot="fallback"&gt;Loading...&lt;/p&gt;
     &lt;x-lazy&gt;&lt;x-hello-world&gt;&lt;/x-hello-world&gt;&lt;/x-lazy&gt;
 &lt;/x-suspense&gt;</code></pre></div>
@@ -2126,7 +2352,7 @@ customElements.define('x-suspense', Suspense);</code></pre></div>
         <p>
             The approach is similar to suspense:
         </p>
-        <div><p><em>example.html:</em></p><pre><code>&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;&lt;x-error-boundary&gt;
+        <div><p><em>example.html:</em></p><pre><code>&lt;x-error-boundary&gt;
     &lt;p slot="error"&gt;Something went wrong&lt;/p&gt;
     &lt;x-suspense&gt;
         &lt;p slot="fallback"&gt;Loading...&lt;/p&gt;
@@ -3373,7 +3599,7 @@ export const html = (strings, ...values) =&gt;
             <p>After careful consideration we present to you, an article page blueprint...</p>
             <div><pre><code>&lt;!doctype html&gt;
 &lt;html lang="en"&gt;
-&lt;head&gt;&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;
+&lt;head&gt;
     &lt;title&gt;A spiffy title!&lt;/title&gt;
     &lt;meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" /&gt;
     &lt;meta name="description" content="This is a spiffy article. You should read it."&gt;
@@ -3465,7 +3691,7 @@ export const html = (strings, ...values) =&gt;
                 Visually showing an index is not so difficult, as a web component built around a simple <code>&lt;li&gt;</code>-based
                 card design can be used to show both the recent posts and the archive page, and was straighforward to style with CSS.
             </p>
-            <div><pre><code>&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;&lt;ul class="cards"&gt;
+            <div><pre><code>&lt;ul class="cards"&gt;
     &lt;li class="card"&gt;
         &lt;img src="./articles/2024-08-17-lets-build-a-blog/image.webp" aria-hidden="true" loading="lazy" /&gt;
         &lt;h3&gt;&lt;a href="./articles/2024-08-17-lets-build-a-blog/"&gt;Let's build a blog, vanilla-style!&lt;/a&gt;&lt;/h3&gt;

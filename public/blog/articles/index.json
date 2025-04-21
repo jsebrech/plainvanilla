@@ -1,5 +1,12 @@
 [
     {
+        "slug": "2025-04-21-attribute-property-duality",
+        "title": "The attribute/property duality",
+        "summary": "How to work with attributes and properties in custom elements.",
+        "published": "2025-04-21",
+        "author": "Joeri Sebrechts"
+    },
+    {
         "slug": "2025-01-01-new-years-resolve",
         "title": "New year's resolve",
         "summary": "import.meta.resolve and other ways to avoid bundling",

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <title>demo 3</title>
+        <link rel="stylesheet" href="../../index.css">
+    </head>
+    <body>
+        <p>Markup: <span id="rawhtml"></span></p>
+        <p>Outputs: <my-hello value="world"></my-hello></p>
+
+        <button onclick="myHello.value = 42">myHello.value = 42</button>
+        <button onclick="location.reload()">Reload</button>
+
+        <script>
+            const span = document.getElementById('rawhtml');
+            const myHello = document.querySelector('my-hello');
+            const m = new MutationObserver(() => {
+                span.textContent = myHello.outerHTML.replace(/\>.*\<\//g, '><');
+            });
+            m.observe(document.body, { subtree: true, childList: true });
+        </script>
+        <script src="demo3.js"></script></script>
+    </body>
+</html>

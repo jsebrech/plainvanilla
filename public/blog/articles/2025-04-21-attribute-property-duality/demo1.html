@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <title>demo 1</title>
+        <link rel="stylesheet" href="../../index.css">
+    </head>
+    <body>
+        <p>Markup: <span id="rawhtml"></span></p>
+        <p>Outputs: <my-hello value="world"></my-hello></p>
+        <script>
+            const span = document.getElementById('rawhtml');
+            const myHello = document.querySelector('my-hello');
+            span.textContent = myHello.outerHTML;
+        </script>
+        <script src="demo1.js"></script></script>
+    </body>
+</html>
