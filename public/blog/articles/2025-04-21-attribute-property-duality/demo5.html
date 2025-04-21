@@ -18,7 +18,7 @@
             const m = new MutationObserver(() => {
                 span.textContent = myHello.outerHTML.replace(/\>.*\<\//g, '><');
             });
-            m.observe(document.body, { subtree: true, attributes: true });
+            m.observe(myHello, { attributes: true, childList: true });
         </script>
         <script src="demo5.js"></script></script>
     </body>
