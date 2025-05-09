@@ -1,5 +1,12 @@
 [
     {
+        "slug": "2025-05-09-form-control",
+        "title": "Making a new form control",
+        "summary": "Building a form control as a custom element.",
+        "published": "2025-05-09",
+        "author": "Joeri Sebrechts"
+    },
+    {
         "slug": "2025-04-21-attribute-property-duality",
         "title": "The attribute/property duality",
         "summary": "How to work with attributes and properties in custom elements.",

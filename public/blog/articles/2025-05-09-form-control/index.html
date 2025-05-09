@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Making a new form control</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="description" content="Building a form control as a custom element.">
+    <link rel="stylesheet" href="../../index.css">
+</head>
+<body>
+    <blog-header published="2025-05-09">
+        <img src="image.webp" alt="A MAD magazine cover of people working hard at a gym." loading="lazy" />
+        <h2>Making a new form control</h2>
+        <p class="byline" aria-label="author">Joeri Sebrechts</p>
+    </blog-header>
+    <main>
+        <p>
+            There are some things that a web developer <em>knows</em> they shouldn't attempt.
+            Making clever use of contenteditable. Building custom form controls. Making complicated custom elements without a framework.
+            But do we really know what we think we know? Why not try to do all three, just for fun? Could it really be that bad?
+        </p>
+        <p><em>Narrator: it would indeed be that bad.</em></p>
+        <p>
+            This article is building on the previous one on proper <a href="../2025-04-21-attribute-property-duality/">attribute/property relations</a> in custom elements.
+            Read that first if you haven't yet. In this piece we're taking it a step further to build a custom element that handles input.
+            The mission is simple: implement a basic version of <code>&lt;input type="text" /&gt;</code> but with <code>display: inline</code> layout.
+        </p>
+
+        <h3>A simple element</h3>
+        
+        <p>
+            Let's start by just throwing something against the wall and playing around with it.
+        </p>
+        <x-code-viewer src="demo1/input-inline.js"></x-code-viewer>
+        <p>
+            And here's how we use it:<br>
+        </p>
+        <x-code-viewer src="demo1/index-partial.txt" name=""></x-code-viewer>
+        <iframe src="demo1/index.html" title="demo1"></iframe>
+
+        <p>
+            This is simple, clean, and horribly broken. For one, the form cannot see these controls at all and submits the empty object.
+        </p>
+
+        <h3>Form-associated elements</h3>
+
+        <p>
+            To fix that, we have to make a <a href="https://html.spec.whatwg.org/dev/custom-elements.html#custom-elements-face-example">form-associated custom element</a>.
+            This is done through the magic of the <code>formAssociated</code> property and <a href="https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals">ElementInternals</a>.
+        </p>
+
+        <x-code-viewer src="demo2/input-inline-partial.js" name="input-inline.js"></x-code-viewer>
+        <iframe src="demo2/index.html" title="demo2"></iframe>
+
+        <p>
+            <code>ElementInternals</code> offers a control surface for setting the behavior of our custom element as part of a form.
+            The <code>this.#internals.role = 'textbox'</code> assignment sets a default role that can be overridden by the element's user through the <code>role</code> attribute or property, just like for built-in form controls.
+            By calling <code>this.#internals.setFormValue</code> every time the control's value changes the form will know what value to submit.
+            But ... while the form does submit the values for our controls now, it does not see the changes we make. That's because we aren't responding to input yet.
+        </p>
+
+        <h3>Looking for input</h3>
+
+        <p>
+            Ostensibly responding to input is just adding a few event listeners in <code>connectedCallback</code> and removing them again in <code>disconnectedCallback</code>.
+            But doing it that way quickly gets verbose. An easy alternative is to instead rely on some of the built-in event logic magic,
+            namely that events bubble and that <a href="https://gregdaynes.com/note/2024/07/29/web-components.html">objects can be listeners too</a>.
+        </p>
+
+        <x-code-viewer src="demo3/input-inline-partial.js" name="input-inline.js"></x-code-viewer>
+        <iframe src="demo3/index.html" title="demo3"></iframe>
+
+        <p>
+            I prefer this pattern because it simplifies the code a lot compared to having separate handler functions.
+            Attaching event listeners in the constructor instead of attaching and detaching them in the lifecycle callbacks is another simplification. 
+            It may seem like blasphemy to never clean up the event listeners, but DOM event listeners
+            are weakly bound and garbage collection of the element can still occur with them attached. So this is fine.
+        </p>
+        <p>
+            In the event handler logic there's some verbosity to deal with the fallout of working with contenteditable.
+            As this code is not the focus of this article, I won't dally on it except to remark that contenteditable is still just as annoying as you thought it was.
+        </p>
+        <p>
+            With these changes our element will now also emit <code>input</code> and <code>change</code> events just like a built-in HTML form control.
+            But, you may have noticed another issue has cropped up. The standard form reset button does not actually reset the form.
+        </p>
+
+        <h3>Read the instructions</h3>
+
+        <p>
+            You see, when we said <code>static formAssociated = true</code> we entered into a contract to faithfully implement the expected behavior of a form control.
+            That means we have a bunch of extra work to do.
+        </p>
+
+        <x-code-viewer src="demo4/input-inline-partial.js" name="input-inline.js"></x-code-viewer>
+        <iframe src="demo4/index.html" title="demo4" height="250"></iframe>
+
+        <p>
+            There's a LOT going on there. It's too much to explain, so let me sum up.
+        </p>
+        <ul>
+            <li>The <code>value</code> attribute now corresponds to a <code>defaultValue</code> property, which is the value shown until changed and also the value that the form will reset the field to.</li>
+            <li>The <code>value</code> property contains only the modified value and does not correspond to an attribute.</li>
+            <li>The control can be marked disabled or read-only through attribute or property.</li>
+            <li>The form callbacks are implemented, so the control can be reset to its default value, will restore its last value after back-navigation, and will disable itself when it is in a disabled fieldset.</li>
+        </ul>
+
+        <h3>With some style</h3>
+
+        <p>
+            Up to this point we've been using some stand-in styling.
+            However, it would be nice to have some default styling that can be bundled with our custom form control.
+            Something like this:
+        </p>
+
+        <x-code-viewer src="demo5/input-inline.css"></x-code-viewer>
+        <iframe src="demo5/index.html" title="demo5" height="250"></iframe>
+
+        <p>
+            The styles are isolated by scoping them to the name of our custom element, 
+            and the use of @layer puts them at the lowest priority, so that any user style will override the default style,
+            just like for the built-in form controls. The use of variables offers an additional way to quickly restyle the control.
+        </p>
+        <p>
+            In the styling we also see the importance of properly thinking out disabled and focused state behavior.
+            The upside and downside of building a custom form control is that we get to implement all the behavior that's normally built-in to the browser.
+        </p>
+        <p>
+            We're now past the 150 lines mark, just to get to the low bar of implementing the browser's mandatory form control behavior.
+            So, are we done? Well, not quite. There's still one thing that form controls do, and although it's optional it's also kind of required.
+        </p>
+
+        <h3>Validation</h3>
+
+        <p>
+            Built-in form controls come with a validity API. To get an idea of what it means to implement it 
+            in a custom form control, let's add one validation attribute: <code>required</code>.
+            It doesn't seem like it should take a lot of work, right?
+        </p>
+
+        <x-code-viewer src="demo6/input-inline-partial.js" name="input-inline.js"></x-code-viewer>
+        <iframe src="demo6/index.html" title="demo6" height="200"></iframe>
+        <p>
+            The code for the example is exactly like it would be for built-in controls:
+        </p>
+        <x-code-viewer src="demo6/index-partial.txt" name=""></x-code-viewer>
+
+        <p>
+            The <code>ElementInternals</code> interface is doing a lot of the work here, but we still have to proxy its methods and properties.
+            You can tell however that by this point we're deep in the weeds of custom elements, because of the rough edges.
+        </p>
+        <ul>
+            <li>The example is using the <code>input-inline:invalid</code> style instead of <code>:user-invalid</code> because
+            <a href="https://github.com/whatwg/html/issues/9639">:user-invalid is not supported</a> on custom elements yet.</li>
+            <li>An ugly hack is needed to get the properly localized message for a required field that matches that of built-in controls.</li>
+            <li>Safari flat-out won't show validation messages on non-shadowed form-associated custom elements if we don't give it an anchor to set them to, requiring another ugly hack.</li>
+        </ul>
+
+        <h3>In conclusion</h3>
+
+        <p>
+            We've established by now that it is indeed feasible to build a custom form control and have it take part in regular HTML forms,
+            but also that it is a path surrounded by peril as well as laborious to travel.
+            Whether it is worth doing is in the eye of the beholder.
+        </p>
+        <p>
+            Along that path we also learned some lessons on how to handle input in custom elements, and have proven yet again that <code>contenteditable</code>,
+            while less painful than it once was, is an attribute that can only be used in anger.
+        </p>
+        <p>
+            Regardless, the full source code of the <code>input-inline</code> form control <a href="https://github.com/jsebrech/input-inline">is on GitHub</a>.
+        </p>
+    </main>
+    <blog-footer></blog-footer>
+    <script type="module" src="../../index.js"></script>
+</body>
+</html>

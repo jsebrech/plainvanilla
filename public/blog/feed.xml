@@ -6,10 +6,546 @@
     <logo>https://plainvanillaweb.com/android-chrome-512x512.png</logo>
     <link rel="alternate" href="https://plainvanillaweb.com/blog/"/>
     <link rel="self" href="https://plainvanillaweb.com/blog/feed.xml"/>
-    <updated>2025-04-21T12:00:00.000Z</updated>
+    <updated>2025-05-09T12:00:00.000Z</updated>
     <author>
         <name>Joeri Sebrechts</name>
     </author>
+    <entry>
+        <title><![CDATA[Making a new form control]]></title>
+        <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2025-05-09-form-control/"/>
+        <id>https://plainvanillaweb.com/blog/articles/2025-05-09-form-control/</id>
+        <published>2025-05-09T12:00:00.000Z</published>
+        <updated>2025-05-09T12:00:00.000Z</updated>
+        <summary><![CDATA[Building a form control as a custom element.]]></summary>
+        <media:content url="https://plainvanillaweb.com/blog/articles/2025-05-09-form-control/image.webp" type="image/webp" medium="image" />
+        <author><name><![CDATA[Joeri Sebrechts]]></name></author>
+        <content type="html"><![CDATA[
+        <p>
+            There are some things that a web developer <em>knows</em> they shouldn't attempt.
+            Making clever use of contenteditable. Building custom form controls. Making complicated custom elements without a framework.
+            But do we really know what we think we know? Why not try to do all three, just for fun? Could it really be that bad?
+        </p>
+        <p><em>Narrator: it would indeed be that bad.</em></p>
+        <p>
+            This article is building on the previous one on proper <a href="../2025-04-21-attribute-property-duality/">attribute/property relations</a> in custom elements.
+            Read that first if you haven't yet. In this piece we're taking it a step further to build a custom element that handles input.
+            The mission is simple: implement a basic version of <code>&lt;input type="text" /&gt;</code> but with <code>display: inline</code> layout.
+        </p>
+
+        <h3>A simple element</h3>
+        
+        <p>
+            Let's start by just throwing something against the wall and playing around with it.
+        </p>
+        <div><pre><code>customElements.define('input-inline', class extends HTMLElement {
+    
+    get value() {
+        return this.getAttribute('value') ?? '';
+    }
+    set value(value) {
+        this.setAttribute('value', String(value));
+    }
+
+    get name() {
+        return this.getAttribute('name') ?? '';
+    }
+    set name(v) {
+        this.setAttribute('name', String(v));
+    }
+    
+    connectedCallback() {
+        this.#update();
+    }
+
+    static observedAttributes = ['value'];
+    attributeChangedCallback() {
+        this.#update();
+    }
+
+    #update() {
+        this.style.display = 'inline';
+        if (this.textContent !== this.value) {
+            this.textContent = this.value;
+        }
+        this.contentEditable = true;
+    }
+});</code></pre></div>
+        <p>
+            And here's how we use it:<br>
+        </p>
+        <div><pre><code>&lt;form&gt;
+    &lt;p&gt;
+        My favorite colors are &lt;input-inline name="color1" value="green"&gt;&lt;/input-inline&gt; 
+        and &lt;input-inline name="color2" value="purple"&gt;&lt;/input-inline&gt;.
+    &lt;/p&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</code></pre></div>
+        <p><a href="https://plainvanillaweb.com/blog/articles/2025-05-09-form-control/demo1/index.html">demo1</a></p>
+
+        <p>
+            This is simple, clean, and horribly broken. For one, the form cannot see these controls at all and submits the empty object.
+        </p>
+
+        <h3>Form-associated elements</h3>
+
+        <p>
+            To fix that, we have to make a <a href="https://html.spec.whatwg.org/dev/custom-elements.html#custom-elements-face-example">form-associated custom element</a>.
+            This is done through the magic of the <code>formAssociated</code> property and <a href="https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals">ElementInternals</a>.
+        </p>
+
+        <div><p><em>input-inline.js:</em></p><pre><code>customElements.define('input-inline', class extends HTMLElement {
+    
+    #internals;
+
+    /* ... */
+
+    constructor() {
+        super();
+        this.#internals = this.attachInternals();
+        this.#internals.role = 'textbox';
+    }
+    
+    /* ... */
+
+    #update() {
+        /* ... */
+        this.#internals.setFormValue(this.value);
+    }
+
+    static formAssociated = true;
+});</code></pre></div>
+        <p><a href="https://plainvanillaweb.com/blog/articles/2025-05-09-form-control/demo2/index.html">demo2</a></p>
+
+        <p>
+            <code>ElementInternals</code> offers a control surface for setting the behavior of our custom element as part of a form.
+            The <code>this.#internals.role = 'textbox'</code> assignment sets a default role that can be overridden by the element's user through the <code>role</code> attribute or property, just like for built-in form controls.
+            By calling <code>this.#internals.setFormValue</code> every time the control's value changes the form will know what value to submit.
+            But ... while the form does submit the values for our controls now, it does not see the changes we make. That's because we aren't responding to input yet.
+        </p>
+
+        <h3>Looking for input</h3>
+
+        <p>
+            Ostensibly responding to input is just adding a few event listeners in <code>connectedCallback</code> and removing them again in <code>disconnectedCallback</code>.
+            But doing it that way quickly gets verbose. An easy alternative is to instead rely on some of the built-in event logic magic,
+            namely that events bubble and that <a href="https://gregdaynes.com/note/2024/07/29/web-components.html">objects can be listeners too</a>.
+        </p>
+
+        <div><p><em>input-inline.js:</em></p><pre><code>customElements.define('input-inline', class extends HTMLElement {
+    
+    #shouldFireChange = false;
+    
+    /* ... */
+
+    constructor() {
+        /* ... */
+        this.addEventListener('input', this);
+        this.addEventListener('keydown', this);
+        this.addEventListener('paste', this);
+        this.addEventListener('focusout', this);
+    }
+
+    handleEvent(e) {
+        switch (e.type) {
+            // respond to user input (typing, drag-and-drop, paste)
+            case 'input':
+                this.value = cleanTextContent(this.textContent);
+                this.#shouldFireChange = true;
+                break;
+            // enter key should submit form instead of adding a new line
+            case 'keydown':
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.#internals.form?.requestSubmit();
+                }
+                break;
+            // prevent pasting rich text (firefox), or newlines (all browsers)
+            case 'paste':
+                e.preventDefault();
+                const text = e.clipboardData.getData('text/plain')
+                    // replace newlines and tabs with spaces
+                    .replace(/[\n\r\t]+/g, ' ')
+                    // limit length of pasted text to something reasonable
+                    .substring(0, 1000);
+                // shadowRoot.getSelection is non-standard, fallback to document in firefox
+                // https://stackoverflow.com/a/70523247
+                let selection = this.getRootNode()?.getSelection?.() || document.getSelection();
+                let range = selection.getRangeAt(0);
+                range.deleteContents();
+                range.insertNode(document.createTextNode(text));
+                // manually trigger input event to restore default behavior
+                this.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+                break;
+            // fire change event on blur
+            case 'focusout':
+                if (this.#shouldFireChange) {
+                    this.#shouldFireChange = false;
+                    this.dispatchEvent(new Event('change', { bubbles: true, composed: true }));
+                }
+                break;
+        }
+    }
+    
+    /* ... */
+});
+
+function cleanTextContent(text) {
+    return (text ?? '')
+        // replace newlines and tabs with spaces
+        .replace(/[\n\r\t]+/g, ' ');
+}
+</code></pre></div>
+        <p><a href="https://plainvanillaweb.com/blog/articles/2025-05-09-form-control/demo3/index.html">demo3</a></p>
+
+        <p>
+            I prefer this pattern because it simplifies the code a lot compared to having separate handler functions.
+            Attaching event listeners in the constructor instead of attaching and detaching them in the lifecycle callbacks is another simplification. 
+            It may seem like blasphemy to never clean up the event listeners, but DOM event listeners
+            are weakly bound and garbage collection of the element can still occur with them attached. So this is fine.
+        </p>
+        <p>
+            In the event handler logic there's some verbosity to deal with the fallout of working with contenteditable.
+            As this code is not the focus of this article, I won't dally on it except to remark that contenteditable is still just as annoying as you thought it was.
+        </p>
+        <p>
+            With these changes our element will now also emit <code>input</code> and <code>change</code> events just like a built-in HTML form control.
+            But, you may have noticed another issue has cropped up. The standard form reset button does not actually reset the form.
+        </p>
+
+        <h3>Read the instructions</h3>
+
+        <p>
+            You see, when we said <code>static formAssociated = true</code> we entered into a contract to faithfully implement the expected behavior of a form control.
+            That means we have a bunch of extra work to do.
+        </p>
+
+        <div><p><em>input-inline.js:</em></p><pre><code>customElements.define('input-inline', class extends HTMLElement {
+    
+    /* ... */
+
+    #formDisabled = false;
+    #value;
+
+    set value(v) {
+        if (this.#value !== String(v)) {
+            this.#value = String(v);
+            this.#update();    
+        }
+    }
+    get value() {
+        return this.#value ?? this.defaultValue;
+    }
+
+    get defaultValue() {
+        return this.getAttribute('value') ?? '';
+    }
+    set defaultValue(value) {
+        this.setAttribute('value', String(value));
+    }
+
+    set disabled(v) {
+        if (v) {
+            this.setAttribute('disabled', 'true');
+        } else {
+            this.removeAttribute('disabled');
+        }
+    }
+    get disabled() {
+        return this.hasAttribute('disabled');
+    }
+
+    set readOnly(v) {
+        if (v) {
+            this.setAttribute('readonly', 'true');
+        } else {
+            this.removeAttribute('readonly');
+        }
+    }
+    get readOnly() {
+        return this.hasAttribute('readonly');
+    }
+
+    /* ... */
+
+    static observedAttributes = ['value', 'disabled', 'readonly'];
+    attributeChangedCallback() {
+        this.#update();
+    }
+
+    #update() {
+        this.style.display = 'inline';
+        this.textContent = this.value;
+        this.#internals.setFormValue(this.value);
+
+        const isDisabled = this.#formDisabled || this.disabled;
+        this.#internals.ariaDisabled = isDisabled;
+        this.#internals.ariaReadOnly = this.readOnly;
+        this.contentEditable = !this.readOnly &amp;&amp; !isDisabled &amp;&amp; 'plaintext-only';
+        this.tabIndex = isDisabled ? -1 : 0;
+    }
+
+    static formAssociated = true;
+
+    formResetCallback() {
+        this.#value = undefined;
+        this.#update();
+    }
+    
+    formDisabledCallback(disabled) {
+        this.#formDisabled = disabled;
+        this.#update();
+    }
+    
+    formStateRestoreCallback(state) {
+        this.#value = state ?? undefined;
+        this.#update();
+    }
+});
+
+/* ... */</code></pre></div>
+        <p><a href="https://plainvanillaweb.com/blog/articles/2025-05-09-form-control/demo4/index.html">demo4</a></p>
+
+        <p>
+            There's a LOT going on there. It's too much to explain, so let me sum up.
+        </p>
+        <ul>
+            <li>The <code>value</code> attribute now corresponds to a <code>defaultValue</code> property, which is the value shown until changed and also the value that the form will reset the field to.</li>
+            <li>The <code>value</code> property contains only the modified value and does not correspond to an attribute.</li>
+            <li>The control can be marked disabled or read-only through attribute or property.</li>
+            <li>The form callbacks are implemented, so the control can be reset to its default value, will restore its last value after back-navigation, and will disable itself when it is in a disabled fieldset.</li>
+        </ul>
+
+        <h3>With some style</h3>
+
+        <p>
+            Up to this point we've been using some stand-in styling.
+            However, it would be nice to have some default styling that can be bundled with our custom form control.
+            Something like this:
+        </p>
+
+        <div><pre><code>/* default styling has lowest priority */
+@layer {
+    :root {
+        --input-inline-border-color: light-dark(rgb(118, 118, 118), rgb(161, 161, 161));
+        --input-inline-border-color-hover: light-dark(rgb(78, 78, 78), rgb(200, 200, 200));
+        --input-inline-border-color-disabled: rgba(150, 150, 150, 0.5);
+        --input-inline-text-color: light-dark(fieldtext, rgb(240, 240, 240));
+        --input-inline-text-color-disabled: light-dark(rgb(84, 84, 84), rgb(170, 170, 170));
+        --input-inline-bg-color: inherit;
+        --input-inline-bg-color-disabled: inherit;
+        --input-inline-min-width: 4ch;
+    }
+
+    input-inline {
+        display: inline;
+        background-color: var(--input-inline-bg-color);
+        color: var(--input-inline-text-color);
+        border: 1px dotted var(--input-inline-border-color);
+        padding: 2px 3px;
+        margin-bottom: -2px;
+        border-radius: 3px;
+        /* minimum width */
+        padding-right: max(3px, calc(var(--input-inline-min-width) - var(--current-length)));
+
+        &amp;:hover {
+            border-color: var(--input-inline-border-color-hover);
+        }
+    
+        &amp;:disabled {
+            border-color: var(--input-inline-border-color-disabled);
+            background-color: var(--input-inline-bg-color-disabled);
+            color: var(--input-inline-text-color-disabled);
+            -webkit-user-select: none;
+            user-select: none;
+        }
+    
+        &amp;:focus-visible {
+            border-color: transparent;
+            outline-offset: 0;
+            outline: 2px solid royalblue; /* firefox */
+            outline-color: -webkit-focus-ring-color; /* the rest */
+        }
+    }
+
+    @media screen and (-webkit-min-device-pixel-ratio:0) {
+        input-inline:empty::before {
+            /* fixes issue where empty input-inline shifts left in chromium browsers */
+            content: " ";
+        }
+    }
+
+}
+</code></pre></div>
+        <p><a href="https://plainvanillaweb.com/blog/articles/2025-05-09-form-control/demo5/index.html">demo5</a></p>
+
+        <p>
+            The styles are isolated by scoping them to the name of our custom element, 
+            and the use of @layer puts them at the lowest priority, so that any user style will override the default style,
+            just like for the built-in form controls. The use of variables offers an additional way to quickly restyle the control.
+        </p>
+        <p>
+            In the styling we also see the importance of properly thinking out disabled and focused state behavior.
+            The upside and downside of building a custom form control is that we get to implement all the behavior that's normally built-in to the browser.
+        </p>
+        <p>
+            We're now past the 150 lines mark, just to get to the low bar of implementing the browser's mandatory form control behavior.
+            So, are we done? Well, not quite. There's still one thing that form controls do, and although it's optional it's also kind of required.
+        </p>
+
+        <h3>Validation</h3>
+
+        <p>
+            Built-in form controls come with a validity API. To get an idea of what it means to implement it 
+            in a custom form control, let's add one validation attribute: <code>required</code>.
+            It doesn't seem like it should take a lot of work, right?
+        </p>
+
+        <div><p><em>input-inline.js:</em></p><pre><code>let VALUE_MISSING_MESSAGE = 'Please fill out this field.';
+(() =&gt; {
+    const input = document.createElement('input');
+    input.required = true;
+    input.reportValidity();
+    VALUE_MISSING_MESSAGE = input.validationMessage;
+})();
+
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+customElements.define('input-inline', class extends HTMLElement {
+    
+    /* ... */
+
+    #customValidityMessage = '';
+
+    /* ... */
+
+    set required(v) {
+        if (v) {
+            this.setAttribute('required', 'true');
+        } else {
+            this.removeAttribute('required');
+        }
+    }
+    get required() {
+        return this.hasAttribute('required');
+    }
+
+    /* ... */
+
+    static observedAttributes = ['value', 'disabled', 'readonly', 'required'];
+    attributeChangedCallback() {
+        this.#update();
+    }
+
+    #update() {
+        /* ... */
+
+        this.#internals.ariaRequired = this.required;
+        this.#updateValidity();
+    }
+
+    /* ... */
+
+    #updateValidity() {
+        const state = {};
+        let message = '';
+
+        // custom validity message overrides all else
+        if (this.#customValidityMessage) {
+            state.customError = true;
+            message = this.#customValidityMessage;
+        } else {
+            if (this.required &amp;&amp; !this.value) {
+                state.valueMissing = true;
+                message = VALUE_MISSING_MESSAGE;
+            }
+    
+            // add other checks here if needed (e.g., pattern, minLength)
+        }
+
+        // safari needs a focusable validation anchor to show the validation message on form submit
+        // and it must be a descendant of the input
+        let anchor = undefined;
+        if (isSafari) {
+            anchor = this.querySelector('span[aria-hidden]');
+            if (!anchor) {
+                anchor = document.createElement('span');
+                anchor.ariaHidden = true;
+                anchor.tabIndex = 0;
+                this.append(anchor);
+            }
+        }
+
+        this.#internals.setValidity(state, message, anchor);
+    }
+
+    checkValidity() {
+        this.#updateValidity();
+        return this.#internals.checkValidity();
+    }
+
+    reportValidity() {
+        this.#updateValidity();
+        return this.#internals.reportValidity();
+    }
+
+    setCustomValidity(message) {
+        this.#customValidityMessage = message ?? '';
+        this.#updateValidity();
+    }
+
+    get validity() {
+        return this.#internals.validity;
+    }
+
+    get validationMessage() {
+        return this.#internals.validationMessage;
+    }
+
+    get willValidate() {
+        return this.#internals.willValidate;
+    }
+});
+
+/* ... */</code></pre></div>
+        <p><a href="https://plainvanillaweb.com/blog/articles/2025-05-09-form-control/demo6/index.html">demo6</a></p>
+        <p>
+            The code for the example is exactly like it would be for built-in controls:
+        </p>
+        <div><pre><code>&lt;form&gt;
+    &lt;p&gt;
+        My favorite color is &lt;input-inline name="color1" value="green" required&gt;&lt;/input-inline&gt;.
+    &lt;/p&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+    &lt;button type="reset"&gt;Reset&lt;/button&gt;
+&lt;/form&gt;</code></pre></div>
+
+        <p>
+            The <code>ElementInternals</code> interface is doing a lot of the work here, but we still have to proxy its methods and properties.
+            You can tell however that by this point we're deep in the weeds of custom elements, because of the rough edges.
+        </p>
+        <ul>
+            <li>The example is using the <code>input-inline:invalid</code> style instead of <code>:user-invalid</code> because
+            <a href="https://github.com/whatwg/html/issues/9639">:user-invalid is not supported</a> on custom elements yet.</li>
+            <li>An ugly hack is needed to get the properly localized message for a required field that matches that of built-in controls.</li>
+            <li>Safari flat-out won't show validation messages on non-shadowed form-associated custom elements if we don't give it an anchor to set them to, requiring another ugly hack.</li>
+        </ul>
+
+        <h3>In conclusion</h3>
+
+        <p>
+            We've established by now that it is indeed feasible to build a custom form control and have it take part in regular HTML forms,
+            but also that it is a path surrounded by peril as well as laborious to travel.
+            Whether it is worth doing is in the eye of the beholder.
+        </p>
+        <p>
+            Along that path we also learned some lessons on how to handle input in custom elements, and have proven yet again that <code>contenteditable</code>,
+            while less painful than it once was, is an attribute that can only be used in anger.
+        </p>
+        <p>
+            Regardless, the full source code of the <code>input-inline</code> form control <a href="https://github.com/jsebrech/input-inline">is on GitHub</a>.
+        </p>
+    ]]></content>
+    </entry>
     <entry>
         <title><![CDATA[The attribute/property duality]]></title>
         <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2025-04-21-attribute-property-duality/"/>

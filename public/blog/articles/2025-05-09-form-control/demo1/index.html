@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <title>demo 1</title>
+        <link rel="stylesheet" href="../../../index.css">
+        <style>
+            input-inline {
+                background-color: lightcyan;
+            }
+            form {
+                max-width: 350px;
+            }
+        </style>
+    </head>
+    <body>
+        <form>
+            <p>
+                My favorite colors are <input-inline name="color1" value="green"></input-inline> 
+                and <input-inline name="color2" value="purple"></input-inline>.
+            </p>
+            <button type="submit">Submit</button>
+            <button type="button" onclick="location.reload()">Reload</button>
+        </form>
+        <br />
+        <p id="result"></p>
+        <script src="input-inline.js"></script>
+        <script>
+            document.querySelector('form').onsubmit = (e) => {
+                e.preventDefault();
+                const data = new FormData(e.target);
+                const obj = Object.fromEntries(data.entries());
+                document.getElementById('result').textContent = 
+                    'Submitted: ' + JSON.stringify(obj);
+            }
+        </script>
+    </body>
+</html>

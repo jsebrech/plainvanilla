@@ -1,0 +1,7 @@
+<form>
+    <p>
+        My favorite color is <input-inline name="color1" value="green" required></input-inline>.
+    </p>
+    <button type="submit">Submit</button>
+    <button type="reset">Reset</button>
+</form>

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <title>demo 5</title>
+        <link rel="stylesheet" href="../../../index.css">
+        <link rel="stylesheet" href="input-inline.css">
+        <style>
+            form {
+                max-width: 350px;
+            }
+            fieldset {
+                margin-bottom: 1em;
+            }
+        </style>
+    </head>
+    <body>
+        <form>
+            <fieldset>
+                <p>
+                    My favorite colors are <input-inline name="color1" value="green"></input-inline> 
+                    and <input-inline name="color2" value="purple"></input-inline>.
+                </p>
+                <button type="submit">Submit</button>
+                <button type="reset">Reset</button>
+            </fieldset>
+            <p>
+                Disabled:
+                <button type="button" onclick="toggleDisabled('fieldset')">Toggle fieldset</button>
+                <button type="button" onclick="toggleDisabled('[name=color1]')">Toggle control 1</button>
+                <button type="button" onclick="toggleDisabled('[name=color2]')">Toggle control 2</button>
+            </p>
+            <p>
+                Readonly:
+                <button type="button" onclick="toggleReadOnly('[name=color1]')">Toggle control 1</button>
+                <button type="button" onclick="toggleReadOnly('[name=color2]')">Toggle control 2</button>
+            </p>
+        </form>
+        <br />
+        <p id="result"></p>
+        <script src="input-inline.js"></script>
+        <script>
+            document.querySelector('form').onsubmit = (e) => {
+                e.preventDefault();
+                const data = new FormData(e.target);
+                const obj = Object.fromEntries(data.entries());
+                document.getElementById('result').textContent = 
+                    'Submitted: ' + JSON.stringify(obj);
+            }
+
+            function toggleDisabled(selector) {
+                const elem = document.querySelector(selector);
+                elem.disabled = !elem.disabled;
+            }
+
+            function toggleReadOnly(selector) {
+                const elem = document.querySelector(selector);
+                elem.readOnly = !elem.readOnly;
+            }
+        </script>
+    </body>
+</html>

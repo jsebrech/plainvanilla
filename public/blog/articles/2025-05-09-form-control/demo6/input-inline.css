@@ -1,0 +1,52 @@
+/* default styling has lowest priority */
+@layer {
+    :root {
+        --input-inline-border-color: light-dark(rgb(118, 118, 118), rgb(161, 161, 161));
+        --input-inline-border-color-hover: light-dark(rgb(78, 78, 78), rgb(200, 200, 200));
+        --input-inline-border-color-disabled: rgba(150, 150, 150, 0.5);
+        --input-inline-text-color: light-dark(fieldtext, rgb(240, 240, 240));
+        --input-inline-text-color-disabled: light-dark(rgb(84, 84, 84), rgb(170, 170, 170));
+        --input-inline-bg-color: inherit;
+        --input-inline-bg-color-disabled: inherit;
+        --input-inline-min-width: 4ch;
+    }
+
+    input-inline {
+        display: inline;
+        background-color: var(--input-inline-bg-color);
+        color: var(--input-inline-text-color);
+        border: 1px dotted var(--input-inline-border-color);
+        padding: 2px 3px;
+        margin-bottom: -2px;
+        border-radius: 3px;
+        /* minimum width */
+        padding-right: max(3px, calc(var(--input-inline-min-width) - var(--current-length)));
+
+        &:hover {
+            border-color: var(--input-inline-border-color-hover);
+        }
+    
+        &:disabled {
+            border-color: var(--input-inline-border-color-disabled);
+            background-color: var(--input-inline-bg-color-disabled);
+            color: var(--input-inline-text-color-disabled);
+            -webkit-user-select: none;
+            user-select: none;
+        }
+    
+        &:focus-visible {
+            border-color: transparent;
+            outline-offset: 0;
+            outline: 2px solid royalblue; /* firefox */
+            outline-color: -webkit-focus-ring-color; /* the rest */
+        }
+    }
+
+    @media screen and (-webkit-min-device-pixel-ratio:0) {
+        input-inline:empty::before {
+            /* fixes issue where empty input-inline shifts left in chromium browsers */
+            content: " ";
+        }
+    }
+
+}

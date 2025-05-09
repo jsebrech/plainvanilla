@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <title>demo 6</title>
+        <link rel="stylesheet" href="../../../index.css">
+        <link rel="stylesheet" href="input-inline.css">
+        <style>
+            form {
+                max-width: 350px;
+            }
+            fieldset {
+                margin-bottom: 1em;
+            }
+            input-inline:invalid {
+                border-color: red;
+            }
+        </style>
+    </head>
+    <body>
+        <form>
+            <p>
+                My favorite color is <input-inline name="color1" value="" required></input-inline>.
+            </p>
+            <button type="submit">Submit</button>
+            <button type="reset">Reset</button>
+        </form>
+        <p style="margin: 0.5em 0;">
+            <button type="button" onclick="setInvalid('[name=color1]', 'Oops, wrong!')">Set custom validity message</button> 
+            <button type="button" onclick="setInvalid('[name=color1]', '')">Clear custom validity message</button>
+        </p>
+        <p id="result"></p>
+        <script src="input-inline.js"></script>
+        <script>
+            document.querySelector('form').onsubmit = (e) => {
+                e.preventDefault();
+                const data = new FormData(e.target);
+                const obj = Object.fromEntries(data.entries());
+                document.getElementById('result').textContent = 
+                    'Submitted: ' + JSON.stringify(obj);
+            }
+            function setInvalid(selector, message) {
+                const elem = document.querySelector(selector);
+                elem.setCustomValidity(message);
+            }
+        </script>
+    </body>
+</html>
