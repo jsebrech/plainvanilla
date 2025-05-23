@@ -49,12 +49,12 @@
                 <dd>The viewport meta is necessary to have mobile-friendly layout.</dd>
                 <dt><code>&lt;head&gt;&lt;link rel="stylesheet" href="index.css"&gt;</code></dt>
                 <dd>By convention the stylesheet is loaded from <code>&lt;head&gt;</code> in a blocking way to ensure the page's markup does not have a flash of unstyled content.</dd>
+                <dt><code>&lt;head&gt;&lt;script type="module" src="index.js" defer&gt;</code></dt>
+                <dd>The main JavaScript file is in the <code>&lt;head&gt;</code>, and will bootstrap the web components as explained on the components page.</dd>
                 <dt><code>&lt;body&gt;&lt;noscript&gt;</code></dt>
                 <dd>Because web components don't work without JavaScript it is good practice to include a noscript warning to users that have JavaScript disabled. This warning only needs to be on pages with web components. If you don't want to show anything except the warning, see the template pattern below.</dd>
                 <dt><code>&lt;body&gt;&lt;header/main/footer&gt;</code></dt>
                 <dd>The page's markup should be organized using <a href="https://developer.mozilla.org/en-US/blog/aria-accessibility-html-landmark-roles/">HTML landmarks</a>. Landmarks when used properly help organize the page into logical blocks and make the page's structure accessible. Because they are standards-based, compatibility with present and future accessibility products is more likely.</dd>
-                <dt><code>&lt;body&gt;&lt;script type="module" src="index.js"&gt;</code></dt>
-                <dd>The main JavaScript file is at the end, and will bootstrap the web components as explained on the components page.</dd>
             </dl>
             <p>
                 Pages that should only show their contents if JavaScript is enabled can use this template pattern:
