@@ -8,10 +8,10 @@
     <link rel="icon" href="../favicon.ico">
     <link rel="apple-touch-icon" href="../apple-touch-icon.png">
     <link rel="stylesheet" href="../index.css">
+    <script type="module" src="../index.js" defer></script>
 </head>
 <body>
     <noscript><strong>Please enable JavaScript to view this page correctly.</strong></noscript>
-    <script type="module" src="../index.js"></script>
     <header>
         <h1>Plain Vanilla Sites</h1>
         <nav>
@@ -50,7 +50,7 @@
                 <dt><code>&lt;head&gt;&lt;link rel="stylesheet" href="index.css"&gt;</code></dt>
                 <dd>By convention the stylesheet is loaded from <code>&lt;head&gt;</code> in a blocking way to ensure the page's markup does not have a flash of unstyled content.</dd>
                 <dt><code>&lt;head&gt;&lt;script type="module" src="index.js" defer&gt;</code></dt>
-                <dd>The main JavaScript file is in the <code>&lt;head&gt;</code>, and will bootstrap the web components as explained on the components page.</dd>
+                <dd>The main JavaScript file is in the <code>&lt;head&gt;</code>, and will bootstrap the web components as explained on the components page. The use of <code>defer</code> allows it to download while the rest of the page is loading and get executed at the end.</dd>
                 <dt><code>&lt;body&gt;&lt;noscript&gt;</code></dt>
                 <dd>Because web components don't work without JavaScript it is good practice to include a noscript warning to users that have JavaScript disabled. This warning only needs to be on pages with web components. If you don't want to show anything except the warning, see the template pattern below.</dd>
                 <dt><code>&lt;body&gt;&lt;header/main/footer&gt;</code></dt>
@@ -96,8 +96,8 @@
                     <a href="https://developer.mozilla.org/en-US/docs/Learn/Forms/HTML5_input_types">rich input types</a>, 
                     <a href="https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation">client-side validation</a> and 
                     <a href="https://developer.mozilla.org/en-US/docs/Learn/Forms/UI_pseudo-classes">UI pseudo classes</a>.
-                    When a suitable form input type for a use case cannot be found, consider using <a href="https://web.dev/articles/more-capable-form-controls">form-associated custom elements</a> 
-                    but be aware of the <a href="https://caniuse.com/mdn-api_elementinternals">browser support for ElementInternals</a>.
+                    When a suitable form input type for a use case cannot be found, consider using <a href="https://web.dev/articles/more-capable-form-controls">form-associated custom elements</a>.
+                    To dive into this topic read the article on <a href="../blog/articles/2025-05-09-form-control/">making a new form control</a>.
                 </dd>
             </dl>
 
@@ -108,7 +108,7 @@
             </p>
             <ul>
                 <li>To keep it really simple, put a <code>favicon.ico</code> in the root path of the site and link to it from your HTML: <code>&lt;link rel="icon" href="favicon.ico"&gt;</code></li>
-                <li>Consider <a href="https://medium.com/swlh/are-you-using-svg-favicons-yet-a-guide-for-modern-browsers-836a6aace3df">SVG favicons</a>, but be aware that Safari does not support them. <a href="https://css-tricks.com/svg-favicons-in-action/">Embed dark mode</a> in the favicon SVG itself or use a generator like <a href="https://realfavicongenerator.net/">RealFaviconGenerator</a> for more convience.</li>
+                <li>Consider <a href="https://medium.com/swlh/are-you-using-svg-favicons-yet-a-guide-for-modern-browsers-836a6aace3df">SVG favicons</a>, but know that Safari does not support them. <a href="https://css-tricks.com/svg-favicons-in-action/">Embed dark mode</a> in the favicon SVG itself or use a generator like <a href="https://realfavicongenerator.net/">RealFaviconGenerator</a> for more convience.</li>
                 <li>Be aware that because favicons are not based on published web standards it is cumbersome to implement the <a href="https://dev.to/masakudamatsu/favicon-nightmare-how-to-maintain-sanity-3al7">de facto standard</a> fully.</li>
             </ul>
 
@@ -251,7 +251,7 @@
             <h3>Import Maps</h3>
             
             <p>
-                An alternative to the <code>imports.js</code> approach are <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script/type/importmap">import maps</a>.
+                An alternative to the <code>imports.js</code> approach are <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/importmap">import maps</a>.
                 These define a unique mapping between importable module name and corresponding library file in a special script tag in the HTML head.
                 This allows a more traditional module-based import syntax in the rest of the codebase.
             </p>
@@ -283,7 +283,7 @@
                 <li>
                     Import maps can be used to more easily load libraries from a <code>node_modules</code> folder or from a CDN.
                     <a href="https://generator.jspm.io">JSPM generator</a> can be used to quickly create an import map for CDN dependencies.
-                    Do remain aware however that adding such external dependencies makes your vanilla codebase rely on the continued availability of that service.
+                    Use this with caution, as adding such external dependencies makes a vanilla codebase rely on the continued availability of that service.
                 </li>
             </ul>
         </section>
@@ -295,7 +295,9 @@
                 <li>Everything on this site works in current versions of Safari, Chrome, Edge and Firefox.</li>
                 <li>
                     Everything on this site has 95% support or more on <a href="https://caniuse.com">caniuse.com</a>, 
-                    with the exception of <a href="https://caniuse.com/import-maps">Import Maps</a> (92%), <a href="https://caniuse.com/declarative-shadow-dom">Declarative Shadow DOM</a> (89%), and <a href="https://caniuse.com/css-nesting">CSS Nesting</a> (88%), and it won't be long before those catch up.
+                    with the exception of <a href="https://caniuse.com/import-maps">Import Maps</a> (93%), 
+                    <a href="https://caniuse.com/mdn-api_elementinternals">ElementInternals</a> (92%), 
+                    <a href="https://caniuse.com/declarative-shadow-dom">Declarative Shadow DOM</a> (91%), and <a href="https://caniuse.com/css-nesting">CSS Nesting</a> (88%), and it won't be long before those catch up.
                 </li>
                 <li>
                     That in turn means you can safely rely on <a href="https://caniuse.com/http2">HTTP/2</a>, <a href="https://caniuse.com/html5semantic">HTML5 semantic elements</a>, <a href="https://caniuse.com/custom-elementsv1">Custom Elements</a>, 
@@ -316,7 +318,7 @@
             <p>To keep up with new web standards, keep an eye on these projects:</p>
             <ul>
                 <li><a href="https://web.dev/baseline">Baseline</a> keeps track of which features are widely available in browsers and lets you know when they are safe to use.</li>
-                <li><a href="https://web.dev/blog/interop-2024">Interop</a> is a yearly initiative between browser makers to bring new web platform features to all browsers. Consider it a preview of what will become baseline.</li>
+                <li><a href="https://web.dev/blog/interop-2025">Interop</a> is a yearly initiative between browser makers to bring new web platform features to all browsers, or fix compatibility of existing ones. Consider it a preview of what will become baseline.</li>
             </ul>
         </section>
         <section id="deploying">
@@ -363,7 +365,7 @@
                 </x-tab>
             </x-tab-panel>
 
-            <p>Some working notes on this approach:</p>
+            <p>Some working notes for how this is set up:</p>
             <ul>
                 <li>
                     The entire code for the unit tests, including the testing libraries, is isolated to a <code>public/tests/</code> subfolder.

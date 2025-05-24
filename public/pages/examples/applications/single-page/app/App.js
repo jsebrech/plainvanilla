@@ -4,7 +4,7 @@ class App extends HTMLElement {
         <h1>Basic Example</h1>
 
         <p>
-            This example demonstrates how the features of React Router
+            This example demonstrates how the features of a framework router
             can be approximated using web components and a vanilla hash router.
         </p>
         <p>

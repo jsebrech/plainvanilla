@@ -3,7 +3,7 @@ body {
     margin: 1em;
 }
 
-button { font-family: inherit; font-size: 100%; }
+button { font-family: inherit; font-size: 100%; margin-left: 0.5em; }
 
 santas-form { display: block }
 santas-form * { vertical-align: middle; }

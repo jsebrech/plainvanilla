@@ -8,10 +8,10 @@
     <link rel="icon" href="../favicon.ico">
     <link rel="apple-touch-icon" href="../apple-touch-icon.png">
     <link rel="stylesheet" href="../index.css">
+    <script type="module" src="../index.js" defer></script>
 </head>
 <body>
     <noscript><strong>Please enable JavaScript to view this page correctly.</strong></noscript>
-    <script type="module" src="../index.js"></script>
     <header>
         <h1>Plain Vanilla Styling</h1>
         <nav>
@@ -30,7 +30,7 @@
             <h2>Modern CSS</h2>
             <p>
                 Modern web applications are built on top of rich tooling for dealing with CSS, relying on plenty of NPM packages and build steps.
-                A vanilla web application however has to choose a lighter weight path, abandoning the preprocessed modern CSS approaches 
+                A vanilla web application has to choose a lighter weight path, abandoning the preprocessed modern CSS approaches 
                 and choosing strategies that are browser native.
             </p>
         </section>
@@ -60,7 +60,7 @@
                 <dt><a href="https://tailwindcss.com/">Tailwind</a></dt>
                 <dd>
                     <p>If you're going to be using Tailwind anyway, you may as well lean on its CSS reset.</p>
-                    <p><a href="https://kopi.dev/tailwind-css-with-cdn-html/">Include it from CDN</a></p>
+                    <p><a href="https://tailwindcss.com/docs/installation/play-cdn">Include it from CDN</a></p>
                 </dd>
             </dl>
         </section>
@@ -89,7 +89,7 @@
                         The most basic structuring technique is separating CSS into multiple files. 
                         We could add all those files in order as <code>&lt;link&gt;</code> tags into the <code>index.html</code>
                         but this quickly becomes unworkable if we have multiple HTML pages.
-                        Instead it is better to import them into the <code>index.css</code>    
+                        Instead it is better to <code>@import</code> them into the <code>index.css</code> where they will still download in parallel.   
                     </p>
                     <p>For example, here's the main CSS file for this site:</p>
                     <x-code-viewer src="../index.css"></x-code-viewer>
@@ -148,7 +148,7 @@
             <h2>Scope</h2>
             <p>
                 In order to avoid conflicting styles between pages and components we want to scope styles locally by default.
-                There are two major mechanisms for achieving that in vanilla web development.
+                There are two main ways of achieving that in vanilla web development.
             </p>
 
             <h3>Prefixed selectors</h3>
@@ -216,8 +216,8 @@
             <a href="#replacing-css-modules" class="section-anchor">#</a>
             <h2>Replacing CSS modules</h2>
             <p>
-                The local scoping feature of CSS modules can be replaced by one of the scoping approaches describe above.
-                For example, let's take the canonical <a href="https://nextjs.org/docs/app/building-your-application/styling/css-modules#example">example of CSS modules</a> from the Next.JS documentation:
+                The local scoping feature of CSS modules can be replaced by one of the scoping mechanisms described above.
+                For instance, let's take the <a href="https://nextjs.org/docs/14/app/building-your-application/styling/css-modules">example of CSS modules</a> from the Next.JS 14 documentation:
             </p>
             <x-tab-panel>
                 <x-tab title="layout.tsx" active>
@@ -276,7 +276,7 @@
                 <dt>Nesting</dt>
                 <dd>CSS nesting is <a href="https://caniuse.com/css-nesting">newly available</a> across major browsers, which may be good enough depending on your browser support needs.</dd>
                 <dt>Modules</dt>
-                <dd>Can be approximated by a combination of <code>@import</code>, CSS variables, and the scoping approaches described above.</dd>
+                <dd>Can be approximated by a combination of <code>@import</code>, CSS variables, and the scoping mechanisms described above.</dd>
                 <dt>Mixins</dt>
                 <dd>Regrettably the <a href="https://github.com/w3c/csswg-drafts/issues/9350">CSS mixins</a> feature that will replace this is still in specification.</dd>
                 <dt>Operators</dt>

@@ -8,10 +8,10 @@
     <link rel="icon" href="../favicon.ico">
     <link rel="apple-touch-icon" href="../apple-touch-icon.png">
     <link rel="stylesheet" href="../index.css">
+    <script type="module" src="../index.js" defer></script>
 </head>
 <body>
     <noscript><strong>Please enable JavaScript to view this page correctly.</strong></noscript>
-    <script type="module" src="../index.js"></script>
     <header>
         <h1>Plain Vanilla Components</h1>
         <nav>
@@ -56,7 +56,7 @@
             <p>
                 Those 3 bullets tell you everything and nothing at the same time.
                 This probably isn't the first tutorial on Web Components you've seen, and you may find them a confusing topic.
-                However, it's not that complicated as long as you build them up step by step ...
+                However, they're not that complicated as long as you build them up step by step ...
             </p>
         </section>
         <section id="simple-component">
@@ -88,7 +88,7 @@
                 <dt><code>class HelloWorldComponent extends HTMLElement {</code></dt>
                 <dd>Every custom element is a class extending <code>HTMLElement</code>. 
                     In theory it's possible to extend other classes &ndash; like <code>HTMLButtonElement</code> to extend a <code>&lt;button&gt;</code> &ndash;
-                    but in practice this <a href="https://caniuse.com/mdn-api_customelementregistry_builtin_element_support">doesn't work yet in Safari</a>.</dd>
+                    but in practice this <a href="https://caniuse.com/mdn-api_customelementregistry_builtin_element_support">doesn't work in Safari</a>.</dd>
                 <dt><code>connectedCallback() {</code></dt>
                 <dd>
                     This method is called when our element is added to the DOM,
@@ -97,7 +97,7 @@
                 </dd>
                 <dt><code>this.textContent = 'hello world!';</code></dt>
                 <dd>The <code>this</code> in this case refers to our element, which has the full <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement">HTMLElement</a> API,
-                    including its ancestors <code>Element</code> and <code>Node</code>, on which we can find the <code>textContent</code> property,
+                    including its ancestors <code>Element</code> and <code>Node</code>, on which we can find the <code>textContent</code> property
                     which is used to add the <code>'hello world!'</code> string to the DOM.</dd>
                 <dt><code>customElements.define('x-hello-world', HelloWorldComponent);</code></dt>
                 <dd>For every web component <code>window.customElements.define</code> must be called once to register the custom element's class and associate it with a tag.
@@ -130,7 +130,7 @@
             </ul>
             <p>
                 To illustrate a way to do those things with custom elements, here's a custom element <code>&lt;x-avatar&gt;</code> that implements
-                a simplified version of the <a href="https://nextui.org/docs/components/avatar">NextUI Avatar component</a> (React):
+                a simplified version of the <a href="https://www.heroui.com/docs/components/avatar">HeroUI Avatar component</a> (React):
             </p>
 
             <iframe src="./examples/components/advanced/simple.html" title="avatar component example" height="70"></iframe>
@@ -194,15 +194,21 @@
             </x-tab-panel>
 
             <p>
-                The use of the CSS <code>@import</code> keyword may seem surprising as this keyword is often frowned upon for performance reasons,
-                but in modern browsers over HTTP/2 and in particular HTTP/3 the performance penalty of this approach is not that severe.
+                The <code>&lt;script&gt;</code> tag in this example has moved into the <code>&lt;head&gt;</code> and picked up a <code>defer</code> attribute.
+                This will allow it to download in parallel with the rest of the page, and have it execute right when the page is loaded.
             </p>
+            <p>
+                In <code>index.css</code> the use of the <code>@import</code> keyword may seem surprising as this keyword is often frowned upon for performance reasons.
+                However, in modern browsers over HTTP/2 and in particular HTTP/3 the performance penalty of this keyword is not that severe,
+                especially because files included with <code>@import</code> now download in parallel.
+            </p>
+            
             <aside>
                 <h3>Don't we need a bundler?</h3>
                 <p>
                     If you've paid close attention, you have seen that we're using the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules">ES module syntax</a> for <code>import</code> and <code>export</code> in our code,
-                    but we haven't set up any JavaScript bundler to transpile that syntax. The magic that makes this work is in the <code>index.html</code>,
-                    where the <code>&lt;script type="module" src="index.js" defer&gt;</code> tag's type attribute enables ES module mode for all the included JavaScript.
+                    but we haven't set up any JavaScript bundler to transpile that syntax. The magic that makes this work is in <code>index.html</code>,
+                    where the <code>&lt;script&gt;</code> tag's <code>type="module"</code> attribute enables ES module mode for all the included JavaScript.
                     This is supported by all modern browsers.
                 </p>
             </aside>
@@ -298,13 +304,13 @@
             <p>This is the code for the newly added <code>&lt;x-header&gt;</code> component:</p>
             <x-code-viewer src="./examples/components/shadow-dom/components/header.js" name="components/header.js"></x-code-viewer>
 
-            <p>There is a lot happening in <code>header.js</code>, so let's unpack.</p>
+            <p>There's a <em>lot</em> happening in <code>header.js</code>, so let's unpack.</p>
             <dl>
                 <dt><code>const template = document.createElement('template');</code></dt>
                 <dd>
                     The header code starts out by creating an <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_templates_and_slots">HTML template</a>.
                     Templates are fragments of HTML that can be easily cloned and appended to a DOM.
-                    For complex web components that have a lot of markup, the use of a template is often more convenient.
+                    For complex web components that have a lot of markup, the use of a template is often convenient.
                     By instantiating the template outside the class, it can be reused across all instances of the <code>&lt;x-header&gt;</code> component.
                 </dd>
                 <dt><code>&lt;link rel="stylesheet" href="${import.meta.resolve('./header.css')}"&gt;</code></dt>
@@ -342,7 +348,7 @@
                     </p>
                     <p>
                         <code>if (!this.shadowRoot) {</code> is not strictly necessary, but allows for server-side generated HTML,
-                        by making use of <a href="https://developer.chrome.com/docs/css-ui/declarative-shadow-dom">declarative shadow DOM</a>.
+                        by making use of <a href="https://web.dev/articles/declarative-shadow-dom">declarative shadow DOM</a>.
                     </p>
                 </dd>
                 <dt><code>this.shadowRoot.append(template.content.cloneNode(true));</code></dt>
@@ -421,7 +427,7 @@
             <h2>Passing Data</h2>
             <p>
                 Everything up to this point assumes that data passed between web components is very simple, just simple numeric and string attributes passing down.
-                A real world web application however passes complex data such as objects and arrays from parent to child components and vice versa.
+                A real world web application however passes complex data such as objects and arrays between parent and child components.
             </p>
             <p>
                 This example demonstrates the three major ways that data can be passed between web components:
@@ -439,11 +445,27 @@
             <x-code-viewer src="./examples/components/data/components/app.js" name="components/app.js"></x-code-viewer>
             <p>The <code>update()</code> method sends the updated list back down to the <code>&lt;santas-list&gt;</code> and <code>&lt;santas-summary&gt;</code> components, using the next two methods.</p>
 
+            <aside>
+                <h3>Memory leak?</h3>
+                <p>
+                    You may be wondering if real world code would need a <code>removeEventListener()</code> to prevent memory leaks.
+                    In most cases the answer is a surprising <em>no</em>, because DOM event listeners are weakly bound and do not prevent
+                    garbage collection of the thing they are listening to. If it soothes your mind, you're still free to add those remove calls anyway.
+                </p>
+            </aside>
+
             <h3>Properties</h3>
             <p>The second way to pass complex data is by using class properties, as exemplified by the <code>&lt;santas-list&gt;</code> component:</p>
             <x-code-viewer src="./examples/components/data/components/list.js" name="components/list.js"></x-code-viewer>
             <p>The <code>list</code> setter calls the <code>update()</code> method to rerender the list.</p>
             <p>This is the recommended way to pass complex data to stateful web components.</p>
+
+            <p>
+                The best practice way of implementing attributes, properties and events is subtle and opinionated.
+                The article <a href="../blog/articles/2025-04-21-attribute-property-duality/">The Attribute-Property Duality</a> dives into this topic in depth,
+                and is recommended reading when making web components that will be embedded in third-party sites or are otherwise expected to behave
+                like built-in elements.
+            </p>
 
             <aside>
                 <h3>Beware of XSS</h3>
@@ -453,12 +475,6 @@
                     To see how this can be done, check out the <a href="applications.html#entity-encoding">entity encoding</a> chapter on the Applications page.
                 </p>
             </aside>
-
-            <p>
-                The best practice way of implementing attributes, properties and events is subtle and opinionated.
-                The article <a href="https://blog.ltgt.net/web-component-properties/">making web components behave closer to the platform</a> explains how custom elements can be made to behave like built-in elements,
-                and is recommended reading when making web components that will be embedded in third-party sites.
-            </p>
 
             <h3>Methods</h3>
             <p>The third way to pass complex data is by calling a method on the web component, as exemplified by the <code>&lt;santas-summary&gt;</code> component:</p>

@@ -33,7 +33,7 @@
 
             <p>The suggested project layout for single-page applications is the same as for multi-page sites, except:</p>
             <dl>
-                <dt>/public/pages</dt>
+                <dt><del>/public/pages</del></dt>
                 <dd>As there is only <code>index.html</code> there is no need for the pages folder.</dd>
                 <dt>/public/app</dt>
                 <dd>All of the views and routes for the application are in this folder, each implemented as a web component, and registered in <code>index.js</code>.</dd>
@@ -45,7 +45,7 @@
             <a href="#routing" class="section-anchor">#</a>
             <h2>Routing</h2>
 
-            <p>Without the assistance of a server to do routing, the only option is hash-based routing:</p>
+            <p>Without the assistance of a server to do routing, the easiest option is hash-based routing:</p>
             <ul>
                 <li>The current route is in <code>window.location.hash</code>, e.g. <code>#/about</code>.</li>
                 <li>The route's changes are detected by listening to the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/hashchange_event">Window hashchange event</a>.</li>
@@ -314,11 +314,11 @@
             <aside>
                 <h4>Challenge</h4>
                 <p>
-                    This approach can be further extended to implement the reactive concept of reducers, by adding them as a method on a context component
+                    This technique can be further extended to implement the reactive concept of reducers, by adding them as a method on a context component
                     and updating the state through the setters, dispatching the necessary events to update the component hierarchy.
                 </p>
                 <p>
-                    To prove your mastery of vanilla web development use the techniques you've learned to port example 5 ("Scaling up with context and a reducer") from React's <a href="https://react.dev/reference/react/useContext">useContext</a> documentation page to vanilla code.
+                    To prove your mastery of vanilla web development use the techniques you've learned to port the React documentation's example <a href="https://react.dev/learn/scaling-up-with-reducer-and-context">Scaling Up with Reducer and Context</a> to vanilla code.
                 </p>
             </aside>
         </section>
