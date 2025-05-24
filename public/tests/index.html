@@ -8,24 +8,24 @@
     <!-- https://unpkg.com/mocha@9.2.2/mocha.css -->
     <link rel="stylesheet" href="./lib/mocha/mocha.css" />
     <!-- https://unpkg.com/chai@4.3.6/chai.js -->
-    <script src="./lib/mocha/chai.js"></script>
+    <script src="./lib/mocha/chai.js" defer></script>
     <!-- https://unpkg.com/mocha@9.2.2/mocha.js -->
-    <script src="./lib/mocha/mocha.js"></script>
+    <script src="./lib/mocha/mocha.js" defer></script>
     <!-- https://unpkg.com/@testing-library/dom@8.17.1/dist/@testing-library/dom.umd.js -->
-    <script src="./lib/@testing-library/dom.umd.js"></script>
-</head>
-<body>
-    <div id="mocha"></div>
-
-    <script type="module" class="mocha-init">
+    <script src="./lib/@testing-library/dom.umd.js" defer></script>
+    
+    <script type="module" class="mocha-init" defer>
         mocha.setup('bdd');
         mocha.checkLeaks();
     </script>
-
-    <script type="module" src="./tabpanel.test.js"></script>
+    
+    <script type="module" src="./tabpanel.test.js" defer></script>
     
     <!-- include more tests here -->
-
-    <script type="module" class="mocha-exec" src="./index.js"></script>
+    
+    <script type="module" class="mocha-exec" src="./index.js" defer></script>
+</head>
+<body>
+    <div id="mocha"></div>
 </body>
 </html>

@@ -5,9 +5,9 @@
         body { font-family: system-ui, sans-serif; }
         x-counter { color: red; }
     </style>
+    <script type="module" src="index.js" defer></script>
 </head>
 <body>
-    <script type="module" src="index.js"></script>
     <p>Let's count to <x-counter></x-counter>.</p>
     <button onclick="document.querySelector('x-counter').increment()">
         Increment

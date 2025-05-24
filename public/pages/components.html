@@ -202,7 +202,7 @@
                 <p>
                     If you've paid close attention, you have seen that we're using the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules">ES module syntax</a> for <code>import</code> and <code>export</code> in our code,
                     but we haven't set up any JavaScript bundler to transpile that syntax. The magic that makes this work is in the <code>index.html</code>,
-                    where the <code>&lt;script type="module" src="index.js"&gt;</code> tag's type attribute enables ES module mode for all the included JavaScript.
+                    where the <code>&lt;script type="module" src="index.js" defer&gt;</code> tag's type attribute enables ES module mode for all the included JavaScript.
                     This is supported by all modern browsers.
                 </p>
             </aside>
