@@ -1,4 +1,4 @@
-@import url("../../lib/speed-highlight/themes/github-dark.css");
+@import "../../lib/speed-highlight/themes/github-dark.css";
 
 x-code-viewer {
     display: block;
@@ -43,7 +43,12 @@ x-code-viewer.loading code::after {
     border-top: 4px solid ghostwhite;
     border-left: 4px solid ghostwhite;
     border-right: 4px solid ghostwhite;
-    animation: code-viewer-spinner .6s linear infinite;
+    -webkit-animation: code-viewer-spinner .6s linear infinite;
+            animation: code-viewer-spinner .6s linear infinite;
+}
+
+@-webkit-keyframes code-viewer-spinner {
+    to {transform: rotate(360deg);}
 }
 
 @keyframes code-viewer-spinner {

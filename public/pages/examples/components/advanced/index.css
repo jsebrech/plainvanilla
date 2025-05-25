@@ -1,2 +1,2 @@
-@import url("./components/avatar.css");
+@import "./components/avatar.css";
 body { font-family: monospace; }

@@ -1,4 +1,4 @@
-@import url("../index.css");
+@import "../index.css";
 
 .cards { 
     padding: 0;
@@ -25,7 +25,8 @@
 .card img {
     width: 100%;
     height: 120px;
-    object-fit: cover;
+    -o-object-fit: cover;
+       object-fit: cover;
     margin-bottom: 0.5em;
 }
 

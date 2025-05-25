@@ -1,5 +1,5 @@
-@import url("./styles/reset.css");
-@import url("./styles/variables.css");
-@import url("./styles/global.css");
-@import url("./components/code-viewer/code-viewer.css");
-@import url("./components/tab-panel/tab-panel.css");
+@import "./styles/reset.css";
+@import "./styles/variables.css";
+@import "./styles/global.css";
+@import "./components/code-viewer/code-viewer.css";
+@import "./components/tab-panel/tab-panel.css";
