@@ -43,12 +43,7 @@ x-code-viewer.loading code::after {
     border-top: 4px solid ghostwhite;
     border-left: 4px solid ghostwhite;
     border-right: 4px solid ghostwhite;
-    -webkit-animation: code-viewer-spinner .6s linear infinite;
-            animation: code-viewer-spinner .6s linear infinite;
-}
-
-@-webkit-keyframes code-viewer-spinner {
-    to {transform: rotate(360deg);}
+    animation: code-viewer-spinner .6s linear infinite;
 }
 
 @keyframes code-viewer-spinner {
