@@ -1,4 +1,4 @@
-@import url("../../lib/speed-highlight/themes/github-dark.css");
+@import "../../lib/speed-highlight/themes/github-dark.css";
 
 x-code-viewer {
     display: block;

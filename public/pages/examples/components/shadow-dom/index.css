@@ -1,6 +1,6 @@
-@import url("./reset.css");
-@import url("./components/avatar.css");
-@import url("./components/badge.css");
+@import "./reset.css";
+@import "./components/avatar.css";
+@import "./components/badge.css";
 
 body { 
     font-family: system-ui, sans-serif;
