@@ -14,7 +14,7 @@ class BlogHeader extends HTMLElement {
                 <ol>
                     <li><a href="${import.meta.resolve('../../index.html')}">Plain Vanilla</a></li>
                     <li><a href="${import.meta.resolve('../index.html')}">Blog</a></li>
-                    <li><a aria-current="page">
+                    <li><a href="#" aria-current="page">
                         <time datetime="${published}">
                             ${new Date(published).toLocaleDateString('en-US', { dateStyle: 'long' })}
                         </time>

@@ -17,6 +17,7 @@ a, a:hover {
 
 header {
     margin-bottom: 1.5em;
+    text-align: center;
 }
 
 h1, h2, h3, h4, p {
@@ -41,7 +42,7 @@ ul ul {
 }
 
 dl {
-    padding-left: 1.5em;
+    padding-left: 0;
 }
 
 dt {
@@ -53,10 +54,27 @@ dd {
     margin-bottom: 1em;
 }
 
+dt .icon {
+    position: relative;
+    left: -0.5em;
+    display: inline-block;
+    width: 1em;
+    font-size: 1.5rem;
+    vertical-align: middle;
+}
+
+@media screen and (max-width: 500px) {
+    dt .icon {
+        left: 0;
+        font-size: 1rem;
+        width: 1.5em;
+    }
+}
+
 nav ol {
     display: flex;
     flex-wrap: wrap;
-    justify-content: start;
+    justify-content: center;
     align-items: center;
     margin: 1em 0;
     padding: 0;
@@ -72,8 +90,16 @@ nav li {
     border-bottom: 2px solid var(--background-color);
 }
 
+nav li:hover, nav li:has(a[aria-current]) {
+    filter: brightness(1.03);
+}
+
 nav li a {
     color: inherit;
+}
+
+nav li a[aria-current] {
+    text-decoration: none;
 }
 
 code {

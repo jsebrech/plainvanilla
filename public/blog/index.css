@@ -103,6 +103,7 @@
 blog-header {
     display: block;
     margin-bottom: 1.5em;
+    text-align: center;
 }
 
 blog-header nav {
