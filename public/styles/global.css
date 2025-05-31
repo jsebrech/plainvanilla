@@ -54,23 +54,6 @@ dd {
     margin-bottom: 1em;
 }
 
-dt .icon {
-    position: relative;
-    left: -0.5em;
-    display: inline-block;
-    width: 1em;
-    font-size: 1.5rem;
-    vertical-align: middle;
-}
-
-@media screen and (max-width: 500px) {
-    dt .icon {
-        left: 0;
-        font-size: 1rem;
-        width: 1.5em;
-    }
-}
-
 nav ol {
     display: flex;
     flex-wrap: wrap;
