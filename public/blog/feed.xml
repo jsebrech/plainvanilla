@@ -6,10 +6,385 @@
     <logo>https://plainvanillaweb.com/android-chrome-512x512.png</logo>
     <link rel="alternate" href="https://plainvanillaweb.com/blog/"/>
     <link rel="self" href="https://plainvanillaweb.com/blog/feed.xml"/>
-    <updated>2025-05-09T12:00:00.000Z</updated>
+    <updated>2025-06-12T12:00:00.000Z</updated>
     <author>
         <name>Joeri Sebrechts</name>
     </author>
+    <entry>
+        <title><![CDATA[Bringing React's <ViewTransition> to vanilla JS]]></title>
+        <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2025-06-12-view-transitions/"/>
+        <id>https://plainvanillaweb.com/blog/articles/2025-06-12-view-transitions/</id>
+        <published>2025-06-12T12:00:00.000Z</published>
+        <updated>2025-06-12T12:00:00.000Z</updated>
+        <summary><![CDATA[Bringing React's declarative view transitions API to vanilla as a custom element.]]></summary>
+        <media:content url="https://plainvanillaweb.com/blog/articles/2025-06-12-view-transitions/image.webp" type="image/webp" medium="image" />
+        <author><name><![CDATA[Joeri Sebrechts]]></name></author>
+        <content type="html"><![CDATA[
+        <p>
+            I like React. I really do. It is the default answer for modern web development, and it is that answer for a reason.
+            Generally when React adds a feature it is well thought through, within the React system of thinking.
+            My one criticism is that React by its nature overthinks things, that dumber and simpler solutions would often be 
+            on the whole ... better. Less magic, more predictable.
+        </p>
+        <p>
+            So when I port framework features to vanilla JS, don't take this as a slight of that framework.
+            It is meant as an exploration of what dumber and simpler solutions might look like, when built  
+            on the ground floor of the web's platform instead of the lofty altitudes of big frameworks. 
+            It is a great way to learn.
+        </p>
+        <p>
+            Which brings me of course to today's topic: view transitions, and how to implement them.
+        </p>
+
+        <h3>View Transitions 101</h3>
+
+        <p>
+            Let's start with the basics: what is a view transition?
+        </p>
+
+        <p><a href="https://plainvanillaweb.com/blog/articles/2025-06-12-view-transitions/example1/index.html">example 1</a></p>
+
+        <p>
+            In a supporting browser, what you'll see when you click is a square smoothly transitioning
+            between blue and orange on every button click. By supported browser I mean Chrome, Edge or Safari,
+            but sadly not yet Firefox, although <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1823896">they're working on it</a>!
+            In Firefox you'll see the change, but applied immediately without the animation.
+        </p>
+        <p>
+            At the code level, it looks something like this:
+        </p>
+
+        <div><p><em>example.js:</em></p><pre><code>function transition() {
+    const square1 = document.getElementById('square1');
+    if (document.startViewTransition) {
+        document.startViewTransition(() =&gt; {
+            square1.classList.toggle('toggled');
+        });
+    } else {
+        square1.classList.toggle('toggled');
+    }
+}
+</code></pre></div>
+        <div><p><em>transitions.css:</em></p><pre><code>#square1 {
+    background-color: orange;
+}
+#square1.toggled {
+    background-color: blue;
+}</code></pre></div>
+
+        <p>
+            How this works is that the browser takes a snapshot of the page when we call <code>document.startViewTransition()</code>,
+            takes another snapshot after the callback passed to it is done (or the promise it returns fulfills),
+            and then figures out how to smoothly animate between the two snapshots, using a fade by default.
+        </p>
+        <p>
+            A very nice thing is that by putting a <code>view-transition-name</code> style on an element we can 
+            make it transition independently from the rest of the page, and we can control that transition through CSS.
+        </p>
+        <div><p><em>example.js:</em></p><pre><code>function transition() {
+    const square1 = document.getElementById('square1');
+    const square2 = document.getElementById('square2');
+    if (document.startViewTransition) {
+        document.startViewTransition(() =&gt; {
+            square1.classList.toggle('toggled');
+            square2.classList.toggle('toggled');
+        });
+    } else {
+        square1.classList.toggle('toggled');
+        square2.classList.toggle('toggled');
+    }
+}
+</code></pre></div>
+        <div><p><em>transitions.css:</em></p><pre><code>#square2 {
+    background-color: green;
+    view-transition-name: slide;
+    display: none;
+}
+#square2.toggled {
+    display: inline-block;
+}
+::view-transition-new(slide):only-child {
+    animation: 400ms ease-in both slide-in;
+}
+@keyframes slide-in {
+    from { transform: translateY(-200px); }
+    to { transform: translateY(0); }
+}</code></pre></div>
+        <p>
+            Now we can see a second square sliding in on the first click, and fading out on the second.
+        </p>
+        <p><a href="https://plainvanillaweb.com/blog/articles/2025-06-12-view-transitions/example2/index.html">example 2</a></p>
+
+        <p>
+            That's enough view transition basics for now. If you're curious for more, 
+            you can learn the rest in the <a href="https://developer.chrome.com/docs/web-platform/view-transitions">chrome developer documentation</a>.
+        </p>
+
+        <h3>Here comes trouble</h3>
+
+        <p>
+            Up to this point, we've gotten the fair weather version of view transitions, but there are paper cuts.
+        </p>
+        <ul>
+            <li>Firefox doesn't support view transitions at all, so we have to feature-detect.</li>
+            <li>There is only one actual current View Transitions standard, level 1, but most of the online tutorials talk about the unfinalized level 2.</li> 
+            <li>If there are duplicate values of <code>view-transition-name</code> anywhere on the page, the animations disappear in a puff of duplicate element error smoke.</li>
+            <li>As always, there's a thing about shadow DOM, but more on that later.</li>
+            <li>Starting a new view transition when one is already running skips to the end of the previous one, bringing the smooth user experience to a jarring end.</li>
+            <li>User input is blocked while the view is transitioning, causing frustration when clicks are ignored.</li>
+            <li>The <code>document.startViewTransition()</code> function only accepts a single callback that returns a single promise.</li>
+        </ul>
+        <p>
+            It is the last one that really spells trouble. In a larger single-page web application we'll typically
+            find a central routing layer that triggers a number of asynchronous updates every time the route changes.
+            Wrapping those asynchronous updates into a single promise can be a challenge,
+            as is finding the right place to "slot in" a call to <code>document.startViewTransition()</code>.
+        </p>
+        <p>
+            Also, we probably don't even <em>want</em> to wait for all of the asynchronous updates to complete.
+            Leaving the application in an interactive state in between two smaller view transitions is better
+            than bundling it all together into one ponderous picture perfect transition animation.
+        </p>
+
+        <h3>What React did</h3>
+
+        <p>
+            React being React they solve those problems through magic, through exceeding cleverness.
+            You can read up on <a href="https://react.dev/blog/2025/04/23/react-labs-view-transitions-activity-and-more#view-transitions">their approach to view transitions</a>, 
+            but distilling it down it becomes this:
+        </p>
+        <ul>
+            <li>Anything that should take part separately in a view transition is wrapped in a <code>&lt;ViewTransition&gt;</code> component.</li>
+            <li>React will choose unique <code>view-transition-name</code> style values, which DOM elements to set them on, and when to set them.
+                This can be controlled through the <code>&lt;ViewTransition&gt;</code> <code>name</code> and <code>key</code> props.</li>
+            <li>Any updates that should become part of a view transition are wrapped in a <code>startTransition()</code> call.</li>
+            <li>React automatically figures out when to call <code>document.startViewTransition()</code>, and what updates to put inside the callback.
+                It also cleverly avoids starting new transitions when one is already running, so <code>startTransition()</code> can be called from multiple places safely.
+                Oh, and by the way, it feature detects, obviously.
+            </li>
+        </ul>
+        <p>
+            When you do all of that, you get <a href="https://codesandbox.io/p/sandbox/njn4yc">magic</a>.
+        </p>
+        <img src="https://plainvanillaweb.com/blog/articles/2025-06-12-view-transitions/react-demo.gif" alt="A React view transition demo" loading="lazy" width="240">
+        <p>
+            Good luck figuring out <a href="https://react.dev/reference/react/ViewTransition#how-does-viewtransition-work">how it works</a>, 
+            or how to troubleshoot when the magic loses its shine.
+            But that is the bar, that is the lofty goal of user experience to reach with a dumber and simpler reimagining as vanilla JS.
+            So let's get cooking.
+        </p>
+
+        <h3>A fresh start</h3>
+
+        <p>
+            Our starting point is a barebones implementation of a <code>startTransition()</code>
+            function to replace what React's <code>startTransition()</code> does.
+            It will fall back to non-animated transitions if our browser doesn't support <code>document.startViewTransition</code>.
+        </p>
+
+        <div><pre><code>export const startTransition = (updateCallback) =&gt; {
+    if (document.startViewTransition) {
+        document.startViewTransition(updateCallback);
+    } else {
+        const done = Promise.try(updateCallback);
+        return {
+            updateCallbackDone: done,
+            ready: done,
+            finished: done,
+            skipTransition: () =&gt; {}
+        };
+    }
+}
+</code></pre></div>
+        <div><p><em>example.js:</em></p><pre><code>import { startTransition } from './view-transition.js';
+
+export function transition() {
+    startTransition(() =&gt; {
+        document.getElementById('square1').classList.toggle('toggled');
+        document.getElementById('square2').classList.toggle('toggled');
+    });
+}
+</code></pre></div>
+
+        <p><a href="https://plainvanillaweb.com/blog/articles/2025-06-12-view-transitions/example3/index.html">example 3</a></p>
+
+        <p>
+            While that takes care of feature-detecting, we can still run into timing issues.
+            For example, let's say that instead of toggling we were switching routes,
+            and the second route needs to load data prior to animating in.
+        </p>
+        <p>
+            So with HTML like this:
+        </p>
+
+        <pre><code>
+    &lt;p&gt;&lt;button&gt;Navigate&lt;/button&gt;&lt;/p&gt;
+    &lt;div id="route1" class="route"&gt;&lt;/div&gt;
+    &lt;div id="route2" class="route"&gt;&lt;/div&gt;
+        </code></pre>
+
+        <p>
+            We might intuitively choose to do something like this:
+        </p>
+
+        <div><p><em>example.js:</em></p><pre><code>import { startTransition } from './view-transition.js';
+
+let currentRoute = '';
+
+export function navigate() {
+    currentRoute = currentRoute === 'route2' ? 'route1' : 'route2';
+    updateRoute1();
+    updateRoute2();
+}
+
+function updateRoute1() {
+    startTransition(() =&gt; {
+        if (currentRoute === 'route1') {
+            document.getElementById('route1').classList.add('active');
+        } else {
+            document.getElementById('route1').classList.remove('active');
+        }
+    });
+}
+
+function updateRoute2() {
+    startTransition(() =&gt; {
+        const route2 = document.getElementById('route2');
+        if (currentRoute === 'route2') {
+            route2.classList.add('active', 'loading');
+            route2.textContent = '...';
+            load().then((data) =&gt; startTransition(() =&gt; {
+                route2.textContent = data;
+                route2.classList.remove('loading');
+            }));
+        } else {
+            document.getElementById('route2').classList.remove('active');
+        }
+    });
+}
+
+function load() {
+    return new Promise((resolve) =&gt; {
+        setTimeout(() =&gt; {
+            resolve('Hi!');
+        }, 250);
+    });
+}
+</code></pre></div>
+        <p><a href="https://plainvanillaweb.com/blog/articles/2025-06-12-view-transitions/example4/index.html">example 4</a></p>
+
+        <p>
+            But, as you see when trying it out, it doesn't work. Because the <code>startTransition()</code>
+            calls end up overlapping each other, the animation is interrupted, and we get a jarring experience.
+            While this toy example can be made to work by tuning delays, in the real world those same delays are network-based, so there's no timing-based solution.
+            We also can't solve this by bundling everything into one single big view transition, because that would imply
+            blocking user input while a network request completes, which would be a bad user experience.
+        </p>
+        <p>
+            React solves all of this in the typical React way. It will smartly choose how to batch work
+            into successive calls to <code>document.startViewTransition()</code>. It will take into account where something loads lazily,
+            as in the previous example, and batch the work of animating in the content for the fallback in a separate view transition.
+        </p>
+        
+        <h3>Taking a queue</h3>
+
+        <p>
+            Distilling that approach to its essence, the really useful part of React's solution is the queueing and batching of work. 
+            Any call to <code>startTransition()</code> that occurs while a view transition is running should be queued until after the transition completes,
+            and nested calls should have all their updates batched together.
+        </p>
+
+        <div><p><em>view-transition.js:</em></p><pre><code>// the currently animating view transition
+let currentTransition = null;
+// the next transition to run (after currentTransition completes)
+let nextTransition = null;
+
+/** start a view transition or queue it for later if one is already animating */
+export const startTransition = (updateCallback) =&gt; {
+    if (!updateCallback) updateCallback = () =&gt; {};
+    // a transition is active
+    if (currentTransition &amp;&amp; !currentTransition.isFinished) {
+        // it is running callbacks, but not yet animating
+        if (!currentTransition.isReady) {
+            currentTransition.addCallback(updateCallback);
+            return currentTransition;
+        // it is already animating, queue callback in the next transition
+        } else {
+            if (!nextTransition) {
+                nextTransition = new QueueingViewTransition();
+            }
+            return nextTransition.addCallback(updateCallback);
+        }
+    // if no transition is active, start animating the new transition
+    } else {
+        currentTransition = new QueueingViewTransition();
+        currentTransition.addCallback(updateCallback);
+        currentTransition.run();
+        // after it's done, execute any queued transition
+        const doNext = () =&gt; {
+            if (nextTransition) {
+                currentTransition = nextTransition;
+                nextTransition = null;
+                currentTransition.run();
+                currentTransition.finished.finally(doNext);
+            } else {
+                currentTransition = null;
+            }
+        }
+        currentTransition.finished.finally(doNext);
+        return currentTransition;
+    }
+}
+
+// ...</code></pre></div>
+
+        <p>
+            The <code>QueueingViewTransition</code> implementation is a straightforward batching of callbacks,
+            and a single call to <code>document.startViewTransition()</code> that executes them in order.
+            It is not included in the text of this article for brevity's sake, but linked at the bottom instead.
+        </p>
+        <p>
+            Applying that queueing solution on top of the previous example's unchanged code, 
+            we suddenly see the magic of clean view transitions between dynamically loading routes.
+        </p>
+
+        <p><a href="https://plainvanillaweb.com/blog/articles/2025-06-12-view-transitions/example5/index.html">example 5</a></p>
+
+        <h3>Back to the top</h3>
+
+        <p>
+             So as I was saying at the top, I like porting framework features to vanilla JS as a way of learning and exploring dumber and simpler solutions.
+             Which brings me to the playground for that learning, a full port of React's tour-de-force <code>&lt;ViewTransition&gt;</code> example to vanilla web code.
+        </p>
+
+        <p><a href="https://plainvanillaweb.com/blog/articles/2025-06-12-view-transitions/example6/index.html">example 6</a></p>
+
+        <p>
+            The full code of this example is <a href="https://github.com/jsebrech/view-transition-element">on GitHub</a>.
+            Arguably the 300 lines of code in the <code>lib/</code> folder of that example constitute a mini-framework,
+            but fascinating to me is that you can get so much mileage out of such a small amount of library code,
+            with the resulting single-page application being more or less the same number of lines as the React original.
+        </p>
+        <p>
+            That example also shows how to do a purely client-side router with clean URLs using <code>pushState()</code>.
+            This blog post has however gone too long already, so I'll leave that for another time.
+        </p>
+
+        <h3>One more thing</h3>
+
+        <p>
+            Oh yeah, I promised to talk about the thing with shadow DOM.
+            Here is the thing: when <code>document.startViewTransition()</code> is called from the light DOM,
+            it cannot see elements inside the shadow DOM that need to transition independently, 
+            unless those elements are exposed as DOM parts and a <code>view-transition-name</code> style is set on them in the light DOM.
+        </p>
+        <p>
+            If the solution to that intrigues you, it's in the GitHub example repo as well.
+            If that sounds like a bunch of mumbo jumbo instead, join the club.
+            Just one more reason to avoid shadow DOM.
+        </p>
+    ]]></content>
+    </entry>
     <entry>
         <title><![CDATA[Making a new form control]]></title>
         <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2025-05-09-form-control/"/>
@@ -767,7 +1142,7 @@ console.log(myHello.getAttribute('value')); // -&gt; "world"
             especially when making web components that may be used by others. YMMV.
         </p>
         <p>
-            In the next article, I'll be looking into custom elements that accept input, and how that adds twists to the plot.
+            In <a href="../2025-05-09-form-control/">the next article</a>, I'll be looking into custom elements that accept input, and how that adds twists to the plot.
         </p>
 
     ]]></content>

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Example 1</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <style>
+        @import "../../../../styles/reset.css";
+        ::view-transition-old(root),
+        ::view-transition-new(root) {
+            animation-duration: 0.5s;
+        }
+        body {
+            margin: 1em;
+        }
+        button {
+            -webkit-user-select: none;
+            user-select: none;
+            margin-bottom: 1em;
+        }
+        .square {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+    <link rel="stylesheet" href="transitions.css">
+</head>
+<body>
+    <button onclick="transition()">Transition</button>
+    <div id="square1" class="square"></div>
+    <script src="index.js"></script>
+</body>
+</html>

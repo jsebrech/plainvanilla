@@ -1,0 +1,6 @@
+#square1 {
+    background-color: orange;
+}
+#square1.toggled {
+    background-color: blue;
+}

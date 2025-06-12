@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Example 3</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <style>
+        @import "../../../../styles/reset.css";
+        ::view-transition-old(root),
+        ::view-transition-new(root) {
+            animation-duration: 0.5s;
+        }
+        body {
+            margin: 1em;
+        }
+        div {
+            display: inline-block;
+        }
+        view-transition {
+            display: inline-block !important;
+        }
+        button {
+            -webkit-user-select: none;
+            user-select: none;
+            margin-bottom: 1em;
+        }
+        .square {
+            width: 100px;
+            height: 100px;
+        }
+        #square1 {
+            background-color: orange;
+        }
+        #square1.toggled {
+            background-color: blue;
+        }
+    </style>
+    <link rel="stylesheet" href="transitions.css">
+    <script type="module" src="index.js" defer></script>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="module">
+        import { transition } from './index.js';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const root = document.getElementById('root');
+            root.innerHTML = `
+                <p><button>Transition</button></p>
+                <div id="square1" class="square"></div>
+                <div id="square2" class="square"></div>
+            `;
+            root.querySelector('button').onclick = transition;
+        });
+    </script>
+</body>
+</html>

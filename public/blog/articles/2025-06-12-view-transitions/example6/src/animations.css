@@ -1,0 +1,95 @@
+/* Slide animations for details content */
+::view-transition-old(details-fallback):only-child {
+    animation: 150ms ease-out both fade-out, 150ms ease-out both slide-down;
+}
+
+::view-transition-new(details-content):only-child,
+::view-transition-new(details-fallback):only-child {
+    animation: 210ms ease-in 150ms both fade-in, 400ms ease-in both slide-up;
+}
+
+/* Animations for view transition classed added by transition type */
+::view-transition-old(nav-forward) {
+    /* when sliding forward, the "old" page should slide out to left. */
+    animation: 150ms cubic-bezier(0.4, 0, 1, 1) both fade-out,
+    400ms cubic-bezier(0.4, 0, 0.2, 1) both slide-to-left;
+}
+
+::view-transition-new(nav-forward) {
+    /* when sliding forward, the "new" page should slide in from right. */
+    animation: 210ms cubic-bezier(0, 0, 0.2, 1) 150ms both fade-in,
+    400ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
+}
+
+::view-transition-old(nav-back) {
+    /* when sliding back, the "old" page should slide out to right. */
+    animation: 150ms cubic-bezier(0.4, 0, 1, 1) both fade-out,
+    400ms cubic-bezier(0.4, 0, 0.2, 1) both slide-to-right;
+}
+
+::view-transition-new(nav-back) {
+    /* when sliding back, the "new" page should slide in from left. */
+    animation: 210ms cubic-bezier(0, 0, 0.2, 1) 150ms both fade-in,
+    400ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-left;
+}
+
+/* Keyframes to support our animations above. */
+@keyframes slide-up {
+    from {
+        transform: translateY(10px);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes slide-down {
+    from {
+        transform: translateY(0);
+    }
+    to {
+        transform: translateY(10px);
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+}
+
+@keyframes fade-out {
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes slide-to-right {
+    to {
+        transform: translateX(50px);
+    }
+}
+
+@keyframes slide-from-right {
+    from {
+        transform: translateX(50px);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes slide-to-left {
+    to {
+        transform: translateX(-50px);
+    }
+}
+
+@keyframes slide-from-left {
+    from {
+        transform: translateX(-50px);
+    }
+    to {
+        transform: translateX(0);
+    }
+}

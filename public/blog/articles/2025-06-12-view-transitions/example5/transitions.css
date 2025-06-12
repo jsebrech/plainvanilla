@@ -1,0 +1,16 @@
+.route {
+    display: none;
+}
+.route.active {
+    display: inline-block;
+}
+.route#route2 {
+    view-transition-name: slide;
+}
+::view-transition-new(slide):only-child {
+    animation: 400ms ease-in both slide-in;
+}
+@keyframes slide-in {
+    from { transform: translateY(-200px); }
+    to { transform: translateY(0); }
+}

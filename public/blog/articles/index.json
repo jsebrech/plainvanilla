@@ -1,5 +1,12 @@
 [
     {
+        "slug": "2025-06-12-view-transitions",
+        "title": "Bringing React's <ViewTransition> to vanilla JS",
+        "summary": "Bringing React's declarative view transitions API to vanilla as a custom element.",
+        "published": "2025-06-12",
+        "author": "Joeri Sebrechts"
+    },
+    {
         "slug": "2025-05-09-form-control",
         "title": "Making a new form control",
         "summary": "Building a form control as a custom element.",
