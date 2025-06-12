@@ -220,13 +220,13 @@
         <h3>One more thing</h3>
 
         <p>
-            Oh yeah, I promised to talk about the thing with shadow DOM.
-            Here is the thing: when <code>document.startViewTransition()</code> is called from the light DOM,
+            Oh yeah, I promised to talk about the thing with shadow DOM, and I promised a custom element.
+            Here is the thing with shadow DOM: when <code>document.startViewTransition()</code> is called from the light DOM,
             it cannot see elements inside the shadow DOM that need to transition independently, 
             unless those elements are exposed as DOM parts and a <code>view-transition-name</code> style is set on them in the light DOM.
         </p>
         <p>
-            If the solution to that intrigues you, it's in the GitHub example repo as well.
+            If the solution to that intrigues you, it's in the GitHub example repo as well as a &lt;view-transition&gt; custom element.
             If that sounds like a bunch of mumbo jumbo instead, join the club.
             Just one more reason to avoid shadow DOM.
         </p>
