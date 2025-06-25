@@ -6,10 +6,374 @@
     <logo>https://plainvanillaweb.com/android-chrome-512x512.png</logo>
     <link rel="alternate" href="https://plainvanillaweb.com/blog/"/>
     <link rel="self" href="https://plainvanillaweb.com/blog/feed.xml"/>
-    <updated>2025-06-12T12:00:00.000Z</updated>
+    <updated>2025-06-25T12:00:00.000Z</updated>
     <author>
         <name>Joeri Sebrechts</name>
     </author>
+    <entry>
+        <title><![CDATA[Clean client-side routing]]></title>
+        <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2025-06-25-routing/"/>
+        <id>https://plainvanillaweb.com/blog/articles/2025-06-25-routing/</id>
+        <published>2025-06-25T12:00:00.000Z</published>
+        <updated>2025-06-25T12:00:00.000Z</updated>
+        <summary><![CDATA[Finding a nice way of doing single-page app routing without a library.]]></summary>
+        <media:content url="https://plainvanillaweb.com/blog/articles/2025-06-25-routing/image.webp" type="image/webp" medium="image" />
+        <author><name><![CDATA[Joeri Sebrechts]]></name></author>
+        <content type="html"><![CDATA[
+        <p>
+            The main Plain Vanilla tutorial explains two ways of doing client-side routing.
+            Both use old school anchor tags for route navigation.
+            First is the traditional multi-page approach described on the Sites page as one HTML file per route,
+            great for content sites, not so great for web applications.
+            Second is the hash-based routing approach decribed on the Applications page, one custom element per route,
+            better for web applications, but not for having clean URLs or having Google index your content.
+        </p>
+        <p>
+            In this article I will describe a third way, single-file and single-page but with clean URLs using the <code>pushState</code> API,
+            and still using anchor tags for route navigation.
+            The conceit of this technique will be that it needs more code, and the tiniest bit of server cooperation.
+        </p>
+        <h3>Intercepting anchor clicks</h3>
+        <p>
+            To get a true single-page experience the first thing we have to do is intercept link tag navigation and redirect them to in-page events.
+            Our SPA can then respond to these events by updating its routes.
+        </p><p>
+
+        <div><pre><code>export const routerEvents = new EventTarget();
+
+export const interceptNavigation = (root) =&gt; {
+    // convert link clicks to navigate events
+    root.addEventListener('click', handleLinkClick);
+    // convert navigate events to pushState() calls
+    routerEvents.addEventListener('navigate', handleNavigate);
+}
+
+const handleLinkClick = (e) =&gt; {
+    const a = e.target.closest('a');
+    if (a &amp;&amp; a.href) {
+        e.preventDefault();
+        const anchorUrl = new URL(a.href);
+        const pageUrl = anchorUrl.pathname + anchorUrl.search + anchorUrl.hash;
+        routerEvents.dispatchEvent(new CustomEvent('navigate', { detail: { url: pageUrl, a }}));
+    }
+}
+
+const handleNavigate = (e) =&gt; {
+    history.pushState(null, null, e.detail.url);
+}
+</code></pre></div>
+
+        </p><p>
+            In an example HTML page we can leverage this to implement routing in a <code>&lt;demo-app&gt;&lt;/demo-app&gt;</code> element.
+        </p>
+        <div><pre><code>import { routerEvents, interceptNavigation } from './view-route.js';
+
+customElements.define('demo-app', class extends HTMLElement {
+
+    #route = '/';
+
+    constructor() {
+        super();
+        interceptNavigation(document.body);
+        routerEvents.addEventListener('navigate', (e) =&gt; {
+            this.#route = e.detail.url;
+            this.update();
+        });
+    }
+
+    connectedCallback() {
+        this.update();
+    }
+
+    update() {
+        if (this.#route === '/') {
+            this.innerHTML = 'This is the homepage. &lt;a href="/details"&gt;Go to the details page&lt;/a&gt;.';
+        } else if (this.#route === '/details') {
+            this.innerHTML = 'This is the details page. &lt;a href="/"&gt;Go to the home page&lt;/a&gt;.';
+        } else {
+            this.innerHTML = `The page ${this.#route} does not exist. &lt;a href="/"&gt;Go to the home page&lt;/a&gt;.`;
+        }
+        this.innerHTML += `&lt;br&gt;Current route: ${this.#route}`;
+    }
+});
+</code></pre></div>
+        <p><a href="https://plainvanillaweb.com/blog/articles/2025-06-25-routing/example1/index.html">example 1</a></p>
+        
+
+        <p>
+            The first thing we're doing in <code>view-route.js</code> is the <code>interceptNavigation()</code> function.
+            It adds an event handler at the top of the DOM that traps bubbling link clicks and turns them into a <code>navigate</code> event instead of the default action of browser page navigation.
+            Then it also adds a <code>navigate</code> event listener that will update the browser's URL by calling <a href="https://developer.mozilla.org/en-US/docs/Web/API/History/pushState">pushState</a>.
+        </p>
+        <p>
+            In <code>app.js</code> we can listen to the same <code>navigate</code> event to actually update the routes.
+            Suddenly we've implemented a very basic in-page routing, but there are still a bunch of missing pieces.
+        </p>
+
+        <h3>There and back again</h3>
+
+        <p>
+            For one, browser back and forward buttons don't actually work.
+            We can click and see the URL update in the browser, but the page does not respond.
+            In order to do this, we need to start listening to <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/popstate_event">popstate</a> events.
+        </p>
+        <p>
+            However, this risks creating diverging code paths for route navigation, one for the <code>navigate</code> event and one for the <code>popstate</code> event.
+            Ideally a single event listener responds to both types of navigation.
+            A simplistic way of providing a single event to listen can look like this:
+        </p>
+        <div><p><em>view-route.js (partial):</em></p><pre><code>const handleNavigate = (e) =&gt; {
+    history.pushState(null, null, e.detail.url);
+    routerEvents.dispatchEvent(new PopStateEvent('popstate'));
+}
+
+// update routes on popstate (browser back/forward)
+export const handlePopState = (e) =&gt; {
+    routerEvents.dispatchEvent(new PopStateEvent('popstate', { state: e.state }));
+}
+window.addEventListener('popstate', handlePopState);
+</code></pre></div>
+        <p>
+            Now our views can respond to <code>popstate</code> events and update based on the current route.
+            A second question then becomes: what is the current route? The <code>popstate</code> event does not carry that info.
+            The <code>window.location</code> value does have that, and it is always updated as we navigate, but because it has the full URL it is cumbersome to parse.
+            What is needed is a way of easily parsing it, something like this:
+        </p>
+        <div><p><em>view-route.js (continued):</em></p><pre><code>// ...
+
+// all routes will be relative to the document's base path
+const baseURL = new URL(window.originalHref || document.URL);
+const basePath = baseURL.pathname.slice(0, baseURL.pathname.lastIndexOf('/'));
+
+// returns an array of regex matches for matched routes, or null
+export const matchesRoute = (path) =&gt; {
+    const fullPath = basePath + '(' + path + ')';
+    const regex = new RegExp(`^${fullPath.replaceAll('/', '\\/')}`, 'gi');
+    const relativeUrl = location.pathname;
+    return regex.exec(relativeUrl);
+}
+</code></pre></div>
+        <p>
+            The <code>matchesRoute()</code> function accepts a regex to match as the route,
+            and will wrap it so it is interpreted relative to the current document's URL,
+            making all routes relative to our single page.
+            Now we can clean up the application code leveraging these new generic routing features:
+        </p>
+        <div><pre><code>import { routerEvents, interceptNavigation, matchesRoute } from './view-route.js';
+
+customElements.define('demo-app', class extends HTMLElement {
+
+    #route = '/';
+
+    constructor() {
+        super();
+        interceptNavigation(document.body);
+        routerEvents.addEventListener('popstate', (e) =&gt; {
+            const matches =
+                matchesRoute('/details') || 
+                matchesRoute('/');
+            this.#route = matches?.[1];
+            this.update();
+        });
+    }
+
+    connectedCallback() {
+        this.update();
+    }
+
+    update() {
+        if (this.#route === '/') {
+            this.innerHTML = 'This is the homepage. &lt;a href="/details"&gt;Go to the details page&lt;/a&gt;.';
+        } else if (this.#route === '/details') {
+            this.innerHTML = 'This is the details page. &lt;a href="/"&gt;Go to the home page&lt;/a&gt;.';
+        } else {
+            this.innerHTML = `The page ${this.#route} does not exist. &lt;a href="/"&gt;Go to the home page&lt;/a&gt;.`;
+        }
+        this.innerHTML += `&lt;br&gt;Current route: ${this.#route}`;
+    }
+});
+</code></pre></div>
+        <p><a href="https://plainvanillaweb.com/blog/articles/2025-06-25-routing/example2/index.html">example 2</a></p>
+        
+        <p>
+            Opening that in a separate tab we can see that the absolute URL neatly updates with the routes,
+            that browser back/forwards navigation updates the view, and that inside the view the route is
+            relative to the document.
+        </p>
+        <p>
+            Because <code>matchesRoute()</code> accepts a regex,
+            it can be used to capture route components that are used inside of the view.
+            Something like <code>matchesRoute('/details/(?&lt;id&gt;[\\w]+)')</code> would
+            put the ID in <code>matches.groups.id</code>. It's simple, but it gets the job done.
+        </p>
+
+        <h3>Can you use it in a sentence?</h3>
+
+        <p>
+            While this rudimentary way of detecting routes works, adding more routes quickly becomes unwieldy.
+            It would be nice to instead have a declarative way of wrapping parts of views inside routes.
+            Enter: a custom element to wrap each route in the page's markup.
+        </p>
+        <div><p><em>view-route.js (partial):</em></p><pre><code>// ...
+
+customElements.define('view-route', class extends HTMLElement {
+
+    #matches = [];
+
+    get isActive() {
+        return !!this.#matches?.length;
+    }
+
+    get matches() {
+        return this.#matches;
+    }
+
+    set matches(v) {
+        this.#matches = v;
+        this.style.display = this.isActive ? 'contents' : 'none';
+        if (this.isActive) {
+            this.dispatchEvent(new CustomEvent('routechange', { detail: v, bubbles: true }));
+        }
+    }
+
+    connectedCallback() {
+        routerEvents.addEventListener('popstate', this);
+        this.update();
+    }
+
+    disconnectedCallback() {
+        routerEvents.removeEventListener('popstate', this);
+    }
+
+    handleEvent(e) {
+        this.update();
+    }
+
+    static get observedAttributes() {
+        return ['path'];
+    }
+
+    attributeChangedCallback() {
+        this.update();
+    }
+
+    update() {
+        const path = this.getAttribute('path') || '/';
+        this.matches = this.matchesRoute(path) || [];
+    }
+
+    matchesRoute(path) {
+        // '*' triggers fallback route if no other route on the same DOM level matches
+        if (path === '*') {
+            const activeRoutes = 
+                Array.from(this.parentNode.getElementsByTagName('view-route')).filter(_ =&gt; _.isActive);
+            if (!activeRoutes.length) return [location.pathname, '*'];
+        // normal routes
+        } else {
+            return matchesRoute(path);
+        }
+        return null;
+    }
+});
+</code></pre></div>
+        <p>
+            Now we can rewrite our app to be a lot more declarative, while preserving the behavior.
+        </p>
+        <div><pre><code>import { interceptNavigation } from './view-route.js';
+
+customElements.define('demo-app', class extends HTMLElement {
+
+    constructor() {
+        super();
+        interceptNavigation(document.body);
+    }
+
+    connectedCallback() {
+        this.innerHTML = `
+        &lt;view-route path="/(?:index.html)?$"&gt;
+            This is the homepage. &lt;a href="/details"&gt;Go to the details page&lt;/a&gt;, or
+            travel a &lt;a href="/unknown"&gt;path of mystery&lt;/a&gt;.
+        &lt;/view-route&gt;
+        &lt;view-route path="/details"&gt;
+            This is the details page. &lt;a href="/"&gt;Go to the home page&lt;/a&gt;.
+        &lt;/view-route&gt;
+        &lt;view-route path="*"&gt;
+            The page does not exist. &lt;a href="/"&gt;Go to the home page&lt;/a&gt;.
+        &lt;/view-route&gt;
+        `
+    }
+});
+</code></pre></div>
+        <p><a href="https://plainvanillaweb.com/blog/articles/2025-06-25-routing/example3/index.html">example 3</a></p>
+        
+
+        <h3>404 not found</h3>
+
+        <p>
+            While things now look like they work perfectly, the illusion is shattered upon reloading the page when it is on the details route.
+            To get rid of the 404 error we need a handler that will redirect to the main index page.
+            This is typically something that requires server-side logic, locking us out from simple static hosting like GitHub Pages,
+            but thanks to the kindness of internet strangers, <a href="https://github.com/rafgraph/spa-github-pages">there is a solution</a>.
+        </p>
+        <p>
+            It involves creating a <code>404.html</code> file that GitHub will load for any 404 error (the tiny bit of server cooperation).
+            In this file the route is encoded as a query parameter, the page redirects to <code>index.html</code>,
+            and inside that index page the route is restored.
+        </p>
+        <div><pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;script&gt;
+        var pathSegmentsToKeep = window.location.hostname === 'localhost' ? 0 : 1;
+
+        var l = window.location;
+        l.replace(
+            l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+            l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
+            l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&amp;/g, '~and~') +
+            (l.search ? '&amp;' + l.search.slice(1).replace(/&amp;/g, '~and~') : '') +
+            l.hash
+        );
+    &lt;/script&gt;
+&lt;/head&gt;
+&lt;/html&gt;</code></pre></div>
+        <div><p><em>index.html:</em></p><pre><code>&lt;!doctype html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;!-- ... --&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;script type="text/javascript"&gt;
+        // preserve route
+        window.originalHref = window.location.href;
+        // decode from parameter passed by 404.html
+        (function (l) {
+            if (l.search[1] === '/') {
+                var decoded = l.search.slice(1).split('&amp;').map(function (s) {
+                    return s.replace(/~and~/g, '&amp;')
+                }).join('?');
+                window.history.replaceState(null, null,
+                    l.pathname.slice(0, -1) + decoded + l.hash
+                );
+            }
+        }(window.location))
+    &lt;/script&gt;
+    
+    &lt;!-- ... --&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre></div>
+
+        <p>
+            Adding this last piece to what we already had gets us a complete routing solution for vanilla single page applications
+            that are hosted on GitHub Pages. Here's a live example hosted from there:
+        </p>
+        <p><a href="https://sebrechts.net/view-route/">example 4</a></p>
+
+        <p>
+            To full code of <code>view-route.js</code> and of this example <a href="https://github.com/jsebrech/view-route">is on GitHub</a>.
+        </p>
+    ]]></content>
+    </entry>
     <entry>
         <title><![CDATA[Bringing React's <ViewTransition> to vanilla JS]]></title>
         <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2025-06-12-view-transitions/"/>

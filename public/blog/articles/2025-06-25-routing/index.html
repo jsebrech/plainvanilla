@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Clean client-side routing</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="description" content="Finding a nice way of doing single-page app routing without a library.">
+    <link rel="stylesheet" href="../../index.css">
+    <script type="module" src="../../index.js" defer></script>
+</head>
+<body>
+    <blog-header published="2025-06-25">
+        <img src="image.webp" alt="A twisty maze of stairways." loading="lazy" />
+        <h2>Clean Client-side Routing</h2>
+        <p class="byline" aria-label="author">Joeri Sebrechts</p>
+    </blog-header>
+    <main>
+        <p>
+            The main Plain Vanilla tutorial explains two ways of doing client-side routing.
+            Both use old school anchor tags for route navigation.
+            First is the traditional multi-page approach described on the Sites page as one HTML file per route,
+            great for content sites, not so great for web applications.
+            Second is the hash-based routing approach decribed on the Applications page, one custom element per route,
+            better for web applications, but not for having clean URLs or having Google index your content.
+        </p>
+        <p>
+            In this article I will describe a third way, single-file and single-page but with clean URLs using the <code>pushState</code> API,
+            and still using anchor tags for route navigation.
+            The conceit of this technique will be that it needs more code, and the tiniest bit of server cooperation.
+        </p>
+        <h3>Intercepting anchor clicks</h3>
+        <p>
+            To get a true single-page experience the first thing we have to do is intercept link tag navigation and redirect them to in-page events.
+            Our SPA can then respond to these events by updating its routes.
+        <p>
+
+        <x-code-viewer src="./example1/view-route.js"></x-code-viewer>
+
+        <p>
+            In an example HTML page we can leverage this to implement routing in a <code>&lt;demo-app&gt;&lt;/demo-app&gt;</code> element.
+        </p>
+        <x-code-viewer src="./example1/app.js"></x-code-viewer>
+        <iframe src="./example1/index.html" title="example 1"></iframe>
+        <p data-rss-exclude="true">
+            <small><a href="./example1/index.html" target="_blank">open example 1 in a separate tab</a></small>
+        </p>
+
+        <p>
+            The first thing we're doing in <code>view-route.js</code> is the <code>interceptNavigation()</code> function.
+            It adds an event handler at the top of the DOM that traps bubbling link clicks and turns them into a <code>navigate</code> event instead of the default action of browser page navigation.
+            Then it also adds a <code>navigate</code> event listener that will update the browser's URL by calling <a href="https://developer.mozilla.org/en-US/docs/Web/API/History/pushState">pushState</a>.
+        </p>
+        <p>
+            In <code>app.js</code> we can listen to the same <code>navigate</code> event to actually update the routes.
+            Suddenly we've implemented a very basic in-page routing, but there are still a bunch of missing pieces.
+        </p>
+
+        <h3>There and back again</h3>
+
+        <p>
+            For one, browser back and forward buttons don't actually work.
+            We can click and see the URL update in the browser, but the page does not respond.
+            In order to do this, we need to start listening to <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/popstate_event">popstate</a> events.
+        </p>
+        <p>
+            However, this risks creating diverging code paths for route navigation, one for the <code>navigate</code> event and one for the <code>popstate</code> event.
+            Ideally a single event listener responds to both types of navigation.
+            A simplistic way of providing a single event to listen can look like this:
+        </p>
+        <x-code-viewer src="./example2/view-route-partial.js" name="view-route.js (partial)"></x-code-viewer>
+        <p>
+            Now our views can respond to <code>popstate</code> events and update based on the current route.
+            A second question then becomes: what is the current route? The <code>popstate</code> event does not carry that info.
+            The <code>window.location</code> value does have that, and it is always updated as we navigate, but because it has the full URL it is cumbersome to parse.
+            What is needed is a way of easily parsing it, something like this:
+        </p>
+        <x-code-viewer src="./example2/view-route-partial2.js" name="view-route.js (continued)"></x-code-viewer>
+        <p>
+            The <code>matchesRoute()</code> function accepts a regex to match as the route,
+            and will wrap it so it is interpreted relative to the current document's URL,
+            making all routes relative to our single page.
+            Now we can clean up the application code leveraging these new generic routing features:
+        </p>
+        <x-code-viewer src="./example2/app.js"></x-code-viewer>
+        <iframe src="./example2/index.html" title="example 2"></iframe>
+        <p data-rss-exclude="true">
+            <small><a href="./example2/index.html" target="_blank">open example 2 in a separate tab</a></small>
+        </p>
+        <p>
+            Opening that in a separate tab we can see that the absolute URL neatly updates with the routes,
+            that browser back/forwards navigation updates the view, and that inside the view the route is
+            relative to the document.
+        </p>
+        <p>
+            Because <code>matchesRoute()</code> accepts a regex,
+            it can be used to capture route components that are used inside of the view.
+            Something like <code>matchesRoute('/details/(?&lt;id&gt;[\\w]+)')</code> would
+            put the ID in <code>matches.groups.id</code>. It's simple, but it gets the job done.
+        </p>
+
+        <h3>Can you use it in a sentence?</h3>
+
+        <p>
+            While this rudimentary way of detecting routes works, adding more routes quickly becomes unwieldy.
+            It would be nice to instead have a declarative way of wrapping parts of views inside routes.
+            Enter: a custom element to wrap each route in the page's markup.
+        </p>
+        <x-code-viewer src="./example3/view-route-partial.js" name="view-route.js (partial)"></x-code-viewer>
+        <p>
+            Now we can rewrite our app to be a lot more declarative, while preserving the behavior.
+        </p>
+        <x-code-viewer src="./example3/app.js"></x-code-viewer>
+        <iframe src="./example3/index.html" title="example 3"></iframe>
+        <p data-rss-exclude="true">
+            <small><a href="./example3/index.html" target="_blank">open example 3 in a separate tab</a></small>
+        </p>
+
+        <h3>404 not found</h3>
+
+        <p>
+            While things now look like they work perfectly, the illusion is shattered upon reloading the page when it is on the details route.
+            To get rid of the 404 error we need a handler that will redirect to the main index page.
+            This is typically something that requires server-side logic, locking us out from simple static hosting like GitHub Pages,
+            but thanks to the kindness of internet strangers, <a href="https://github.com/rafgraph/spa-github-pages">there is a solution</a>.
+        </p>
+        <p>
+            It involves creating a <code>404.html</code> file that GitHub will load for any 404 error (the tiny bit of server cooperation).
+            In this file the route is encoded as a query parameter, the page redirects to <code>index.html</code>,
+            and inside that index page the route is restored.
+        </p>
+        <x-code-viewer src="example4/404.html"></x-code-viewer>
+        <x-code-viewer src="example4/index-partial.html" name="index.html"></x-code-viewer>
+
+        <p>
+            Adding this last piece to what we already had gets us a complete routing solution for vanilla single page applications
+            that are hosted on GitHub Pages. Here's a live example hosted from there:
+        </p>
+        <iframe src="https://sebrechts.net/view-route/" title="example 4" height="300"></iframe>
+
+        <p>
+            To full code of <code>view-route.js</code> and of this example <a href="https://github.com/jsebrech/view-route">is on GitHub</a>.
+        </p>
+    </main>
+    <blog-footer></blog-footer>
+</body>
+</html>

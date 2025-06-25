@@ -1,5 +1,12 @@
 [
     {
+        "slug": "2025-06-25-routing",
+        "title": "Clean client-side routing",
+        "summary": "Finding a nice way of doing single-page app routing without a library.",
+        "published": "2025-06-25",
+        "author": "Joeri Sebrechts"
+    },
+    {
         "slug": "2025-06-12-view-transitions",
         "title": "Bringing React's <ViewTransition> to vanilla JS",
         "summary": "Bringing React's declarative view transitions API to vanilla as a custom element.",

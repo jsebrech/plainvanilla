@@ -11,6 +11,16 @@
         ]
       }
     ],
-    "no-inline-styles": "off"
+    "no-inline-styles": "off",
+    "compat-api/css": [
+      "default",
+      {
+        "ignore": [
+          "view-transition-name",
+          "text-size-adjust",
+          "text-size-adjust: none"
+        ]
+      }
+    ]
   }
 }

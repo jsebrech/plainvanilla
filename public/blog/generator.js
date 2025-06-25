@@ -177,6 +177,9 @@ customElements.define('blog-generator', class BlogGenerator extends HTMLElement 
             }
         });
 
+        // strip out unwanted elements
+        [...main.querySelectorAll('[data-rss-exclude]')].map((elem) => elem.remove());
+
         return main.innerHTML;
     }
 
