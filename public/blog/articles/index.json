@@ -1,5 +1,12 @@
 [
     {
+        "slug": "2025-07-13-history-architecture",
+        "title": "The history of web application architecture",
+        "summary": "The many different ways of building for the web, and their many frustrations.",
+        "published": "2025-07-13",
+        "author": "Joeri Sebrechts"
+    },
+    {
         "slug": "2025-06-25-routing",
         "title": "Clean client-side routing",
         "summary": "Finding a nice way of doing single-page app routing without a library.",

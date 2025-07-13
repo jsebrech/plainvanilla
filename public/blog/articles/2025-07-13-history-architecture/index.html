@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>The history of web application architecture</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="description" content="The many different ways of building for the web, and their many frustrations.">
+    <link rel="stylesheet" href="../../index.css">
+    <script type="module" src="../../index.js" defer></script>
+</head>
+<body>
+    <blog-header published="2025-07-13">
+        <img src="image.webp" alt="dramatic view of the sky viewed through a passage between buildings" />
+        <h2>The history of web application architecture</h2>
+        <p class="byline" aria-label="author">Joeri Sebrechts</p>
+    </blog-header>
+    <main>
+        <p>
+            I'm old enough to remember what it was like. I first got online in 1994, but by then I was using computers for a few years already.
+            That means I was there for the whole ride, the entire history of web application architecture, 
+            from the before times to the present day.
+            So this post will be an overview of the various ways to make a web app, past and present, 
+            and their relative trade-offs as I experienced them.
+        </p>
+        <p>
+            Just to set expectations right: this will cover architectures targeted primarily at proper applications, 
+            of the sort that work with user data, and where most screens have to be made unique based on that user data.
+            Web sites where the different visitors are presented with identical pages are a different beast.
+            Although many of these architectures overlap with that use case, it will not be the focus here.
+        </p>
+        <p>
+            Also, while I will be mentioning some frameworks, they are equally not the focus.
+            Where you see a framework, you can slot in vanilla web development with a bespoke solution.
+        </p>
+        <p>
+            This will be a long one, so grab a snack, take some time, and let's get going.
+        </p>
+
+        <h3>Before time began</h3>
+        <p>
+            Back when people first went online, the ruling architecture was <em>offline-first</em>.
+            It looked sort of like this:
+        </p>
+        <img src="architectures/old-school-desktop.webp" alt="architecture diagram of user sending a local file via e-mail" />
+        <p>
+            Our user would have a proper desktop application, written in C or C++ most likely,
+            and that would work with local files on their local file system, all perfectly functional when offline.
+            When they wanted to "go online" and share their work, they would dial in to the internet,
+            start their e-mail client and patiently send an e-mail to their friend or colleague containing 
+            a copy of their file as an attachment.
+        </p>
+        <p>
+            This architecture was very simple, and it worked well in the absence of a reliable and fast internet connection.
+            This was a good thing because at the time most people <em>never had</em> a reliable and fast internet connection.
+            There were problems though. For one, the bootstrapping problem: how do you get everyone to have the application 
+            installed so they can open and edit the file they received via e-mail?
+            Also, the syncing problem: how are changes kept in sync between multiple devices and users?
+            Merging edits from different files that could have <em>weeks</em> of incompatible edits was always 
+            somewhere between frustrating and impossible.
+        </p>
+
+        <h3>Traditional server-side rendering</h3>
+        <p>
+            Web applications promised they would solve both problems. At first we built them like this:
+        </p>
+        <img src="architectures/traditional-ssr.webp" alt="architecture diagram of a traditional server-side rendered web application" loading="lazy" />
+        <p>
+            The first thing we did was move all of the stuff from all of the users into a central database somewhere online.
+            Because this database was shared between the users, it became a lot more easy to keep their changes in sync.
+            If one user made an edit to something, everyone else would see it on the next refresh.
+        </p>
+        <p>
+            To allow users to actually get at this database we had to give them an application to do it.
+            This new-fangled thing called a <em>web application</em> running on a <em>web application server</em> would take http requests
+            coming from the user's browser, SQL query the database for the right set of stuff, 
+            and send back an entire web page. Every click, every submit, it would generate a whole new page.
+        </p>
+        <p>
+            Deployment of those early web applications was often suspiciously simple:
+            someone would connect via FTP to a server, and copy over the files from their local machine.
+            There often weren't even any build steps. There was no step 3.
+        </p>
+        <p>
+            On the one hand this architecture was convenient. It solved the bootstrapping problem 
+            by only demanding that each user have a web browser and an internet connection.
+            It also moved all of the application logic over to the server, keeping it neatly in one place.
+            Crucially it kept the browser's task minimal, important in an era where browsers were much less capable
+            and PC's were orders of magnitude slower than today. If done well, it could even be used to make
+            web applications that still worked with JavaScript disabled. My first mobile web app was like that,
+            sneakily using HTML forms with multiple submit actions and hidden input fields
+            to present interactive navigation through a CRUD interface.
+        </p>
+        <p>
+            On the other hand, it had many problems, especially early on. HTML wasn't very good, CSS was in its infancy,
+            and early JavaScript was mostly useless. It was hard going building <em>anything at all</em> on the early web.
+            On top of that, web developers were a new breed, and they had to relearn many of the architecture lessons their desktop developer
+            colleagues had already learned through bitter experience. For example, everyone has heard of the adage
+            "If you don't choose a framework, you'll end up building a worse one yourself." That is because for the first few years
+            building your own terrible framework as you went was the norm, until everyone wisened up and started preaching this wisdom. 
+            For sure, my own first experiments in web application development in PHP 3 and 4 were all 
+            without the benefit of a proper framework.
+        </p>
+        <p>
+            Web developers also had to learn lessons that their desktop counterparts never had to contend with.
+            Moving the application to the server was convenient, but it exposed it to hackers from all across the world,
+            and the early web application landscape was riddled with embarrassing hacks.
+            Because the threat level on the internet keeps rising this remains a major headache to this day.
+        </p>
+        <p>
+            Another novel problem was having to care a whole lot about connectivity and server uptime.
+            Because users literally couldn't do anything at all if they didn't have a connection to a working web server,
+            making sure that connection was always there became a pervasive headache.
+            Going to a site and seeing an error 500 message was unsurprisingly common in those early years.
+        </p>
+        <p>
+            The biggest problems however were throughput, bandwidth and latency. Because almost every click had to reload the whole page,
+            doing anything at all in those early web applications was <em>slow</em>, like <em>really, really slow</em>.
+            At the time, servers were slow to render the page, networks slow to transport it, and PC's and browsers slow to render.
+            That couldn't stand, so something had to change. It was at this point that we saw a fork in the road,
+            and the web developer community split up into two schools of thought that each went their own way.
+            Although, as you will see, they are drawing closer again.
+        </p>
+
+        <h3>Modern server-side rendering</h3>
+
+        <p>
+            One branch of the web development tree doubled down on server-side rendering,
+            building further on top of the existing server-side frameworks.
+        </p>
+        <img src="architectures/liveview.webp" alt="architecture diagram of a server-side rendered application with liveview templates" loading="lazy" />
+        <p>
+            They tackled the problems imposed by throughput and latency by
+            moving over to a model of partial page updates, where small bits of user-activated JavaScript
+            (originally mostly built with jQuery) would update parts of the page with HTML partials
+            that they fetched from the server.
+        </p>
+        <p>
+            The evolution of this architecture are so called <em>LiveViews</em>.
+            This is a design first popularized by the Phoenix framework for the obscure Elixir programming language,
+            but quickly <a href="https://github.com/liveviews/liveviews">adopted in many places</a>.
+        </p>
+        <p>
+            It uses framework logic to automatically wire up server-side generated templates with bits of JavaScript
+            that will automatically call the server to fetch partial page updates when necessary.
+            The developer has the convenience of not thinking about client-side scripting, 
+            while the users gets an interactive user experience similar to a JavaScript-rich frontend.
+            Typically the client keeps an open websocket connection to the server,
+            so that server-side changes are quickly and automatically streamed into the page as soon as they occur.
+        </p>
+        <p>
+            This architecture is conceptually simple to work with as all the logic remains on the server.
+            It also doesn't ask much from the browser, good for slow devices and bandwidth-constrained environments.
+            As a consequence it finds a sweet spot in mostly static content-driven web sites.
+        </p>
+        <p>
+            But nothing is without trade-offs. This design hits the server on almost every interaction and has no path to offline functionality.
+            Network latency and reliability are its UX killer, and especially on mobile phones &ndash; the main way people interact with web apps these days &ndash;
+            those can still be a challenge. While this can be mitigated somewhat through browser caching, the limitation is always there.
+            After all, the more that page content is dictated by realtime user input, the more necessary it becomes to push logic to the client.
+            In cases where the network is good however, it can seem like magic even for highly interactive applications, 
+            and for that reason it has its diehard fans.
+        </p>
+
+        <h3>Client-side rendering</h3>
+        <p>
+            There was another branch of web development practice, let's say the ones who were fonder
+            of clever architecture, who had a crazy thought: what if we moved rendering data to HTML from the server to the browser?
+            They built new frameworks, in JavaScript, designed to run in the browser
+            so that the application could be shipped as a whole as part of the initial page load, 
+            and every navigation would only need to fetch data for the new route.
+            In theory this allowed for smaller and less frequent roundtrips to the server,
+            and therefore an improvement to the user experience.
+            Thanks to a blooming cottage industry of industry insiders advertising its benefits, it became the dominant architecture for new web applications,
+            with React as the framework of choice to run inside the browser.
+        </p>
+        <p>
+            This method taken to its modern best practice extreme looks like this:
+        </p>
+        <img src="architectures/modern-SPA.webp" alt="Architecture diagram of a client-side rendered single-page application" loading="lazy" />
+        <p>
+            It starts out by moving the application, its framework, and its other dependencies over to the browser.
+            When the page is loaded the entire bundle gets loaded, and then pages can be rendered as routes inside of the single-page application.
+            Every time a new route needs to be rendered the data gets fetched from the server, not the HTML.
+        </p>
+        <p>
+            The web application server's job is now just providing the application bundle as a single HTML page,
+            and providing API endpoints for loading JSON data for every route. 
+            Because those API endpoints naturally end up mirroring the frontend's routes this part usually gets called the <em>backend-for-frontend</em>.
+            This job was so different from the old web server's role that a new generation of frameworks sprung up to be a better fit. 
+            Express on node became a very popular choice, as it allowed a great deal of similarity between browser and server codebases,
+            although in practice there's usually not much actual code in common.
+        </p>
+        <p>
+            For security reasons &ndash; after all, the web application servers are on the increasingly dangerous public internet &ndash;
+            the best practice became to host backends-for-frontend in a DMZ, a demilitarized zone
+            where the assumption has to be that security is temporary and hostile interlopers could arrive at any time.
+            In addition, if an organization has multiple frontends (and if they have a mobile app they probably have at least two),
+            then this DMZ will contain multiple backends for frontend.
+        </p>
+        <p>
+            Because there is only a single database to share between those different BFFs, 
+            and because of the security risks of connecting to the database from the dangerous DMZ,
+            a best practice became to keep the backend-for-frontend focused on just the part of serving the frontend,
+            and to wrap the database in a separate thing. This separate <em>microservice</em>
+            is an application whose sole job is publishing an API that gatekeeps access to the database.
+            This API is usually in a separate network segment, shielded by firewalls or API gateways,
+            and it is often built in yet another framework better tailored for building APIs, 
+            or even in a different programming language like Go or C#.
+        </p>
+        <p>
+            Of course, having only one microservice is kind of a lonely affair, 
+            so even organizations of moderate size would often end up having their backends-for-frontend each talking to multiple microservices.
+        </p>
+        <p>
+            That's just too many servers to manage, too many network connections to configure, too many builds to run, 
+            so people by and large stopped managing their own servers, either for running builds or for runtime hosting.
+            Instead they moved to the cloud, where someone else manages the server, and hosted their backends
+            as docker containers or serverless functions deployed by git-powered CI/CD pipelines.
+            This made some people fabulously wealthy. After all, 74% of Amazon's profit is made from AWS,
+            and over a third of Microsoft's from Azure.
+            It is no accident that there is a persistent drumbeat that everyone should move everything to the cloud.
+            Those margins aren't going to pad themselves.
+        </p>
+        <p>
+            Incidentally, microservices as database intermediary are also a thing in the world of server-side rendered applications,
+            but in my personal observation those teams seem to choose this strategy less often.
+            Equally incidentally, the word <em>serverless</em> in the context of serverless functions was and is highly amusing to me, 
+            since it requires just as many servers, if not more. (I know why it's called that way, that doesn't make it any less funny.)
+        </p>
+        <p>
+            On paper this client-side rendered architecture has many positive qualities. It is highly modular,
+            which makes the work easy to split up across developers or teams. It pushes page rendering logic into
+            the browser, creating the potential to have a low latency and high quality user experience.
+            The layered nature of the backend and limited scope of the internet-facing backend-for-frontend forms
+            a solid defensive moat against cyberattacks. And the cloud-hosted infrastructure is low effort to manage and easy to scale.
+            A design like this is every architecture astronomer's dream, and I was for a while very enamored with it myself.
+        </p>
+        <p>
+            In practice though, it just doesn't work very well. It's just too <em>complicated</em>.
+            For larger experienced teams in large organizations it can kind of sort of make sense,
+            and it is no surprise that big tech is a heavy proponent of this architecture.
+            But step away from web-scale for just a second and there's too many parts to build and deploy and keep track of,
+            too many technologies to learn, too many hops a data request has to travel through. 
+        </p>
+        <p>
+            The application's logic gets smeared out across three or more independent codebases,
+            and a lot of overhead is created in keeping all of those in sync.
+            Adding a single data field to a type can suddenly become a whole project. For one application I was working on
+            I once counted in how many places a particular type was explicitly defined, and the tally reached lucky number 7.
+            It is no accident that right around the time that this architecture peaked the use of monorepo tools 
+            to bundle multiple projects into a single repository peaked as well.
+        </p>
+        <p>
+            Go talk to some people just starting out with web development
+            and see how lost they get in trying to figure out all of this <em>stuff</em>, 
+            learning all the technologies comprising the Rube Goldberg machine that produces a webpage at the end.
+            See just how little time they have left to dedicate to learning vanilla HTML, CSS and JS, 
+            arguably the key things a beginner should be focusing on.
+        </p>
+        <p>
+            Moreover, the promise that moving the application entirely to the browser would improve the user experience mostly <a href="https://gitnation.com/contents/project-fugu-bringing-hardware-capabilities-to-the-web-safely">did not pan out</a>.
+            As applications built with client-side frameworks like React or Angular grew, the bundle to be shipped in a page load ballooned to <em>megabytes</em> in size.
+            The slowest quintile of devices and network connections struggled mightily with these heavy JavaScript payloads.
+            It was hoped that Moore's law would solve this problem, but the dynamics of how (mobile) device and internet provider markets work
+            mean that it hasn't been, and that it won't be any time soon. It's not impossible to build a great user experience 
+            with this architecture, but you're starting from behind. Well, at least for public-facing web applications.
+        </p>
+
+        <h3>Client-side rendering with server offload</h3>
+        <p>
+            The designers of client-side frameworks were not wholly insensitive to the frustrations of developers 
+            trying to make client-side rendered single-page applications work well on devices and connections 
+            that weren't up to the job. They started to offload more and more of the rendering work back to the server.
+            In situations where the content of a page is fixed, <em>static site generation</em> can execute
+            the client-side framework at build time to pre-render pages to HTML.
+            And for situations where content has a dynamic character, <em>server-side rendering</em> was reintroduced 
+            back into the mix to offload some of the rendering work back to the server.
+        </p>
+        <p>
+            The current evolution of these trends is the streaming single-page application:
+        </p>
+        <img src="architectures/streaming-SPA.webp" alt="architecture diagram of a streaming single-page application" loading="lazy" />
+
+        <p>
+            In this architecture the framework runs the show in both backend-for-frontend and in the browser.
+            It decides where the rendering happens, and only pushes the work to the browser that must run there.
+            When possible the page is shipped prerendered to the browser and the code for the prerendered parts 
+            is not needed in the client bundle.
+            Because some parts of the page are more dynamic than others, they can be rendered on-demand in the server 
+            and <em>streamed</em> to the browser where they are slotted into the prerendered page.
+            The bundle that is shipped to the browser can be kept light-weight because it mostly just needs 
+            to respond to user input by streaming the necessary page updates from the server over an open websocket connection.
+        </p>
+        <p>
+            If that sounds suspiciously like the architecture for modern server-side rendering that I described before,
+            that is because it basically is. While a Next.JS codebase is likely to have some
+            client-rendered components still, the extreme of a best practice Astro codebase would 
+            see every last component rendered on the server. 
+            In doing that they arrive at something functionally no different from LiveView architecture,
+            and with a similar set of trade-offs. These architectures are simpler to work with, but they 
+            perform poorly for dynamic applications on low reliability or high latency connections,
+            and they cannot work offline.
+        </p>
+        <p>
+            Another major simplication of the architecture is getting rid of the database middleman.
+            Microservices and serverless functions are not as hyped as they were, 
+            people are happy to build so-called <em>monoliths</em> again, 
+            and frameworks are happy to recommend they do so.
+            The meta-frameworks now suggest that the API can be merged into the web application frontend, 
+            and the framework will know that those parts are only meant to be run on the server.
+            This radically simplifies the codebase, we're back to a single codebase for the entire application
+            managed by a single framework.
+        </p>
+        <p>
+            However, <a href="https://en.wikipedia.org/wiki/No_such_thing_as_a_free_lunch">TANSTAAFL</a>. This simplification comes at the expense of other things. The Next.JS documentation may claim
+            <em>"Since Server Components are rendered on the server, you can safely make database queries using an ORM or database client."</em>
+            but that doesn't mean that it's actually safe to allow the part that faces the internet to have a direct line to the database.
+            Defense in depth was a good idea, and we're back to trading security for simplicity.
+            There were other reasons that monoliths once fell out of favor. It's like we're now forgetting lessons that were already learned.
+        </p>
+
+        <h3>Where does that leave us?</h3>
+
+        <p>
+            So, which architecture should you pick? I wish I could tell you,
+            but you should have understood by now that the answer was always going to be <em>it depends</em>.
+            Riffing on the work of Tolstoy: all web architectures are alike in that they are unhappy in their own unique way.
+        </p>
+        <p>
+            In a sense, all of these architectures are also unhappy in the same way:
+            there's a whole internet in between the user and their data.
+            There's a golden rule in software architecture: you can't beat physics with code.
+            We draw the internet on diagrams as a cute little cloud, pretending it is not a physical thing.
+            But the internet is wires, and antennas, and satellites, and data centers, and all kinds of physical things and places.
+            Sending a signal through all those physical things and places will always be somewhat unreliable and somewhat slow.
+            We cannot reliably deliver on the promise of a great user experience as long as we put a cute little cloud 
+            in between the user and their stuff.
+        </p>
+        <p>
+            In the next article I'll be exploring an obscure but very different architecture,
+            a crazy thought similar to that of client-side rendering:
+            what happens when we move the user's data from the server back into the client?
+            What is <em>local-first web application architecture</em>?
+        </p>
+    </main>
+    <blog-footer></blog-footer>
+</body>
+</html>
