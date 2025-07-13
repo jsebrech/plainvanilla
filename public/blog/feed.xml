@@ -148,7 +148,7 @@
             It uses framework logic to automatically wire up server-side generated templates with bits of JavaScript
             that will automatically call the server to fetch partial page updates when necessary.
             The developer has the convenience of not thinking about client-side scripting, 
-            while the users gets an interactive user experience similar to a JavaScript-rich frontend.
+            while the users get an interactive user experience similar to a JavaScript-rich frontend.
             Typically the client keeps an open websocket connection to the server,
             so that server-side changes are quickly and automatically streamed into the page as soon as they occur.
         </p>
