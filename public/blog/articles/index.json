@@ -1,5 +1,12 @@
 [
     {
+        "slug": "2025-07-16-local-first-architecture",
+        "title": "Local-first web application architecture",
+        "summary": "Maybe we just need to dig a little deeper (into the client).",
+        "published": "2025-07-16",
+        "author": "Joeri Sebrechts"
+    },
+    {
         "slug": "2025-07-13-history-architecture",
         "title": "The history of web application architecture",
         "summary": "The many different ways of building for the web, and their many frustrations.",

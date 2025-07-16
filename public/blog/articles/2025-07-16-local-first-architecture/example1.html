@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Latency simulator</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <style>
+        @import "../../../../styles/reset.css";
+        body {
+            font-family: system-ui, sans-serif;
+            margin: 1em;
+        }
+    </style>
+</head>
+<body>
+    <p>
+        <label for="latency">Round-trip latency:</label>
+        <input id="latency" type="range" min="50" max="1000" step="50" value="100" />
+    </p>
+    <p id="display"></p>
+    <p id="frame" style="text-align: center; padding: 0.5em;">
+        <button id="btn1">Blue</button>
+        <button id="btn2">Yellow</button>
+    </p>
+    <script>
+        const latency = document.getElementById('latency');
+        const display = document.getElementById('display');
+        const frame = document.getElementById('frame');
+        const btn1 = document.getElementById('btn1');
+        const btn2 = document.getElementById('btn2');
+
+        function updateDisplay() {
+            display.textContent = `${latency.value} ms`;
+        }
+
+        function updateFrameColor(color) {
+            btn1.disabled = true;
+            btn2.disabled = true;
+            setTimeout(() => {
+                frame.style.backgroundColor = color;
+                btn1.disabled = false;
+                btn2.disabled = false;
+            }, latency.value);
+        }
+
+        btn1.onclick = () => updateFrameColor('cornflowerblue');
+        btn2.onclick = () => updateFrameColor('gold');
+
+        latency.addEventListener('input', updateDisplay);
+        updateDisplay();
+    </script>
+</body>
+</html>
