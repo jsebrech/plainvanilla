@@ -63,7 +63,7 @@
             To get a feel of this delay, here's a simulator where you can try out roundtrip latencies
             from 50 ms to one second:
         </p>
-        <iframe src="example1.html" title="roundtrip latency simulator" height="200"></iframe>
+        <iframe src="example1.html" title="roundtrip latency simulator" height="200" loading="lazy"></iframe>
         <p>
             Can you tell how much nicer 100 ms and below feel?
             How the buttons actually <em>feel</em> lighter to press?
@@ -109,7 +109,7 @@
             To apply it to the web, let's start from the basic design of a client-side rendered web application
             as covered in the previous article:
         </p>
-        <img src="architectures/modern-SPA.webp" alt="architecture diagram of a client-side rendered web application" loading="lazy" />
+        <img src="architectures/modern-SPA.webp" alt="architecture diagram of a client-side rendered web application" width="1830" height="1444" loading="lazy" />
         <p>
             This design does not need the server for rendering, so it has the theoretical potential to hit 100 ms.
             But because the user's interactions have to fetch data from the remote database and update it as well &ndash; 
@@ -117,7 +117,7 @@
             in practice we rarely actually hit that low latency.
             We can <em>move the data to the user</em> by doing something like this:
         </p>
-        <img src="architectures/local-first-partial.webp" alt="architecture diagram of a local-first application with server-side sync" loading="lazy" />
+        <img src="architectures/local-first-partial.webp" alt="architecture diagram of a local-first application with server-side sync" width="1806" height="1502" loading="lazy" />
         <p>
             The user's data gets duplicated into a local IndexedDB. More than duplicated actually as
             this becomes the only copy of the data that the user will interact with directly.
@@ -190,7 +190,7 @@
             the application-specific database and syncing logic on the server,
             but what if we instead did away with every last piece of server-side application logic?
         </p>
-        <img src="architectures/local-first-full.webp" alt="architecture diagram of a local-first application without server-side logic" loading="lazy" />
+        <img src="architectures/local-first-full.webp" alt="architecture diagram of a local-first application without server-side logic" width="1768" height="1372" loading="lazy" />
         <p>
             The syncing engine now gets moved in the client, and what it uploads to the server are just files.
             That means all we need is a generic cloud drive, like Dropbox or Onedrive.

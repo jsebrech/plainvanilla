@@ -63,7 +63,7 @@
         <p>
             Web applications promised they would solve both problems. At first we built them like this:
         </p>
-        <img src="architectures/traditional-ssr.webp" alt="architecture diagram of a traditional server-side rendered web application" loading="lazy" />
+        <img src="architectures/traditional-ssr.webp" alt="architecture diagram of a traditional server-side rendered web application" width="1586" height="1324" loading="lazy" />
         <p>
             The first thing we did was move all of the stuff from all of the users into a central database somewhere online.
             Because this database was shared between the users, it became a lot more easy to keep their changes in sync.
@@ -127,7 +127,7 @@
             One branch of the web development tree doubled down on server-side rendering,
             building further on top of the existing server-side frameworks.
         </p>
-        <img src="architectures/liveview.webp" alt="architecture diagram of a server-side rendered application with liveview templates" loading="lazy" />
+        <img src="architectures/liveview.webp" alt="architecture diagram of a server-side rendered application with liveview templates" width="1588" height="1324" loading="lazy" />
         <p>
             They tackled the problems imposed by throughput and latency by
             moving over to a model of partial page updates, where small bits of user-activated JavaScript
@@ -176,7 +176,7 @@
         <p>
             This method taken to its modern best practice extreme looks like this:
         </p>
-        <img src="architectures/modern-SPA.webp" alt="Architecture diagram of a client-side rendered single-page application" loading="lazy" />
+        <img src="architectures/modern-SPA.webp" alt="Architecture diagram of a client-side rendered single-page application" width="1830" height="1444" loading="lazy" />
         <p>
             It starts out by moving the application, its framework, and its other dependencies over to the browser.
             When the page is loaded the entire bundle gets loaded, and then pages can be rendered as routes inside of the single-page application.
@@ -279,7 +279,7 @@
         <p>
             The current evolution of these trends is the streaming single-page application:
         </p>
-        <img src="architectures/streaming-SPA.webp" alt="architecture diagram of a streaming single-page application" loading="lazy" />
+        <img src="architectures/streaming-SPA.webp" alt="architecture diagram of a streaming single-page application" width="1830" height="1544"loading="lazy" />
 
         <p>
             In this architecture the framework runs the show in both backend-for-frontend and in the browser.
