@@ -119,6 +119,7 @@ customElements.define('blog-generator', class BlogGenerator extends HTMLElement 
 
         this.addFeedBlock();
         this.addIndexJsonBlock();
+        this.addSitemapBlock();
     }
 
     async processArticle(article, path) {
@@ -245,6 +246,18 @@ customElements.define('blog-generator', class BlogGenerator extends HTMLElement 
         const button = document.createElement('button');
         button.onclick = () => navigator.clipboard.writeText(text);
         button.textContent = 'Copy index.json to clipboard';
+        this.appendChild(button);
+    }
+
+    addSitemapBlock() {
+        const sitemap = this.#articles.map(a => `${BLOG_BASE_URL}articles/${a.slug}/index.html`).sort().join('\n');
+        this.addMessage('sitemap.txt:');
+        const pre = document.createElement('pre');
+        pre.textContent = sitemap;
+        this.appendChild(pre);
+        const button = document.createElement('button');
+        button.onclick = () => navigator.clipboard.writeText(sitemap);
+        button.textContent = 'Copy sitemap.txt to clipboard';
         this.appendChild(button);
     }
 });
