@@ -27,3 +27,7 @@ These are some other resources demonstrating #notools web development techniques
 - [plainJS](https://plainjs.com/): a collection of vanilla javascript functions and plugins to replace the use of jQuery
 - [Web Dev Toolkit](https://gomakethings.com/toolkit/): a collection of vanilla helper functions, boilerplates and libraries
 - [The Modern JavaScipt Tutorial](https://javascript.info/): a step-by-step tutorial to learn vanilla JavaScript
+
+## Attribution
+
+Soft ice icon by [Twemoji](https://github.com/jdecked/twemoji) is licensed under [CC BY 4.0](http://creativecommons.org/licenses/by/4.0/).
