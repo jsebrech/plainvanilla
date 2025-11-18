@@ -32,6 +32,10 @@ h3 {
     margin-top: 1em;
 }
 
+select {
+    padding: 0.5em;
+}
+
 ul {
     padding-left: 2em;
     margin-top: 0.5em;
