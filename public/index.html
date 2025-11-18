@@ -1,76 +1,81 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <title>Plain Vanilla</title>
+    <title data-i18n="title">Plain Vanilla</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width" />
-    <meta name="description" content="An explainer for web development using only vanilla techniques.">
+    <meta name="description" data-i18n="meta.description" content="An explainer for web development using only vanilla techniques.">
     <link rel="icon" href="favicon.ico">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="stylesheet" href="index.css">
     <link rel="canonical" href="https://plainvanillaweb.com/index.html" />
     <script type="module" src="index.js" defer></script>
+    <script src="./lib/translator.js" defer></script>
 </head>
 <body>
     <header>
-        <h1>Plain Vanilla</h1>
-        <p>
+        <h1 data-i18n="header.title">Plain Vanilla</h1>
+        <p data-i18n="header.subtitle">
             An explainer for web development using only vanilla techniques. 
             No tools, no frameworks&nbsp;&mdash; just HTML, CSS, and JavaScript.
         </p>
         <nav>
             <ol>
-                <li><a href="#" aria-current="page">Welcome</a></li>
-                <li><a href="pages/components.html">Components</a></li>
-                <li><a href="pages/styling.html">Styling</a></li>
-                <li><a href="pages/sites.html">Sites</a></li>
-                <li><a href="pages/applications.html">Applications</a></li>
-                <li><a href="blog/">Blog</a></li>
+                <li><a href="#" aria-current="page" data-i18n="link.welcome">Welcome</a></li>
+                <li><a href="pages/components.html" data-i18n="link.components">Components</a></li>
+                <li><a href="pages/styling.html" data-i18n="link.styling">Styling</a></li>
+                <li><a href="pages/sites.html" data-i18n="link.sites">Sites</a></li>
+                <li><a href="pages/applications.html" data-i18n="link.applications">Applications</a></li>
+                <li><a href="blog/" data-i18n="link.blog">Blog</a></li>
             </ol>
         </nav>
+        <select id="languageSwitcher">
+            <option value="en">English</option>
+            <option value="es">Español</option>
+        </select>
     </header>
 
     <main>
         <section>
-            <h2>
+            <h2 data-i18n="content.title_about">
                 About this site
             </h2>
-            <p>
+            <p data-i18n="content.desc_about_1">
                 This is an overview of the major techniques used to make web sites and web applications
                 without making use of build tools or frameworks, with just an editor, a browser, and web standards.
             </p>
-            <p>
+            <p data-i18n="content.desc_about_2">
                 Specifically, that means these topics:
             </p>
             <dl>
-                <dt><a href="pages/components.html">Components</a></dt>
-                <dd>The use of Web Components as the basic building block for making higher-level primitives out of plain HTML, JavaScript and CSS, replacing the components of frameworks like React or Vue.</dd>
-                <dt><a href="pages/styling.html">Styling</a></dt>
-                <dd>Fully leveraging the abilities of modern CSS to replace the conveniences of CSS Modules, PostCSS, or SASS.</dd>
-                <dt><a href="pages/sites.html">Sites</a></dt>
-                <dd>Making a web project based on web components and deploying it for production without involving build tools, frameworks or server-side logic.</dd>
-                <dt><a href="pages/applications.html">Applications</a></dt>
-                <dd>How to build single-page web applications with vanilla techniques, how to do routing, and how to manage state.</dd>
+                <dt><a href="pages/components.html" data-i18n="nav.components">Components</a></dt>
+                <dd data-i18n="nav.components_desc">The use of Web Components as the basic building block for making higher-level primitives out of plain HTML, JavaScript and CSS, replacing the components of frameworks like React or Vue.</dd>
+                <dt><a href="pages/styling.html" data-i18n="nav.styling">Styling</a></dt>
+                <dd data-i18n="nav.styling_desc">Fully leveraging the abilities of modern CSS to replace the conveniences of CSS Modules, PostCSS, or SASS.</dd>
+                <dt><a href="pages/sites.html" data-i18n="nav.sites">Sites</a></dt>
+                <dd data-i18n="nav.sites_desc">Making a web project based on web components and deploying it for production without involving build tools, frameworks or server-side logic.</dd>
+                <dt><a href="pages/applications.html" data-i18n="nav.applications">Applications</a></dt>
+                <dd data-i18n="nav.applications_desc">How to build single-page web applications with vanilla techniques, how to do routing, and how to manage state.</dd>
             </dl>
             <p>
-                This tutorial is meant for those who already know their way around HTML, CSS and JavaScript. If you're just starting out learning web development and are looking for resources to get going, then this is not the site for you yet. 
-                You can get started at <a href="https://www.theodinproject.com/paths/foundations/courses/foundations">The Odin Project Foundations Course</a> 
-                or the <a href="https://developer.mozilla.org/en-US/docs/Learn">MDN Learn web development</a> learning path. 
+                <span data-i18n="content.desc_about_3_part1">This tutorial is meant for those who already know their way around HTML, CSS and JavaScript. If you're just starting out learning web development and are looking for resources to get going, then this is not the site for you yet. 
+                You can get started at</span> <a href="https://www.theodinproject.com/paths/foundations/courses/foundations" data-i18n="link.odin_project">The Odin Project Foundations Course</a> 
+                <span data-i18n="content.desc_about_3_part2">or the</span> <a href="https://developer.mozilla.org/en-US/docs/Learn" data-i18n="link.mdn_learn">MDN Learn web development</a> <span data-i18n="content.desc_about_3_part3">learning path.</span> 
             </p>
         </section>
         <section>
-            <h2>
+            <h2 data-i18n="content.title_frameworks">
                 Wait, but why
             </h2>
-            <p>
+            <p data-i18n="content.content_frameworks_1">
                 Modern web development frameworks are powerful for developing rich well-structured web applications quickly,
                 and for this reason worth your time to learn.
             </p>
-            <p>
+            <p data-i18n="content.content_frameworks_2">
                 However, this rich functionality comes at the cost of framework and tooling complexity,
                 and the resulting projects often require regular maintenance to keep secure and up to date.
             </p>
-            <p>
+            <p data-i18n="content.content_frameworks_3">
                 The plain vanilla style of web development makes a different choice,
                 trading off a few short term comforts for long term benefits like simplicity and being effectively zero-maintenance.
                 This is made possible by today's browser landscape, which offers excellent web standards support.
@@ -78,16 +83,16 @@
         </section>
         <section>
             <hr />
-            <h2>Up next</h2>
-            Learn how to use <a href="pages/components.html">Web Components</a> to compose content, style and behavior.
+            <h2 data-i18n="content.title_upnext">Up next</h2>
+            <p data-i18n="content.content_upnext">Learn how to use <a href="pages/components.html">Web Components</a> to compose content, style and behavior.</p>
         </section>
     </main>
 
     <footer>
         <hr />
         <div class="contact">
-            <a href="https://github.com/jsebrech/plainvanilla">GitHub</a>
-            <a href="https://sebrechts.net/">Contact</a>
+            <a href="https://github.com/jsebrech/plainvanilla" data-i18n="link.github">GitHub</a>
+            <a href="https://sebrechts.net/" data-i18n="footer.contact">Contact</a>
         </div>
         <x-analytics></x-analytics>
     </footer>
