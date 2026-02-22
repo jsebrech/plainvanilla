@@ -1,35 +1,51 @@
 html {
-    margin:    0 auto;
-    max-width: 800px;
-    background-color: var(--background-color);
+    margin: 0 auto;
+    max-width: 960px;
+    background-color: var(--background-color-html);
+    box-shadow: 0 0 0.5em var(--background-color-html-shadow);
     color: var(--text-color);
+    overscroll-behavior: none;
 }
 
 body {
     font-family: var(--font-system);
     font-weight: normal;
-    margin: 1.5em;
+    background-color: var(--background-color);
+    padding: 3em 5em;
+    padding-bottom: 0;
+    /* make room for navigation */
+    padding-top: 8em;
 }
 
 a, a:hover {
     color: var(--link-color);
 }
 
-header {
-    margin-bottom: 1.5em;
-    text-align: center;
+h1 {
+    font-size: 3.5em;
+    position: relative;
+    left: -5px;
+    font-weight: lighter;
+    margin-bottom: 0.4em;
 }
 
-h1, h2, h3, h4, p {
-    margin-bottom: 0.5em;
+h2, h3, h4, p {
+    margin-bottom: 1em;
 }
 
 h2 {
     margin-top: 1em;
+    font-size: 1.5em;
+    font-weight: lighter;
 }
 
 h3 {
     margin-top: 1em;
+    font-size: 1.2em;
+}
+
+h4 {
+    font-size: 1em;
 }
 
 ul {
@@ -49,131 +65,22 @@ dt {
     margin: 0.5em 0;
 }
 
+dt::before {
+    content: "";
+    border-left: 3px solid var(--base-color);
+    margin: 0 calc(1em - 3px) 0 0;
+}
+
 dd {
-    margin-left: 1.5em;
+    margin-left: 1em;
     margin-bottom: 1em;
-}
-
-nav ol {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    margin: 1em 0;
-    padding: 0;
-    list-style-type: none;
-}
-
-nav li {
-    display: inline-block;
-    padding: 0.5em 0.7em;
-    border: none;
-    background-color: var(--nav-background-color);
-    border-left: 2px solid var(--nav-separator-color);
-    border-bottom: 2px solid var(--background-color);
-}
-
-nav li:hover, nav li:has(a[aria-current]) {
-    filter: brightness(1.03);
-}
-
-nav li a {
-    color: inherit;
-}
-
-nav li a[aria-current] {
-    text-decoration: none;
-}
-
-code {
-    color: var(--code-text-color);
-    background-color: var(--code-text-color-bg);
-    padding: 0.15em 0.25em;
-    overflow-wrap: break-word;
-    font-family: var(--font-system-code);
-    font-size: var(--font-system-code-size);
-}
-
-x-code-viewer {
-    border: 1px solid var(--border-color);
-    margin: 1em 0;
-    min-height: 6em;
-    max-height: 30em;
-}
-
-x-tab-panel {
-    border: 1px solid var(--border-color);
-    margin: 1em 0;
-    min-height: 8em;
-}
-
-x-tab-panel x-code-viewer {
-    border: none;
-    margin: 0;
-}
-
-iframe {
-    display: block;
-    width: 100%;
-    margin: 1em 0;
-}
-
-aside {
-    border: 1px dotted var(--border-color);
-    margin: 2em 0;
-    padding-bottom: 0.5em;
-}
-
-aside h3, 
-aside h4 {
-    color: var(--panel-title-color);
-    background-color: var(--panel-title-color-bg);
-    padding: 1em;
-    font-size: 100%;
-    margin: 0;
-}
-
-aside p {
-    margin: 1em;
-    margin-bottom: 0.5em;
-}
-
-aside x-code-viewer {
-    margin: 1em;
-}
-
-footer {
-    margin: 2.5em 0;
-    text-align: center;
-}
-
-footer .contact a {
-    color: inherit;
-    background-repeat: no-repeat;
-    background-position: center left;
-    background-size: contain;
-    margin: 0 0.5em;
-}
-
-footer .contact a:hover {
-    color: var(--link-color);
-}
-
-footer .contact a[href*="github.com"] {
-    background-image: url("../lib/akar-icons/github-fill.svg");
-    padding-left: 2em;
-}
-
-footer .contact a[href*="sebrechts.net"] {
-    background-image: url("../lib/akar-icons/envelope.svg");
-    padding-left: 2em;
 }
 
 hr {
     border: none;
-    border-top: 1px dotted var(--border-color);
-    margin: 2em auto;
-    width: 50%;
+    border-top: 1px solid var(--border-color);
+    margin: -0.5em 0 1em 0;
+    width: 100%;
 }
 
 section {
@@ -204,7 +111,7 @@ section:hover > a.section-anchor:hover {
 }
 
 blockquote {
-    border-left: 10px solid var(--nav-background-color);
+    border-left: 10px solid var(--base-color-tint-light);
     margin: 1.5em 0 1em 0.5em;
     padding: 0.5em 10px;
     quotes: "\201C""\201D""\2018""\2019";
@@ -219,4 +126,235 @@ cite {
 
 table {
     margin-bottom: 1em;
+}
+
+/* page header and navigation */
+
+header {
+    margin-bottom: 1.5em;
+    text-align: left;
+}
+
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 3em 0 0 0;
+    /* make content scroll underneath it */
+    background-color: var(--background-color);
+    z-index: 1;
+    box-shadow: 0 1em 1em var(--background-color);
+    clip-path: inset(0px 0 -2em 0);
+}
+
+nav ol {
+    display: flex;
+    margin: 0 5em;
+    list-style-type: none;
+    padding: 0.7em 0;
+
+    border-bottom: 1px solid black;
+}
+
+nav ol a {
+    text-decoration: none;
+    color: inherit;
+}
+
+nav ol a:hover {
+    text-decoration: underline;
+    color: inherit;
+}
+
+nav ol a[aria-current],
+nav ol a[aria-current]:hover {
+    font-weight: bold;
+    text-decoration: none;
+}
+
+nav ol li {
+    display: inline;
+}
+
+nav ol li::before {
+    content: "";
+    border-left: 1px solid black;
+    margin: 0 0.4em;
+}
+
+nav ol li:first-child::before {
+    display:none;
+}
+
+nav ol li.nav-right {
+    margin-left: auto;
+}
+
+nav ol li.nav-right::before {
+    display: none;
+}
+
+/* (hidden) skip to content link */
+
+a.skip-to-content {
+  /* from https://www.a11y-collective.com/blog/skip-to-main-content/ */
+  position: absolute;
+  left: -9999px;
+  z-index: 999;
+  padding: 1em;
+  background-color: black;
+  color: white;
+  opacity: 0;
+}
+
+a.skip-to-content:focus {
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 1;
+}
+
+main[id] {
+    /* take sticky header into account when scrolling via skip content */
+    scroll-margin-top: 8em;
+}
+
+/* code examples */
+
+code {
+    color: var(--code-text-color);
+    background-color: var(--code-text-color-bg);
+    overflow-wrap: break-word;
+    font-family: var(--font-system-code);
+    font-size: var(--font-system-code-size);
+}
+
+x-code-viewer {
+    border: 1px solid var(--border-color);
+    margin: 1em 0 1.5em 0;
+    min-height: 6em;
+    max-height: 30em;
+}
+
+x-tab-panel {
+    border: 1px solid var(--border-color);
+    margin: 1em 0 1.5em 0;
+    min-height: 8em;
+}
+
+x-tab-panel x-code-viewer {
+    border: none;
+    margin: 0;
+}
+
+iframe {
+    display: block;
+    width: 100%;
+    margin: 1em 0;
+}
+
+/* asides */
+
+aside {
+    position: relative;
+    background-color: var(--background-color-mute);
+    text-align: left;
+    margin: 3em 0 3em -5em;
+    padding: 3em 3em 3em 5em;
+}
+
+aside::before {
+    position: absolute;
+    left: 3.5em;
+    top: 3em;
+    bottom: 3em;
+    content: "";
+    border-left: 3px solid var(--base-color-tint-light);
+}
+
+aside.aside-mirror {
+    margin: 3em -5em 3em 0;
+    padding: 3em 5em 3em 4em;
+    text-align: right;
+}
+
+aside.aside-mirror::before {
+    left: auto;
+    right: 3.5em;
+}
+
+aside h2, aside h3, aside h4 {
+    margin: 0;
+}
+
+aside p {
+    margin: 1em 0 0.5em 0;
+}
+
+aside x-code-viewer {
+    margin: 1em;
+}
+
+/* page footer */
+
+footer {
+    margin: 4em -5em;
+    padding: 3em 5em;
+    margin-bottom: 0;
+    background-color: var(--background-color-invert);
+    color: var(--text-color-invert);
+    text-align: right;
+}
+
+footer .top-link {
+    margin-top: 1.5em;
+    font-size: 0.9em;
+}
+
+footer a {
+    color: inherit;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+    color: inherit;
+}
+
+footer .contact a::before {
+    font-size: 0.9em;
+    content: "";
+    border-left: 1px solid var(--text-color-invert);
+    margin: 0 0.4em 0 0.2em;
+}
+
+footer .contact a:first-child::before {
+    display:none;
+}
+
+/* utilities */
+
+.hero-text {
+    font-size: 1.2em;
+    line-height: 1.9em;
+    margin-bottom: 1.8em;
+}
+
+a.button {
+    display: inline-block;
+    font-size: 1.1em;
+    color: var(--base-color-shade-darker);
+    background-color: var(--base-color);
+    margin-top: 0.5em;
+    padding: 0.5em 3em;
+    border-radius: 5px;
+    box-shadow: 0.1em 0.1em 0.2em -0.1em var(--background-color-html);
+    text-decoration: none;
+}
+
+a.button:hover {
+    background-color: var(--base-color-tint-light);
 }

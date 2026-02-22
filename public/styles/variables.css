@@ -6,15 +6,24 @@
     --font-system-code: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
     --font-system-code-size: 0.8rem;
 
-    --background-color: white;
+    --base-color: #FFCC4D;
+    --base-color-tint-light: #ffdb82;
+    --base-color-tint-lighter: #fff5db;
+    --base-color-shade-dark: #b38f36;
+    --base-color-shade-darker: #191408;
+
+    --background-color-html: #969696;
+    --background-color-html-shadow: #404040;
+    --background-color: #fdfdfd;
+    --background-color-mute: #f2f2f2;
 
     --text-color: black;
     --text-color-mute: hsl(0, 0%, 40%);
 
-    --link-color: darkblue;
+    --background-color-invert: var(--base-color-shade-darker);
+    --text-color-invert: white;
 
-    --nav-separator-color: goldenrod;
-    --nav-background-color: hsl(50, 50%, 95%);
+    --link-color: black;
 
     --border-color: black;
 
@@ -22,5 +31,5 @@
     --code-text-color-bg: inherit;
 
     --panel-title-color: black;
-    --panel-title-color-bg: cornsilk;
+    --panel-title-color-bg: var(--base-color-tint-lighter);
 }

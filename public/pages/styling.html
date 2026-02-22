@@ -13,7 +13,7 @@
 <body>
     <noscript><strong>Please enable JavaScript to view this page correctly.</strong></noscript>
     <header>
-        <h1>Plain Vanilla Styling</h1>
+        <h1>Styling</h1>
         <nav>
             <ol>
                 <li><a href="../index.html">Welcome</a></li>
@@ -21,7 +21,7 @@
                 <li><a href="#" aria-current="page">Styling</a></li>
                 <li><a href="sites.html">Sites</a></li>
                 <li><a href="applications.html">Applications</a></li>
-                <li><a href="../blog/">Blog</a></li>
+                <li class="nav-right"><a href="../blog/">Blog</a></li>
             </ol>
         </nav>
     </header>
@@ -285,18 +285,21 @@
             <p><strong>Bottom-line:</strong> SASS is a lot more powerful than PostCSS, and while many of its features have a vanilla alternative it is not as easy to replace entirely. YMMV whether the added complexity of the SASS preprocessor is worth the additional abilities.</p>
         </section>
         <section>
-            <hr />
             <h2>Up next</h2>
-            Learn about <a href="sites.html">making vanilla sites</a> with web components.
+            <hr />
+            <p>Learn about making vanilla sites with web components.</p>
+            <p><a href="sites.html" class="button">Make Sites</a></p>
         </section>
     </main>
 
     <footer>
-        <hr />
         <div class="contact">
             <a href="https://github.com/jsebrech/plainvanilla">GitHub</a>
             <a href="https://sebrechts.net/">Contact</a>
         </div>
+        <p class="top-link">
+            <a href="#top">Back to top</a>
+        </p>
         <x-analytics></x-analytics>
     </footer>
 </body>

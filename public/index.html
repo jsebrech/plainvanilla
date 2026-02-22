@@ -4,19 +4,42 @@
     <title>Plain Vanilla</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width" />
-    <meta name="description" content="An explainer for web development using only vanilla techniques.">
+    <meta name="description" content="An explainer for web development using only vanilla techniques. No tools, no frameworks &mdash; just HTML, CSS, and JavaScript.">
     <link rel="icon" href="favicon.ico">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="stylesheet" href="index.css">
     <link rel="canonical" href="https://plainvanillaweb.com/index.html" />
-    <script type="module" src="index.js" defer></script>
+    <style type="text/css">
+        dl {
+            margin-left: -1em;
+        }
+
+        #text-and-logo {
+
+            display: flex;
+            align-items: flex-start;
+            gap: 2rem;
+
+            > div {
+                flex: 1 1 auto;
+            }
+
+            > svg {
+                margin-top: 1em;
+                flex: 0 0 auto;
+                height: 19em;
+                width: auto;
+            }
+        }
+    </style>
 </head>
 <body>
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
     <header>
         <h1>Plain Vanilla</h1>
-        <p>
-            An explainer for web development using only vanilla techniques. 
-            No tools, no frameworks&nbsp;&mdash; just HTML, CSS, and JavaScript.
+        <p class="hero-text">
+            An explainer for web development using only vanilla techniques.<br>
+            No tools, no frameworks &mdash; just HTML, CSS, and JavaScript.
         </p>
         <nav>
             <ol>
@@ -25,71 +48,91 @@
                 <li><a href="pages/styling.html">Styling</a></li>
                 <li><a href="pages/sites.html">Sites</a></li>
                 <li><a href="pages/applications.html">Applications</a></li>
-                <li><a href="blog/">Blog</a></li>
+                <li class="nav-right"><a href="blog/">Blog</a></li>
             </ol>
         </nav>
     </header>
 
-    <main>
-        <section>
-            <h2>
-                About this site
-            </h2>
-            <p>
-                This is an overview of the major techniques used to make web sites and web applications
-                without making use of build tools or frameworks, with just an editor, a browser, and web standards.
-            </p>
-            <p>
-                Specifically, that means these topics:
-            </p>
-            <dl>
-                <dt><a href="pages/components.html">Components</a></dt>
-                <dd>The use of Web Components as the basic building block for making higher-level primitives out of plain HTML, JavaScript and CSS, replacing the components of frameworks like React or Vue.</dd>
-                <dt><a href="pages/styling.html">Styling</a></dt>
-                <dd>Fully leveraging the abilities of modern CSS to replace the conveniences of CSS Modules, PostCSS, or SASS.</dd>
-                <dt><a href="pages/sites.html">Sites</a></dt>
-                <dd>Making a web project based on web components and deploying it for production without involving build tools, frameworks or server-side logic.</dd>
-                <dt><a href="pages/applications.html">Applications</a></dt>
-                <dd>How to build single-page web applications with vanilla techniques, how to do routing, and how to manage state.</dd>
-            </dl>
-            <p>
-                This tutorial is meant for those who already know their way around HTML, CSS and JavaScript. If you're just starting out learning web development and are looking for resources to get going, then this is not the site for you yet. 
-                You can get started at <a href="https://www.theodinproject.com/paths/foundations/courses/foundations">The Odin Project Foundations Course</a> 
-                or the <a href="https://developer.mozilla.org/en-US/docs/Learn">MDN Learn web development</a> learning path. 
-            </p>
+    <main id="main-content">
+        <section id="text-and-logo">
+            <div>
+                <p class="hero-text">
+                    Learn how to make web sites and web applications without build tools or frameworks,
+                    with just an editor, a browser, and web standards.
+                </p>
+                <dl>
+                    <dt><strong><a href="pages/components.html">Components</a></strong></dt>
+                    <dd>Use web components to make higher-level primitives<br>
+                        out of plain HTML, JavaScript, and CSS.</dd>
+                    <dt><strong><a href="pages/styling.html">Styling</a></strong></dt>
+                    <dd>Leverage modern CSS to replace the conveniences<br>
+                        of CSS Modules, PostCSS, or SASS.</dd>
+                    <dt><strong><a href="pages/sites.html">Sites</a></strong></dt>
+                    <dd>Make a vanilla web site and get it online without<br>
+                        build tools, frameworks or server-side logic.</dd>
+                    <dt><strong><a href="pages/applications.html">Applications</a></strong></dt>
+                    <dd>Craft single-page applications with vanilla strategies<br>
+                        for client-side routing and managing state.</dd>
+                </dl>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36">
+                <path fill="#FFCC4D" d="M17.182 23H9.818s1.353 6.5 2.351 9.752C13.167 36.006 16.773 36 17.591 36c1.635 0 4.424.006 5.422-3.248C24.01 29.5 26.183 23 26.183 23h-9.001z"/>
+                <path fill="#FFAC33" d="M18 28c3.46 0 5.831-.751 7.097-1.725.349-1.06.653-1.977.85-2.569-.15-.25-.373-.487-.67-.706H10.723c-.341.252-.585.526-.732.817.109.508.262 1.214.447 2.037C11.527 27.024 14.055 28 18 28z"/>
+                <path fill="#FFCC4D" d="M9 20v3c0 1.657 4.03 3 9 3s9-1.343 9-3v-3H9z"/>
+                <path fill="#F4900C" d="M26.183 20.5c0 1.381-3.664 2.5-8.183 2.5s-8.182-1.119-8.182-2.5S13.481 18 18 18s8.183 1.119 8.183 2.5z"/>
+                <path fill="#FFE8B6" d="M26.902 13.908c.218-.939.159-1.941-.258-2.942-.404-.969-1.106-1.726-1.956-2.239.19-.709.154-1.469-.179-2.228-.501-1.145-1.589-1.903-2.814-2.113.152-.341.214-.76.039-1.288-.595-1.782-2.97-.584-4.751-2.959-1.476.885-1.777 2.208-1.707 3.315-1.352.241-2.132.532-2.132.532v.001c-.808.327-1.379 1.119-1.379 2.044 0 .49.165.939.436 1.305l-.48.179.001.002c-1.384.517-2.36 1.767-2.36 3.229 0 .622.191 1.197.5 1.702C8.176 13.198 7 14.838 7 16.754c0 2.495 1.989 4.518 4.508 4.712 2.663.826 7.99.6 12.076-.091 2.371-.4 4.791-1.82 4.791-4.225 0-1.295-.576-2.445-1.473-3.242z"/><path d="M14.75 18.212c-2.24.634-5.602.796-7.39.314.725 1.744 2.478 2.977 4.535 2.977 6.145 0 12.417-4.183 12.417-4.183 1.969-1.226 2.972-3.16 2.649-5.188-2.042 2.888-9.869 5.417-12.211 6.08zm-1.615-3.981c4.739 0 9.575-3.069 9.575-3.069 1.583-.937 2.372-2.438 2.02-3.994-6.026 3.918-11.564 5.07-14.918 5.198.633 1.104 1.876 1.865 3.323 1.865zm-1.302-7.676c.236.964 1.1 1.681 2.136 1.681.655 0 1.312-.111 1.936-.277.384-.116.764-.24 1.143-.375 1.456-.565 2.517-1.291 2.517-1.291 1.056-.677 2.143-1.873 2.143-1.873s.369-.831-.25-1.319c-1.745 1.748-7.313 3.478-9.625 3.454z" fill="#FFD983"/>
+            </svg>
         </section>
         <section>
-            <h2>
-                Wait, but why
-            </h2>
-            <p>
-                Modern web development frameworks are powerful for developing rich well-structured web applications quickly,
-                and for this reason worth your time to learn.
-            </p>
-            <p>
-                However, this rich functionality comes at the cost of framework and tooling complexity,
-                and the resulting projects often require regular maintenance to keep secure and up to date.
-            </p>
-            <p>
-                The plain vanilla style of web development makes a different choice,
-                trading off a few short term comforts for long term benefits like simplicity and being effectively zero-maintenance.
-                This is made possible by today's browser landscape, which offers excellent web standards support.
-            </p>
+            <aside>
+                <h2>Why go plain vanilla?</h2>
+                <p>
+                    Modern web development frameworks offer rich functionality,
+                    but this comes at the cost of framework and tooling complexity.
+                    The plain vanilla style of web development takes a different path,
+                    trading off short term comforts for long term benefits like simplicity 
+                    and being effectively zero-maintenance.
+                </p>
+            </aside>
         </section>
         <section>
-            <hr />
+            <aside class="aside-mirror">
+                <h2>Who is this for?</h2>
+                <p>
+                    This tutorial is meant for those who already know their way around HTML, CSS, and JavaScript,
+                    and are looking to press the eject button on tooling complexity.
+                </p>
+                <p>
+                    If you're just starting out learning web development then this is not the site for you yet. 
+                    You can get started at <a href="https://htmlforpeople.com/">HTML for People</a> 
+                    or <a href="https://www.theodinproject.com/paths/foundations/courses/foundations">The Odin Project Foundations Course</a>.
+                </p>
+            </aside>
+        </section>
+        <section>
             <h2>Up next</h2>
-            Learn how to use <a href="pages/components.html">Web Components</a> to compose content, style and behavior.
+            <hr />
+            <p>Learn how to use Web Components to compose content, style and behavior.</p>
+            <p><a href="pages/components.html" class="button">Get Started</a></p>
         </section>
     </main>
 
     <footer>
-        <hr />
         <div class="contact">
-            <a href="https://github.com/jsebrech/plainvanilla">GitHub</a>
             <a href="https://sebrechts.net/">Contact</a>
+            <a href="https://github.com/jsebrech/plainvanilla">GitHub</a>
         </div>
+        <p class="top-link">
+            <a href="#top">Back to top</a>
+        </p>
         <x-analytics></x-analytics>
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const { registerAnalyticsComponent } = await import("./components/analytics/analytics.js");
+            registerAnalyticsComponent();
+        });
+    </script>
 </body>
 </html>

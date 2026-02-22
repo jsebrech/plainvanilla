@@ -18,7 +18,9 @@
         "ignore": [
           "view-transition-name",
           "text-size-adjust",
-          "text-size-adjust: none"
+          "text-size-adjust: none",
+          "overscroll-behavior",
+          "overscroll-behavior: none"
         ]
       }
     ]
