@@ -32,4 +32,15 @@
 
     --panel-title-color: black;
     --panel-title-color-bg: var(--base-color-tint-lighter);
+
+    --body-padding-lr: 5em;
+    --body-padding-tb: 3em;
+
+}
+
+@media screen and (max-width: 600px) {
+    :root {
+        --body-padding-lr: 3em;
+        --body-padding-tb: 3em;
+    }
 }

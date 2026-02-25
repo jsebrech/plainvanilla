@@ -10,7 +10,7 @@ class BlogHeader extends HTMLElement {
         template.innerHTML = html`
             <h1>${title}</h1>
             <p>A blog about vanilla web development &mdash; no frameworks, just standards.</p>
-            <nav aria-label="breadcrumb">
+            <nav aria-label="breadcrumb" id="menu-nav" popover>
                 <ol>
                     <li><a href="${import.meta.resolve('../../index.html')}">Plain Vanilla</a></li>
                     <li><a href="${import.meta.resolve('../index.html')}">Blog</a></li>
@@ -29,6 +29,9 @@ class BlogHeader extends HTMLElement {
                     </small>
                 ` : ''}
             </nav>
+            <button popovertarget="menu-nav" popovertargetaction="toggle" aria-label="menu">
+                &mldr;
+            </button>
         `;
         this.insertBefore(template.content, this.firstChild);
     }

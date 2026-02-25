@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="index.css">
     <link rel="canonical" href="https://plainvanillaweb.com/index.html" />
     <style type="text/css">
+
+        h1 {
+            margin-bottom: 0.4em;
+        }
+
         dl {
             margin-left: -1em;
         }
@@ -31,6 +36,19 @@
                 width: auto;
             }
         }
+
+        @media screen and (max-width: 800px) {
+            #text-and-logo > svg {
+                height: 12em;
+            }
+        }
+
+        @media screen and (max-width: 600px) {
+            #text-and-logo > svg {
+                display: none;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -41,7 +59,7 @@
             An explainer for web development using only vanilla techniques.<br>
             No tools, no frameworks &mdash; just HTML, CSS, and JavaScript.
         </p>
-        <nav>
+        <nav id="menu-nav" popover aria-label="main">
             <ol>
                 <li><a href="#" aria-current="page">Welcome</a></li>
                 <li><a href="pages/components.html">Components</a></li>
@@ -51,6 +69,9 @@
                 <li class="nav-right"><a href="blog/">Blog</a></li>
             </ol>
         </nav>
+        <button popovertarget="menu-nav" popovertargetaction="toggle" aria-label="menu">
+            &mldr;
+        </button>
     </header>
 
     <main id="main-content">

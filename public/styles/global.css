@@ -11,10 +11,10 @@ body {
     font-family: var(--font-system);
     font-weight: normal;
     background-color: var(--background-color);
-    padding: 3em 5em;
+    padding: var(--body-padding-tb) var(--body-padding-lr);
     padding-bottom: 0;
     /* make room for navigation */
-    padding-top: 8em;
+    padding-top: calc(var(--body-padding-tb) + 5em);
 }
 
 a, a:hover {
@@ -26,7 +26,6 @@ h1 {
     position: relative;
     left: -5px;
     font-weight: lighter;
-    margin-bottom: 0.4em;
 }
 
 h2, h3, h4, p {
@@ -137,6 +136,7 @@ header {
 
 nav {
     position: fixed;
+    border: none;
     top: 0;
     left: 0;
     right: 0;
@@ -153,7 +153,7 @@ nav {
 
 nav ol {
     display: flex;
-    margin: 0 5em;
+    margin: 0 var(--body-padding-lr);
     list-style-type: none;
     padding: 0.7em 0;
 
@@ -196,6 +196,65 @@ nav ol li.nav-right {
 
 nav ol li.nav-right::before {
     display: none;
+}
+
+/* responsive nav menu and other content on smaller screens */
+
+@media screen and (max-width: 600px) {
+
+    body {
+        padding-top: var(--body-padding-tb);
+    }
+
+    h1 {
+        font-size: 3em;
+    }
+
+    nav[popover] {
+        top: 4em;
+        right: 1em;
+        padding-top: 1em;
+        background-color: color-mix(in srgb, var(--background-color) 90%, transparent);
+    }
+
+    button[popovertarget] {
+        position: absolute;
+        top: 0;
+        right: 0.5em;
+        padding: 0.5em;
+        font-size: 2em;
+        background: none;
+        color: inherit;
+        border: none;
+    }
+
+    nav ol {
+        flex-direction: column;
+    }
+
+    nav ol li {
+        text-align: right;
+        font-size: 1.4em;
+    }
+
+    nav ol li::before {
+        border-left: none;
+        margin: 0;
+    }
+
+    nav ol li.nav-right {
+        margin-left: 0;
+    }
+}
+
+@media screen and (min-width: 601px) {
+    nav[popover] {
+        display: block;
+    }
+
+    button[popovertarget] {
+        display: none;
+    }
 }
 
 /* (hidden) skip to content link */
@@ -262,13 +321,13 @@ aside {
     position: relative;
     background-color: var(--background-color-mute);
     text-align: left;
-    margin: 3em 0 3em -5em;
-    padding: 3em 3em 3em 5em;
+    margin: 3em 0 3em calc(var(--body-padding-lr) * -1);
+    padding: 3em 3em 3em var(--body-padding-lr);
 }
 
 aside::before {
     position: absolute;
-    left: 3.5em;
+    left: calc(var(--body-padding-lr) * 0.5);
     top: 3em;
     bottom: 3em;
     content: "";
@@ -276,14 +335,14 @@ aside::before {
 }
 
 aside.aside-mirror {
-    margin: 3em -5em 3em 0;
-    padding: 3em 5em 3em 4em;
+    margin: 3em calc(var(--body-padding-lr) * -1) 3em 0;
+    padding: 3em var(--body-padding-lr) 3em 4em;
     text-align: right;
 }
 
 aside.aside-mirror::before {
     left: auto;
-    right: 3.5em;
+    right: calc(var(--body-padding-lr) * 0.5);
 }
 
 aside h2, aside h3, aside h4 {
@@ -301,8 +360,8 @@ aside x-code-viewer {
 /* page footer */
 
 footer {
-    margin: 4em -5em;
-    padding: 3em 5em;
+    margin: 4em calc(var(--body-padding-lr) * -1);
+    padding: 3em var(--body-padding-lr);
     margin-bottom: 0;
     background-color: var(--background-color-invert);
     color: var(--text-color-invert);

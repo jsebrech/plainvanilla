@@ -14,12 +14,15 @@
     <header>
         <h1>Plain Vanilla Blog</h1>
         <p class="hero-text">A blog about vanilla web development&nbsp;&mdash; no frameworks, just standards.</p>
-        <nav aria-label="breadcrumb">
+        <nav aria-label="breadcrumb" id="menu-nav" popover>
             <ol>
                 <li><a href="../index.html">Plain Vanilla</a></li>
                 <li><a href="#" aria-current="page">Blog</a></li>
             </ol>
         </nav>
+        <button popovertarget="menu-nav" popovertargetaction="toggle" aria-label="menu">
+            &mldr;
+        </button>
     </header>
     <main>
         <h2>Featured</h2>

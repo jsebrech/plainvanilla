@@ -8,8 +8,8 @@ class BlogFooter extends HTMLElement {
                 ${mastodonUrl ? 
                     html`<p style="text-align: center"><a href="${mastodonUrl}">Discuss on Mastodon</a></p>` : ''}
                 <div class="contact">
-                    <a href="https://github.com/jsebrech/plainvanilla">GitHub</a>
                     <a href="https://sebrechts.net/">Contact</a>
+                    <a href="https://github.com/jsebrech/plainvanilla">GitHub</a>
                 </div>
                 <p class="top-link">
                     <a href="#top">Back to top</a>

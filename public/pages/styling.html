@@ -14,7 +14,7 @@
     <noscript><strong>Please enable JavaScript to view this page correctly.</strong></noscript>
     <header>
         <h1>Styling</h1>
-        <nav>
+        <nav id="menu-nav" popover aria-label="main">
             <ol>
                 <li><a href="../index.html">Welcome</a></li>
                 <li><a href="components.html">Components</a></li>
@@ -24,6 +24,9 @@
                 <li class="nav-right"><a href="../blog/">Blog</a></li>
             </ol>
         </nav>
+        <button popovertarget="menu-nav" popovertargetaction="toggle" aria-label="menu">
+            &mldr;
+        </button>
     </header>
     <main>
         <section>
@@ -294,8 +297,8 @@
 
     <footer>
         <div class="contact">
-            <a href="https://github.com/jsebrech/plainvanilla">GitHub</a>
             <a href="https://sebrechts.net/">Contact</a>
+            <a href="https://github.com/jsebrech/plainvanilla">GitHub</a>
         </div>
         <p class="top-link">
             <a href="#top">Back to top</a>

@@ -100,27 +100,40 @@
     margin-bottom: 1.5em;
 }
 
+
+main img {
+    margin: 0.5em 0;
+}
+
+.comments {
+    margin-top: 2em;
+    text-align: center;
+}
+
+/* header section */
+
 blog-header {
     display: block;
     margin-bottom: 1.5em;
-    text-align: center;
+    text-align: left;
 }
 
 blog-header nav {
     margin-bottom: 2em;
 }
 
-main img {
-    margin: 0.5em 0;
+blog-header img {
+    margin-top: 0.5em;
+}
+
+@media screen and (max-width: 600px) {
+    h1 {
+        font-size: 2.5em;
+    }
 }
 
 @media (scripting: none) {
     blog-header::before {
         content: 'Please enable scripting to view the navigation'
     }
-}
-
-.comments {
-    margin-top: 2em;
-    text-align: center;
 }
