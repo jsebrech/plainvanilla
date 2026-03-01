@@ -25,3 +25,4 @@ https://plainvanillaweb.com/blog/articles/2025-06-12-view-transitions/index.html
 https://plainvanillaweb.com/blog/articles/2025-06-25-routing/index.html
 https://plainvanillaweb.com/blog/articles/2025-07-13-history-architecture/index.html
 https://plainvanillaweb.com/blog/articles/2025-07-16-local-first-architecture/index.html
+https://plainvanillaweb.com/blog/articles/2026-03-01-redesigning-plain-vanilla/index.html
