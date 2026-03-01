@@ -322,27 +322,13 @@ aside {
     background-color: var(--background-color-mute);
     text-align: left;
     margin: 3em 0 3em calc(var(--body-padding-lr) * -1);
-    padding: 3em 3em 3em var(--body-padding-lr);
-}
-
-aside::before {
-    position: absolute;
-    left: calc(var(--body-padding-lr) * 0.5);
-    top: 3em;
-    bottom: 3em;
-    content: "";
-    border-left: 3px solid var(--base-color-tint-light);
+    padding: 3em 2em 3em var(--body-padding-lr);
 }
 
 aside.aside-mirror {
     margin: 3em calc(var(--body-padding-lr) * -1) 3em 0;
-    padding: 3em var(--body-padding-lr) 3em 4em;
+    padding: 3em var(--body-padding-lr) 3em 2em;
     text-align: right;
-}
-
-aside.aside-mirror::before {
-    left: auto;
-    right: calc(var(--body-padding-lr) * 0.5);
 }
 
 aside h2, aside h3, aside h4 {
@@ -354,7 +340,7 @@ aside p {
 }
 
 aside x-code-viewer {
-    margin: 1em;
+    margin: 1em 0;
 }
 
 /* page footer */

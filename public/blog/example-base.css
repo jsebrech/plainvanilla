@@ -1,0 +1,21 @@
+/* base CSS used for examples in blog articles */
+
+@import "../styles/reset.css";
+@import "../styles/variables.css";
+
+html {
+    margin:    0 auto;
+    max-width: 800px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+body {
+    font-family: var(--font-system);
+    font-weight: normal;
+    margin: 1.5em;
+}
+
+a, a:hover {
+    color: var(--link-color);
+}
