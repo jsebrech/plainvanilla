@@ -13,17 +13,20 @@
 <body>
     <noscript><strong>Please enable JavaScript to view this page correctly.</strong></noscript>
     <header>
-        <h1>Plain Vanilla Components</h1>
-        <nav>
+        <h1>Components</h1>
+        <nav id="menu-nav" popover aria-label="main">
             <ol>
                 <li><a href="../index.html">Welcome</a></li>
                 <li><a href="#" aria-current="page">Components</a></li>
                 <li><a href="styling.html">Styling</a></li>
                 <li><a href="sites.html">Sites</a></li>
                 <li><a href="applications.html">Applications</a></li>
-                <li><a href="../blog/">Blog</a></li>
+                <li class="nav-right"><a href="../blog/">Blog</a></li>
             </ol>
         </nav>
+        <button popovertarget="menu-nav" popovertargetaction="toggle" aria-label="menu">
+            &mldr;
+        </button>
     </header>
     <main>
         <section id="what-are-they">
@@ -280,7 +283,7 @@
                     See the <code>index.html</code> above for where this is called.
                 </dd>
             </dl>
-            <aside>
+            <aside class="aside-mirror">
                 <h3>Detecting children</h3>
                 <p>
                     Knowing when children are added or removed to a web component is possible with a <a href="https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver">MutationObserver</a>, 
@@ -467,7 +470,7 @@
                 like built-in elements.
             </p>
 
-            <aside>
+            <aside class="aside-mirror">
                 <h3>Beware of XSS</h3>
                 <p>
                     Keen observers may have noticed there's a cross-site scripting bug in the above example.
@@ -516,23 +519,27 @@
                     And most importantly, it remains readable and maintainable.
                 </p>
                 <p>
-                    There's still more to say on web components. For a deeper dive into their lifecycle,
-                    check out this <a href="../blog/articles/2024-09-16-life-and-times-of-a-custom-element/">article on web component lifecycle</a>.
+                    There's still more to say on web components. For a deeper dive, 
+                    check out this article on <a href="../blog/articles/2024-09-16-life-and-times-of-a-custom-element/">the web component lifecycle</a>.
                 </p>
             </aside>
         </section>
         <section>
             <h2>Up next</h2>
-            Learn about <a href="styling.html">styling Web Components</a> in ways that are encapsulated and reusable.
+            <hr />
+            <p>Learn about styling Web Components in ways that are encapsulated and reusable.</p>
+            <p><a href="styling.html" class="button">Add Styling</a></p>
         </section>
     </main>
 
     <footer>
-        <hr />
         <div class="contact">
-            <a href="https://github.com/jsebrech/plainvanilla">GitHub</a>
             <a href="https://sebrechts.net/">Contact</a>
+            <a href="https://github.com/jsebrech/plainvanilla">GitHub</a>
         </div>
+        <p class="top-link">
+            <a href="#top">Back to top</a>
+        </p>
         <x-analytics></x-analytics>
     </footer>
 </body>

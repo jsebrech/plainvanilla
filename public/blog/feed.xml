@@ -6,10 +6,115 @@
     <logo>https://plainvanillaweb.com/android-chrome-512x512.png</logo>
     <link rel="alternate" href="https://plainvanillaweb.com/blog/"/>
     <link rel="self" href="https://plainvanillaweb.com/blog/feed.xml"/>
-    <updated>2025-07-16T12:00:00.000Z</updated>
+    <updated>2026-03-01T12:00:00.000Z</updated>
     <author>
         <name>Joeri Sebrechts</name>
     </author>
+    <entry>
+        <title><![CDATA[Redesigning Plain Vanilla]]></title>
+        <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2026-03-01-redesigning-plain-vanilla/"/>
+        <id>https://plainvanillaweb.com/blog/articles/2026-03-01-redesigning-plain-vanilla/</id>
+        <published>2026-03-01T12:00:00.000Z</published>
+        <updated>2026-03-01T12:00:00.000Z</updated>
+        <summary><![CDATA[Stepping out of my comfort zone.]]></summary>
+        <media:content url="https://plainvanillaweb.com/blog/articles/2026-03-01-redesigning-plain-vanilla/image.webp" type="image/webp" medium="image" />
+        <author><name><![CDATA[Joeri Sebrechts]]></name></author>
+        <content type="html"><![CDATA[
+        <p>
+            <em>Design</em> has never been the part of building for the web that I felt comfortable with.
+            I would hide behind the shorthand "I'm not a designer" and just use someone else's design,
+            or throw something together that I wasn't happy with.
+            The original design of Plain Vanilla was shipped very much in that not-happy-with-it mindset.
+        </p>
+        <p>
+            So when I decided to finally take a web design course, settling on <a href="https://designacademy.io/">DesignAcademy.io</a>
+            and had to pick a project to apply the course's learnings to, turning this site's design into something I liked was top of mind. 
+            This article documents how and why the new design came about.
+        </p>
+        <p>
+            The course starts out by making you really think about the content that you want to apply a design to.
+            They challenge you to make your web page work as a google doc, so I did precisely that.
+            In revisiting the landing page and thinking through its text, about half of the characters were cut,
+            without losing any of the meaning.
+        </p>
+        <p>
+            <strong>Lesson 1</strong>: less is more.
+        </p>
+        <p>
+            The next challenge the course throws at you is to decide on a style and to gather inspiration for your design.
+            What I wanted the design of Plain Vanilla to communicate was a sort of timelessness,
+            like a manual from an earlier time, that at the same time feels simple and fresh.
+            In looking for inspiration I settled on <a href="https://en.wikipedia.org/wiki/Swiss_Style_(design)">Swiss style</a>,
+            the 1950's minimalist style that manages to feel modern and old at the same time.
+            I absolutely adore the old manuals from the 50's, as in the image at the top of this page,
+            where minimalist design relying heavily on typography and spacing brings the content to the foreground.
+        </p>
+        <p>
+            With this style and many googled-together examples of it as inspiration in hand, I took on the next challenge:
+            make a first sketch of the design by simply copy pasting together elements of web sites and imagery
+            that inspired you into a rough first outline. The second half of the challenge:
+            take that design and layer your content over it. The result of this exercise was the initial redesign.
+            Notice how the left half is literally copy pasted together bits of screenshots.
+        </p>
+        <img src="https://plainvanillaweb.com/blog/articles/2026-03-01-redesigning-plain-vanilla/sketch-1.webp" alt="initial redesign sketch" style="border: 1px solid gray;">
+        <p>
+            <strong>Lesson 2</strong>: taking ideas from everywhere is a quick way to get started.
+        </p>
+        <p>
+            The rest of the course was a series of design exercises on top of that initial draft, 
+            to choose fonts, colors, imagery, to apply a grid system and figure out spacing, and to sort out the finer aspects.
+            Some elements of the initial redesign survived this process, others didn't, and what I ended up with
+            in the final Affinity Designer file is pretty close to the shipping redesign.
+        </p>
+        <img src="https://plainvanillaweb.com/blog/articles/2026-03-01-redesigning-plain-vanilla/sketch-2.webp" alt="final redesign sketch" style="width: 400px; border: 1px solid gray;">
+        <p>
+            <strong>Lesson 3</strong>: design doesn't have to be intimidating if you have the right process.
+        </p>
+        <p>
+            The actual work of translating of the design to code wasn't all that complicated.
+            There was already a good baseline of semantic markup, so the redesign ended up mostly constrained
+            to central CSS changes. Most of the time was taken up by responsiveness, something absent from the design mockup.
+            Many of the final decisions on the exact behavior were made to favor code simplicity.
+            This is for example why I decided not to add animations.
+        </p>
+        <p>
+            This is also why I chose the popover API as the strategy for having a responsive hamburger menu on small screens.
+            While the popover API presently only has 87% support on caniuse.com, I felt that for the audience of this site
+            support should be sufficient, and the dramatic code simplification it allowed was undeniable.
+            The nav menu works without <em>any</em> JavaScript. It presents as a toggled menu by default,
+            and uses CSS to become permanently visible on larger screens.
+        </p>
+        <div><pre><code>&lt;nav id="menu-nav" popover aria-label="main"&gt;
+    &lt;ol&gt;
+        &lt;li&gt;&lt;a href="#" aria-current="page"&gt;Welcome&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="pages/components.html"&gt;Components&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="pages/styling.html"&gt;Styling&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="pages/sites.html"&gt;Sites&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="pages/applications.html"&gt;Applications&lt;/a&gt;&lt;/li&gt;
+        &lt;li class="nav-right"&gt;&lt;a href="blog/"&gt;Blog&lt;/a&gt;&lt;/li&gt;
+    &lt;/ol&gt;
+&lt;/nav&gt;
+&lt;button popovertarget="menu-nav" popovertargetaction="toggle" aria-label="menu"&gt;
+    &amp;mldr;
+&lt;/button&gt;</code></pre></div>
+        <p>
+            This was also a good opportunity to revisit the website's content.
+            As it turns out, not a lot needed to change. Web standards don't actually change that often.
+            I did update some parts where evolving baseline support took away caveats 
+            (for example, CSS nesting is now safe to use), and added some links to newly baseline 
+            features like popover, dialog and mutually-exclusive details.
+        </p>
+        <p>
+            <strong>Lesson 4</strong>: when you build on top of web standards, you don't need to do a lot of maintenance.
+        </p>
+        <p>
+            In the end, I'm finally happy with the design of Plain Vanilla.
+            I still haven't gotten around to adding a dark mode, but it's on the todo list.
+            There may be some hiccups with the new design, so if you see any please let me know by making an issue on GitHub.
+            Do you like the new design, do you hate it? Please let me know.
+        </p>
+    ]]></content>
+    </entry>
     <entry>
         <title><![CDATA[Local-first web application architecture]]></title>
         <link rel="alternate" type="text/html" href="https://plainvanillaweb.com/blog/articles/2025-07-16-local-first-architecture/"/>
@@ -114,7 +219,7 @@
             To apply it to the web, let's start from the basic design of a client-side rendered web application
             as covered in the previous article:
         </p>
-        <img src="https://plainvanillaweb.com/blog/articles/2025-07-16-local-first-architecture/architectures/modern-SPA.webp" alt="architecture diagram of a client-side rendered web application" loading="lazy">
+        <img src="https://plainvanillaweb.com/blog/articles/2025-07-16-local-first-architecture/architectures/modern-SPA.webp" alt="architecture diagram of a client-side rendered web application" width="1830" height="1444" loading="lazy">
         <p>
             This design does not need the server for rendering, so it has the theoretical potential to hit 100 ms.
             But because the user's interactions have to fetch data from the remote database and update it as well – 
@@ -122,7 +227,7 @@
             in practice we rarely actually hit that low latency.
             We can <em>move the data to the user</em> by doing something like this:
         </p>
-        <img src="https://plainvanillaweb.com/blog/articles/2025-07-16-local-first-architecture/architectures/local-first-partial.webp" alt="architecture diagram of a local-first application with server-side sync" loading="lazy">
+        <img src="https://plainvanillaweb.com/blog/articles/2025-07-16-local-first-architecture/architectures/local-first-partial.webp" alt="architecture diagram of a local-first application with server-side sync" width="1806" height="1502" loading="lazy">
         <p>
             The user's data gets duplicated into a local IndexedDB. More than duplicated actually as
             this becomes the only copy of the data that the user will interact with directly.
@@ -195,7 +300,7 @@
             the application-specific database and syncing logic on the server,
             but what if we instead did away with every last piece of server-side application logic?
         </p>
-        <img src="https://plainvanillaweb.com/blog/articles/2025-07-16-local-first-architecture/architectures/local-first-full.webp" alt="architecture diagram of a local-first application without server-side logic" loading="lazy">
+        <img src="https://plainvanillaweb.com/blog/articles/2025-07-16-local-first-architecture/architectures/local-first-full.webp" alt="architecture diagram of a local-first application without server-side logic" width="1768" height="1372" loading="lazy">
         <p>
             The syncing engine now gets moved in the client, and what it uploads to the server are just files.
             That means all we need is a generic cloud drive, like Dropbox or Onedrive.
@@ -320,7 +425,7 @@
         <p>
             Web applications promised they would solve both problems. At first we built them like this:
         </p>
-        <img src="https://plainvanillaweb.com/blog/articles/2025-07-13-history-architecture/architectures/traditional-ssr.webp" alt="architecture diagram of a traditional server-side rendered web application" loading="lazy">
+        <img src="https://plainvanillaweb.com/blog/articles/2025-07-13-history-architecture/architectures/traditional-ssr.webp" alt="architecture diagram of a traditional server-side rendered web application" width="1586" height="1324" loading="lazy">
         <p>
             The first thing we did was move all of the stuff from all of the users into a central database somewhere online.
             Because this database was shared between the users, it became a lot more easy to keep their changes in sync.
@@ -384,7 +489,7 @@
             One branch of the web development tree doubled down on server-side rendering,
             building further on top of the existing server-side frameworks.
         </p>
-        <img src="https://plainvanillaweb.com/blog/articles/2025-07-13-history-architecture/architectures/liveview.webp" alt="architecture diagram of a server-side rendered application with liveview templates" loading="lazy">
+        <img src="https://plainvanillaweb.com/blog/articles/2025-07-13-history-architecture/architectures/liveview.webp" alt="architecture diagram of a server-side rendered application with liveview templates" width="1588" height="1324" loading="lazy">
         <p>
             They tackled the problems imposed by throughput and latency by
             moving over to a model of partial page updates, where small bits of user-activated JavaScript
@@ -433,7 +538,7 @@
         <p>
             This method taken to its modern best practice extreme looks like this:
         </p>
-        <img src="https://plainvanillaweb.com/blog/articles/2025-07-13-history-architecture/architectures/modern-SPA.webp" alt="Architecture diagram of a client-side rendered single-page application" loading="lazy">
+        <img src="https://plainvanillaweb.com/blog/articles/2025-07-13-history-architecture/architectures/modern-SPA.webp" alt="Architecture diagram of a client-side rendered single-page application" width="1830" height="1444" loading="lazy">
         <p>
             It starts out by moving the application, its framework, and its other dependencies over to the browser.
             When the page is loaded the entire bundle gets loaded, and then pages can be rendered as routes inside of the single-page application.
@@ -536,7 +641,7 @@
         <p>
             The current evolution of these trends is the streaming single-page application:
         </p>
-        <img src="https://plainvanillaweb.com/blog/articles/2025-07-13-history-architecture/architectures/streaming-SPA.webp" alt="architecture diagram of a streaming single-page application" loading="lazy">
+        <img src="https://plainvanillaweb.com/blog/articles/2025-07-13-history-architecture/architectures/streaming-SPA.webp" alt="architecture diagram of a streaming single-page application" width="1830" height="1544" loading="lazy">
 
         <p>
             In this architecture the framework runs the show in both backend-for-frontend and in the browser.
@@ -597,7 +702,7 @@
             In the next article I'll be exploring an obscure but very different architecture,
             a crazy thought similar to that of client-side rendering:
             what happens when we move the user's data from the server back into the client?
-            What is <em>local-first web application architecture</em>?
+            What is <a href="../2025-07-16-local-first-architecture/">local-first web application architecture</a>?
         </p>
     ]]></content>
     </entry>
@@ -913,7 +1018,7 @@ customElements.define('demo-app', class extends HTMLElement {
         </p>
         <div><pre><code>&lt;!DOCTYPE html&gt;
 &lt;html lang="en"&gt;
-&lt;head&gt;
+&lt;head&gt;&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;
     &lt;script&gt;
         var pathSegmentsToKeep = window.location.hostname === 'localhost' ? 0 : 1;
 
@@ -930,7 +1035,7 @@ customElements.define('demo-app', class extends HTMLElement {
 &lt;/html&gt;</code></pre></div>
         <div><p><em>index.html:</em></p><pre><code>&lt;!doctype html&gt;
 &lt;html lang="en"&gt;
-&lt;head&gt;
+&lt;head&gt;&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;
     &lt;!-- ... --&gt;
 &lt;/head&gt;
 &lt;body&gt;
@@ -2819,7 +2924,7 @@ customElements.define('my-component', class extends HTMLElement {
             Which would be used on a page like this, with <code>&lt;my-subscriber&gt;</code> requesting 
             the theme by dispatching a <code>context-request</code> event.
         </p>
-        <div><pre><code>&lt;theme-context&gt;
+        <div><pre><code>&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;&lt;theme-context&gt;
     &lt;div&gt;
         &lt;my-subscriber&gt;&lt;/my-subscriber&gt;
     &lt;/div&gt;
@@ -3156,7 +3261,7 @@ function reparent() {
         </p>
         <div><p><em>index.html:</em></p><pre><code>&lt;!DOCTYPE html&gt;
 &lt;html lang="en"&gt;
-&lt;head&gt;
+&lt;head&gt;&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;
     &lt;meta charset="UTF-8"&gt;
     &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
     &lt;title&gt;Document&lt;/title&gt;
@@ -3667,7 +3772,7 @@ customElements.define('task-item', class extends HTMLElement {
         <p><a href="https://plainvanillaweb.com/blog/articles/2024-09-16-life-and-times-of-a-custom-element/undefined/example.html">undefined/example.html</a></p>
         <div><p><em>example.html:</em></p><pre><code>&lt;!doctype html&gt;
 &lt;html&gt;
-    &lt;head&gt;
+    &lt;head&gt;&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;
         &lt;meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" /&gt;
         &lt;link rel="stylesheet" href="example.css"&gt;
         &lt;title&gt;undefined custom element&lt;/title&gt;
@@ -3700,7 +3805,7 @@ customElements.define('task-item', class extends HTMLElement {
         <p><a href="https://plainvanillaweb.com/blog/articles/2024-09-16-life-and-times-of-a-custom-element/defined/example.html">defined/example.html</a></p>
         <div><p><em>example.html:</em></p><pre><code>&lt;!doctype html&gt;
 &lt;html&gt;
-    &lt;head&gt;
+    &lt;head&gt;&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;
         &lt;meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" /&gt;
         &lt;title&gt;defining the custom element&lt;/title&gt;
         &lt;style&gt;
@@ -3894,7 +3999,7 @@ customElements.define('task-item', class extends HTMLElement {
         <p><a href="https://plainvanillaweb.com/blog/articles/2024-09-16-life-and-times-of-a-custom-element/shadowed/example.html">shadowed/example.html</a></p>
         <div><p><em>example.html:</em></p><pre><code>&lt;!doctype html&gt;
 &lt;html&gt;
-    &lt;head&gt;
+    &lt;head&gt;&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;
         &lt;meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" /&gt;
         &lt;title&gt;shadowed custom element&lt;/title&gt;
         &lt;style&gt;
@@ -3966,7 +4071,7 @@ customElements.define('task-item', class extends HTMLElement {
         <p><a href="https://plainvanillaweb.com/blog/articles/2024-09-16-life-and-times-of-a-custom-element/observer/example.html">observer/example.html</a></p>
         <div><p><em>example.html:</em></p><pre><code>&lt;!doctype html&gt;
 &lt;html&gt; 
-    &lt;head&gt;
+    &lt;head&gt;&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;
         &lt;meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" /&gt;
         &lt;title&gt;custom element with observer&lt;/title&gt;
         &lt;style&gt;
@@ -4128,7 +4233,7 @@ customElements.define('task-item', class extends HTMLElement {
             the <code>&lt;x-suspense&gt;</code> component. This starts out as a tale of two slots. When the suspense element is loading it shows the fallback, otherwise the content.
         </p>
 
-        <div><p><em>example.html:</em></p><pre><code>&lt;x-suspense&gt;
+        <div><p><em>example.html:</em></p><pre><code>&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;&lt;x-suspense&gt;
     &lt;p slot="fallback"&gt;Loading...&lt;/p&gt;
     &lt;x-lazy&gt;&lt;x-hello-world&gt;&lt;/x-hello-world&gt;&lt;/x-lazy&gt;
 &lt;/x-suspense&gt;</code></pre></div>
@@ -4218,7 +4323,7 @@ customElements.define('x-suspense', Suspense);</code></pre></div>
         <p>
             The approach is similar to suspense:
         </p>
-        <div><p><em>example.html:</em></p><pre><code>&lt;x-error-boundary&gt;
+        <div><p><em>example.html:</em></p><pre><code>&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;&lt;x-error-boundary&gt;
     &lt;p slot="error"&gt;Something went wrong&lt;/p&gt;
     &lt;x-suspense&gt;
         &lt;p slot="fallback"&gt;Loading...&lt;/p&gt;
@@ -5465,7 +5570,7 @@ export const html = (strings, ...values) =&gt;
             <p>After careful consideration we present to you, an article page blueprint...</p>
             <div><pre><code>&lt;!doctype html&gt;
 &lt;html lang="en"&gt;
-&lt;head&gt;
+&lt;head&gt;&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;
     &lt;title&gt;A spiffy title!&lt;/title&gt;
     &lt;meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" /&gt;
     &lt;meta name="description" content="This is a spiffy article. You should read it."&gt;
@@ -5557,7 +5662,7 @@ export const html = (strings, ...values) =&gt;
                 Visually showing an index is not so difficult, as a web component built around a simple <code>&lt;li&gt;</code>-based
                 card design can be used to show both the recent posts and the archive page, and was straighforward to style with CSS.
             </p>
-            <div><pre><code>&lt;ul class="cards"&gt;
+            <div><pre><code>&lt;script type="text/javascript" src="/___vscode_livepreview_injected_script"&gt;&lt;/script&gt;&lt;ul class="cards"&gt;
     &lt;li class="card"&gt;
         &lt;img src="./articles/2024-08-17-lets-build-a-blog/image.webp" aria-hidden="true" loading="lazy" /&gt;
         &lt;h3&gt;&lt;a href="./articles/2024-08-17-lets-build-a-blog/"&gt;Let's build a blog, vanilla-style!&lt;/a&gt;&lt;/h3&gt;

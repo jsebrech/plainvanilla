@@ -13,17 +13,20 @@
 <body>
     <noscript><strong>Please enable JavaScript to view this page correctly.</strong></noscript>
     <header>
-        <h1>Plain Vanilla Sites</h1>
-        <nav>
+        <h1>Sites</h1>
+        <nav id="menu-nav" popover aria-label="main">
             <ol>
                 <li><a href="../index.html">Welcome</a></li>
                 <li><a href="components.html">Components</a></li>
                 <li><a href="styling.html">Styling</a></li>
                 <li><a href="#" aria-current="page">Sites</a></li>
                 <li><a href="applications.html">Applications</a></li>
-                <li><a href="../blog/">Blog</a></li>
+                <li class="nav-right"><a href="../blog/">Blog</a></li>
             </ol>
         </nav>
+        <button popovertarget="menu-nav" popovertargetaction="toggle" aria-label="menu">
+            &mldr;
+        </button>
     </header>
     <main>
         <section id="pages">
@@ -88,6 +91,10 @@
                     Being familiar with HTML's set of built-in elements saves time, 
                     both in avoiding the need for custom elements and in easing implementation of the custom elements that are needed.
                     When properly used HTML elements are accessible by default.
+                    Pay special attention to the newly baseline features that enable complex UI patterns with minimal JavaScript, 
+                    like how <a href="https://web.dev/learn/css/popover-and-dialog">popover</a>
+                    and <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog">dialog</a> can be used to implement HTML-native tooltips, dialogs and menus,
+                    and how the <a href="https://developer.mozilla.org/en-US/blog/html-details-exclusive-accordions/">details</a> element can be used to implement accordions.
                 </dd>
                 <dt><a href="https://developer.mozilla.org/en-US/docs/Learn/Forms">Forms</a></dt>
                 <dd>
@@ -295,9 +302,9 @@
                 <li>Everything on this site works in current versions of Safari, Chrome, Edge and Firefox.</li>
                 <li>
                     Everything on this site has 95% support or more on <a href="https://caniuse.com">caniuse.com</a>, 
-                    with the exception of <a href="https://caniuse.com/import-maps">Import Maps</a> (93%), 
-                    <a href="https://caniuse.com/mdn-api_elementinternals">ElementInternals</a> (92%), 
-                    <a href="https://caniuse.com/declarative-shadow-dom">Declarative Shadow DOM</a> (91%), and <a href="https://caniuse.com/css-nesting">CSS Nesting</a> (88%), and it won't be long before those catch up.
+                    with the exception of <a href="https://caniuse.com/wf-popover">Popover</a> (87%), 
+                    <a href="https://caniuse.com/wf-details-name">mutually-exclusive details</a> (86%), 
+                    and <a href="https://caniuse.com/css-nesting">CSS Nesting</a> (90%), and it won't be long before those catch up.
                 </li>
                 <li>
                     That in turn means you can safely rely on <a href="https://caniuse.com/http2">HTTP/2</a>, <a href="https://caniuse.com/html5semantic">HTML5 semantic elements</a>, <a href="https://caniuse.com/custom-elementsv1">Custom Elements</a>, 
@@ -397,18 +404,21 @@
             <p>This website is the example. Check out the <a href="https://github.com/jsebrech/plainvanilla/">project on GitHub</a>.</p>
         </section>
         <section>
-            <hr />
             <h2>Up next</h2>
-            Learn how to build <a href="applications.html">single-page applications</a> using vanilla techniques.
+            <hr />
+            <p>Learn how to build single-page applications using vanilla techniques.</p>
+            <p><a href="applications.html" class="button">Make Applications</a></p>
         </section>
     </main>
 
     <footer>
-        <hr />
         <div class="contact">
-            <a href="https://github.com/jsebrech/plainvanilla">GitHub</a>
             <a href="https://sebrechts.net/">Contact</a>
+            <a href="https://github.com/jsebrech/plainvanilla">GitHub</a>
         </div>
+        <p class="top-link">
+            <a href="#top">Back to top</a>
+        </p>
         <x-analytics></x-analytics>
     </footer>
 </body>

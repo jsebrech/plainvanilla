@@ -1,5 +1,12 @@
 [
     {
+        "slug": "2026-03-01-redesigning-plain-vanilla",
+        "title": "Redesigning Plain Vanilla",
+        "summary": "Stepping out of my comfort zone.",
+        "published": "2026-03-01",
+        "author": "Joeri Sebrechts"
+    },
+    {
         "slug": "2025-07-16-local-first-architecture",
         "title": "Local-first web application architecture",
         "summary": "Maybe we just need to dig a little deeper (into the client).",

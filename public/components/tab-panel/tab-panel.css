@@ -23,7 +23,7 @@ x-tab-panel div[role=tablist] button[role=tab] {
 
 x-tab-panel div[role=tablist] button[role=tab][aria-selected=true] {
     font-weight: bold;
-    border-bottom: 2px solid black;
+    border-bottom: 2px solid var(--border-color);
 }
 
 x-tab-panel > x-tab {

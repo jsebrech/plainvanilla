@@ -7,11 +7,13 @@ class BlogFooter extends HTMLElement {
             <footer>                
                 ${mastodonUrl ? 
                     html`<p style="text-align: center"><a href="${mastodonUrl}">Discuss on Mastodon</a></p>` : ''}
-                <hr />
                 <div class="contact">
-                    <a href="https://github.com/jsebrech/plainvanilla">GitHub</a>
                     <a href="https://sebrechts.net/">Contact</a>
+                    <a href="https://github.com/jsebrech/plainvanilla">GitHub</a>
                 </div>
+                <p class="top-link">
+                    <a href="#top">Back to top</a>
+                </p>
                 <x-analytics></x-analytics>
             </footer>
         `;
