@@ -1,0 +1,29 @@
+<style>
+    details {
+        summary {
+            list-style: none;
+            user-select: none;
+            svg {
+                display: inline-block;
+                vertical-align: bottom;
+                color: gray;
+                rotate: 0;
+                transition: rotate 0.3s ease-out;
+            }
+        }
+        &[open] summary {
+            svg {
+                rotate: 180deg;
+            }
+        }
+    }
+</style>
+<details>
+    <summary>
+        A summary
+        <svg focusable="false" width="24" height="24" aria-hidden="true">
+            <path d="M6.34317 7.75732L4.92896 9.17154L12 16.2426L19.0711 9.17157L17.6569 7.75735L12 13.4142L6.34317 7.75732Z" fill="currentColor" />
+        </svg>
+    </summary>
+    Some details to further explain the summary.
+</details>

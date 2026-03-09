@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>&lt;details&gt; matters</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="description" content="An oddball element set to take the main stage.">
+    <link rel="stylesheet" href="../../index.css">
+    <script type="module" src="../../index.js" defer></script>
+</head>
+<body>
+    <blog-header published="2026-03-09">
+        <img src="image.webp" alt="detail of a London street crossing showing the words look right" />
+        <h2>&lt;details&gt; matters</h2>
+        <p class="byline" aria-label="author">Joeri Sebrechts</p>
+    </blog-header>
+    <main>
+        <p>
+            The richness of HTML continues to be a delightful surprise.
+        </p>
+        <p>
+            For example, take an unassuming element like &lt;details&gt;.
+            We've all seen it before. Here it is in its pure form:
+        </p>
+        <x-code-viewer src="example1/index-partial.html" name=""></x-code-viewer>
+        <iframe src="example1/index.html" title="undecorated details"></iframe>
+        
+        <p>
+            We can merrily click the summary to open and close the details to our heart's content.
+            But this is kind of plain-looking. Can we change that triangle into something else?
+        </p>
+        <iframe src="example2/index.html" title="replacing the marker"></iframe>
+        <p>
+            In a just world, this would work by neatly styling the <code>::marker</code> pseudo-element,
+            but like so often <a href="https://caniuse.com/css-marker-pseudo">Safari is being annoying</a>. 
+            Thankfully we can instead replace the marker by removing it with <code>list-style: none;</code> and adding a new summary marker
+            on the <code>::before</code> or <code>::after</code> pseudo-elements.
+        </p>
+        <x-code-viewer src="example2/index-partial.html" name=""></x-code-viewer>
+        <p>
+            And really, the <code>summary</code> element can contain anything at all, inviting our creativity.
+            Here's a fancier example that replaces the marker by an animated svg icon.
+        </p>
+        <iframe src="example3/index.html" title="replacing the marker, but more fancy"></iframe>
+        <x-code-viewer src="example3/index-partial.html" name=""></x-code-viewer>
+        
+        <p>
+            There's no reason to stop at decorating the marker though.
+            We can make the details element look like anything we want,
+            all it takes is the right CSS. If we wanted, we could make it look like a card.
+        </p>
+        <iframe src="example4/index.html" height="250" title="card-like appearance"></iframe>
+        <x-code-viewer src="example4/index-partial.html" name=""></x-code-viewer>
+        <p>
+            One caveat with this example is the <code>::details-content</code> pseudo-element used to select
+            the expanded content area. This is baseline 2025 so still pretty new. For older browsers you can wrap the content 
+            in a div and style that instead.
+        </p>
+
+        <p>
+            But wait, there's more! In baseline 2024 <code>&lt;details&gt;</code> picked up a neat trick
+            where all the elements with the same <code>name</code> attribute are mutually exclusive,
+            meaning only one can be open at the same time. All we have to do is stack them
+            to magically get an accordion.
+        </p>
+        <iframe src="example5/index.html" height="350" title="card-like appearance"></iframe>
+        <x-code-viewer src="example5/index-partial.html" name=""></x-code-viewer>
+        <p>
+            There's no magic code here to make the accordion work aside from the <code>name</code> attributes. 
+            HTML is doing the magic for us, which means this also happens to be fully keyboard-navigable and accessible.
+            The only tricky bit is animating the expanding and collapsing of the cards.
+            In this example that is implemented using <code>interpolate-size: allow-keywords</code>,
+            which is a <a href="https://css-tricks.com/almanac/properties/i/interpolate-size/">Chromium-only trick</a> hopefully coming to other browsers near you.
+            Thankfully in those other browsers this is still perfectly functional, just not as smoothly animating.
+        </p>
+        <p>
+            By the way, the mutually exclusive &lt;details&gt; elements do not even need to share a parent element.
+            These accordion cards could be wrapped in custom elements, or <code>&lt;fieldset&gt;</code> or <code>&lt;form&gt;</code> elements,
+            and they would work just fine in all browsers, today. But you'll have to take my word for it.
+            After all, I have to leave some exercises up to the reader. &#x1F609;
+        </p>
+
+        <p>
+            Like I said, the richness of HTML continues to be a delightful surprise.
+            If you ask me then <code>&lt;details&gt;</code> has a bright future ahead of it.
+        </p>
+        <p>
+            No JavaScript was harmed in the making of this blog post.
+        </p>
+    </main>
+    <blog-footer></blog-footer>
+</body>
+</html>

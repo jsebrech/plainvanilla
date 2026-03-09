@@ -1,5 +1,12 @@
 [
     {
+        "slug": "2026-03-09-details-matters",
+        "title": "<details> matters",
+        "summary": "An oddball element set to take the main stage.",
+        "published": "2026-03-09",
+        "author": "Joeri Sebrechts"
+    },
+    {
         "slug": "2026-03-01-redesigning-plain-vanilla",
         "title": "Redesigning Plain Vanilla",
         "summary": "Stepping out of my comfort zone.",

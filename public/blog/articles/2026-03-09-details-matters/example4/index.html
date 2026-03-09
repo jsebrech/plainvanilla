@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Example 4</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="../../../example-base.css">
+</head>
+<body>
+    <style>
+        details {
+            border: 1px solid gray;
+            max-width: 20em;
+            
+            summary {
+                position: relative;
+                list-style: none;
+                padding: 0.2em 0.4em;
+                user-select: none;
+                svg {
+                    position: absolute;
+                    right: 0.2em;
+                    top: 0.3em;
+                    color: gray;
+                    rotate: 0;
+                    transition: rotate 0.3s ease-out;
+                }
+            }
+
+            &[open] {
+                summary {
+                    font-weight: bold;
+                    svg {
+                        rotate: 180deg;
+                    }
+                }
+
+                &::details-content {
+                    border-top: 1px solid gray;
+                    padding: 0.2em 0.4em;        
+                }
+            }
+        }
+    </style>
+    <details>
+        <summary>
+            A summary
+            <svg focusable="false" width="24" height="24" aria-hidden="true">
+                <path d="M6.34317 7.75732L4.92896 9.17154L12 16.2426L19.0711 9.17157L17.6569 7.75735L12 13.4142L6.34317 7.75732Z" fill="currentColor" />
+            </svg>
+        </summary>
+        Some details to further explain the summary.
+        And this is another sentence that spends a great deal of time saying nothing.
+    </details>
+</body>
+</html>

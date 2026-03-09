@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Example 2</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="../../../example-base.css">
+</head>
+<body>
+    <style>
+        details {
+            summary {
+                list-style: none;
+            }
+            summary::before {
+                content: "\1F512";
+                margin: 0 0.3em 0 -0.1em;
+            }
+            &[open] summary::before {
+                content: "\1F513";
+            }
+        }
+    </style>
+    <details>
+        <summary>A summary</summary>
+        Some details to further explain the summary.
+    </details>
+</body>
+</html>
